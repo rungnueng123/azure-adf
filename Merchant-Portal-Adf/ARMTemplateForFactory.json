@@ -1,0 +1,3408 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "Merchant-Portal-Adf"
+		},
+		"AzureSftpOnPrem_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'AzureSftpOnPrem'"
+		},
+		"AzureSql_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSql'"
+		},
+		"AzureSqlDB_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDB'"
+		},
+		"B2Kblob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'B2Kblob'"
+		},
+		"AzureSftpOnPrem_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "94.74.112.153"
+		},
+		"AzureSftpOnPrem_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "ttb_pbiz_transfer"
+		},
+		"az_blob_b2k_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Storage/storageAccounts/merchantportalblob"
+		},
+		"az_blob_b2k_properties_groupId": {
+			"type": "string",
+			"defaultValue": "blob"
+		},
+		"az_blob_b2k_properties_fqdns": {
+			"type": "array",
+			"defaultValue": [
+				"merchantportalblob.blob.core.windows.net"
+			]
+		},
+		"az_sql_b2k_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Sql/servers/hfympcdb"
+		},
+		"az_sql_b2k_properties_groupId": {
+			"type": "string",
+			"defaultValue": "sqlServer"
+		},
+		"az_sql_b2k_properties_fqdns": {
+			"type": "array",
+			"defaultValue": [
+				"hfympcdb.database.windows.net"
+			]
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K Blob to DB')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "FixLenghtProcessFlow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "B2K_FixLenghtProcessDataFlow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"mcrmrchFixedLength": {},
+									"edctermFixedLength": {},
+									"emsmrmstFixedLength": {},
+									"mcrmrchSink": {},
+									"edctermSink": {},
+									"emsmrmstSink": {}
+								}
+							},
+							"staging": {},
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "B2K_MCRMRCH to SQL",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "FixLenghtProcessFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "BILLER_MERCHANT_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BILLER_MERCHANT_ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ACCOUNT_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ACCOUNT_ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "TAX_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "TAX_ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "NAME_TH",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "NAME_TH",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "NAME_EN",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "NAME_EN",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ACTIVE_STATUS",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ACTIVE_STATUS",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "UPDATE_DATE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "UPDATE_DATE",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										}
+									},
+									{
+										"source": {
+											"name": "SOURCE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SOURCE",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "B2K_MCRMRCH_TEMP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "MerchantProfileTempSQL",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "B2K_EDCTERM to SQL",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "FixLenghtProcessFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Terminal_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "TERMINAL_ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Terminal_Name_TH",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "TERMINAL_NAME_TH",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Terminal_Name_EN",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "TERMINAL_NAME_EN",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "MERCHANT_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "MERCHANT_ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "UPDATE_DATE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "UPDATE_DATE",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "B2K_EDCTERM_TEMP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "TerminalProfileTempSql",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "B2K_EMSMRMST to SQL",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "FixLenghtProcessFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "BILLER_MERCHANT_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BILLER_MERCHANT_ID",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "EMAIL_1",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "EMAIL_1",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "EMAIL_2",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "EMAIL_2",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "EMAIL_3",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "EMAIL_3",
+											"type": "String",
+											"physicalType": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "B2K_EMSMRMST_TEMP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "MerchantEmailTempSQL",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "B2KMPS"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-15T07:06:00Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/B2K_FixLenghtProcessDataFlow')]",
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]",
+				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH_TEMP')]",
+				"[concat(variables('factoryId'), '/datasets/MerchantProfileTempSQL')]",
+				"[concat(variables('factoryId'), '/datasets/B2K_EDCTERM_TEMP')]",
+				"[concat(variables('factoryId'), '/datasets/TerminalProfileTempSql')]",
+				"[concat(variables('factoryId'), '/datasets/B2K_EMSMRMST_TEMP')]",
+				"[concat(variables('factoryId'), '/datasets/MerchantEmailTempSQL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set Date Start",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "startDateMerchant",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),6,'Month'),'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Date End",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date Start",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "endDateMerchant",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(utcnow(),6,'Month'),'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set File Name",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date End",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "fileNameMerchant",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),6,'Month'),'dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Set File Name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "MERCHANT_ACTIVITY_LOG_FLOW",
+								"type": "DataFlowReference",
+								"parameters": {
+									"schemaName": "'dbo'",
+									"tableName": "'MERCHANT_ACTIVITY_LOG'",
+									"startDate": {
+										"value": "'@{variables('startDateMerchant')}'",
+										"type": "Expression"
+									},
+									"endDate": {
+										"value": "'@{variables('endDateMerchant')}'",
+										"type": "Expression"
+									},
+									"columnName": "'TRANSACTION_DATE'",
+									"fileName": {
+										"value": "'@{variables('fileNameMerchant')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"queryMERCHANTACTIVITYLOG": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"startDateMerchant": {
+						"type": "String"
+					},
+					"endDateMerchant": {
+						"type": "String"
+					},
+					"fileNameMerchant": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Log"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-16T03:36:51Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/MERCHANT_ACTIVITY_LOG_FLOW')]",
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MPS Blob to DB')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "FixLenghtProcessFlow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "MPS_FixLenghtProcessDataFlow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"ppmerchantFixedLength": {},
+									"ODSPP": {},
+									"ppdebitadviceFixedLength": {},
+									"ppmerchantSink": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "MPS_PP_MerchantFile to SQL",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "FixLenghtProcessFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "MPS_PP_MERCHANTFILE_TEMP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "MerchantProfileTempSQL",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "MPS_PP_DebitAdvice to SQL",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "FixLenghtProcessFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "MPS_PP_DEBITADVICE_TEMP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "MerchantEmailTempSQL",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "B2KMPS"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/MPS_FixLenghtProcessDataFlow')]",
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]",
+				"[concat(variables('factoryId'), '/datasets/MPS_PP_MERCHANTFILE_TEMP')]",
+				"[concat(variables('factoryId'), '/datasets/MerchantProfileTempSQL')]",
+				"[concat(variables('factoryId'), '/datasets/MPS_PP_DEBITADVICE_TEMP')]",
+				"[concat(variables('factoryId'), '/datasets/MerchantEmailTempSQL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MasterPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get File From SFTP",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SFTP to Blob",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Insert B2K To DB",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Get File From SFTP",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "B2K Blob to DB",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Insert MPS To DB",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Get File From SFTP",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "MPS Blob to DB",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Send Email Error",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Get File From SFTP",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "B2KMPS"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/SFTP to Blob')]",
+				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]",
+				"[concat(variables('factoryId'), '/pipelines/MPS Blob to DB')]",
+				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Set File Name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "SCB_ACTIVITY_LOG_FLOW",
+								"type": "DataFlowReference",
+								"parameters": {
+									"schemaName": "'dbo'",
+									"tableName": "'SCB_ACTIVITY_LOG'",
+									"startDate": {
+										"value": "'@{variables('startDateSCB')}'",
+										"type": "Expression"
+									},
+									"endDate": {
+										"value": "'@{variables('endDateSCB')}'",
+										"type": "Expression"
+									},
+									"columnName": "'TRANSACTION_DATE'",
+									"fileName": {
+										"value": "'@{variables('fileNameSCB')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"querySCBACTIVITYLOG": {},
+									"sink1": {
+										"year": "utcnow('yyyy')",
+										"month": "utcnow('MM')",
+										"date": "utcnow('dd')"
+									}
+								}
+							},
+							"staging": {},
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Set Date Start",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "startDateSCB",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Date End",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date Start",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "endDateSCB",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(utcnow(),1,'Year'),'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set File Name",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date End",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "fileNameSCB",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'dd')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"startDateSCB": {
+						"type": "String"
+					},
+					"endDateSCB": {
+						"type": "String"
+					},
+					"fileNameSCB": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Log"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-16T03:36:51Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/SCB_ACTIVITY_LOG_FLOW')]",
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SFTP to Blob')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "SftpReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*",
+									"enablePartitionDiscovery": false,
+									"disableChunking": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SFTPOnPrem",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SFTPBlobTemp",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "B2KMPS"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SFTPOnPrem')]",
+				"[concat(variables('factoryId'), '/datasets/SFTPBlobTemp')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Send Email')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Send Email Error",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://merchantportal-office365la.azurewebsites.net:443/api/office365la/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=6bDQNEtmoTwN9_zhV1KI-v6PN6mHTItCW39UdHxGAvw",
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"body": {
+								"to": "rungnueng.luangkamchorn@stream.co.th",
+								"subject": "subject test",
+								"toname": "rungnueng",
+								"html": "test body",
+								"container": "knowledge-sharing-temp",
+								"attachmentPath": "/Untitle.jpeg",
+								"endpoint": "https://merchant-portal-dah2ggfzeegsf6g3.z01.azurefd.net/dev/blob/"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "B2KMPS"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EDCMERCH')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EDCMERCH"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat(\n    'B2K_EDCMERCH_',\n    utcnow('yyyyMMdd'),\n    '.txt'\n)",
+							"type": "Expression"
+						},
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EDCMERCH_OUTPUT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EDCMERCH"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "B2K_EDCMERCH_TEMP.txt",
+						"folderPath": "output",
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EDCMERCH_TEMP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EDCMERCH"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "B2K_EDCMERCH_TEMP.txt",
+						"folderPath": "output",
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EDCTERM"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat(\n    'B2K_EDCTERM_',\n    utcnow('yyyyMMdd'),\n    '.txt'\n)",
+							"type": "Expression"
+						},
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM_OUTPUT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EDCTERM"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "B2K_EDCTERM_TEMP.txt",
+						"folderPath": "output",
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM_TEMP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EDCTERM"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "B2K_EDCTERM_TEMP.txt",
+						"folderPath": "output",
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "MERCHANT_ID",
+						"type": "String"
+					},
+					{
+						"name": "Terminal_ID",
+						"type": "String"
+					},
+					{
+						"name": "Terminal_Name_EN",
+						"type": "String"
+					},
+					{
+						"name": "Terminal_Name_TH",
+						"type": "String"
+					},
+					{
+						"name": "UPDATE_DATE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EMSMRMST')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EMSMRMST"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat(\n    'B2K_EMSMRMST_',\n    utcnow('yyyyMMdd'),\n    '.txt'\n)",
+							"type": "Expression"
+						},
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EMSMRMST_OUTPUT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EMSMRMST"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "B2K_EMSMRMST_TEMP.txt",
+						"folderPath": "output",
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EMSMRMST_TEMP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EMSMRMST"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "B2K_EMSMRMST_TEMP.txt",
+						"folderPath": "output",
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_MCRMRCH')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/MCRMRCH"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat(\n    'B2K_MCRMRCH_',\n    utcnow('yyyyMMdd'),\n    '.txt'\n)",
+							"type": "Expression"
+						},
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_MCRMRCH_OUTPUT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/MCRMRCH"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "B2K_MCRMRCH_TEMP.txt",
+						"folderPath": "output",
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_MCRMRCH_TEMP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/MCRMRCH"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "B2K_MCRMRCH_TEMP.txt",
+						"folderPath": "output",
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "BILLER_MERCHANT_ID",
+						"type": "String"
+					},
+					{
+						"name": "ACCOUNT_ID",
+						"type": "String"
+					},
+					{
+						"name": "TAX_ID",
+						"type": "String"
+					},
+					{
+						"name": "NAME_TH",
+						"type": "String"
+					},
+					{
+						"name": "NAME_EN",
+						"type": "String"
+					},
+					{
+						"name": "ACTIVE_STATUS",
+						"type": "String"
+					},
+					{
+						"name": "UPDATE_DATE",
+						"type": "String"
+					},
+					{
+						"name": "SOURCE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Log/MERCHANT_ACTIVITY_LOG/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TRANSACTION_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "FUNCTION_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "LOG",
+						"type": "varchar"
+					},
+					{
+						"name": "LOG_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "APPLICATION_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "EVENT",
+						"type": "varchar"
+					},
+					{
+						"name": "EVENT_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "URL",
+						"type": "varchar"
+					},
+					{
+						"name": "MERCHANT_CENTER_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_ADDRESS",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_HOSTNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_USERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_OBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_ADDRESS",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_HOSTNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_USERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_OBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGE_FROM",
+						"type": "text"
+					},
+					{
+						"name": "CHANGE_TO",
+						"type": "text"
+					},
+					{
+						"name": "SEARCH_CRITERIA",
+						"type": "text"
+					},
+					{
+						"name": "RESULT_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "MESSAGE",
+						"type": "text"
+					},
+					{
+						"name": "UPDATE_PII_LOG_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "UPDATE_PII_LOG_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "MERCHANT_ACTIVITY_LOG"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG_OUTPUT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Log/MERCHANT_ACTIVITY_LOG/OUTPUT"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat(utcnow('dd'),'.log')",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@concat(\n    'merchant_activity_log/',\n    formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'yyyy'),\n    '/',\n    formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'MM')\n)",
+							"type": "Expression"
+						},
+						"container": "log"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MPS_ODSPP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/MPS/ODSPP"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat(\n    'MPS_ODS_PP_APINOTI_D',\n    utcnow('yyyyMMdd'),\n    '.DAT'\n)",
+							"type": "Expression"
+						},
+						"container": "b2kmps"
+					},
+					"columnDelimiter": ",",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MPS_PP_DEBITADVICE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/MPS/PPDebitAdvice"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat(\n    'MPS_PP_DebitAdvice_Info_D',\n    utcnow('yyyyMMdd'),\n    '.txt'\n)",
+							"type": "Expression"
+						},
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MPS_PP_DEBITADVICE_OUTPUT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/MPS/PPDebitAdvice"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "MPS_PP_DEBITADVICE_TEMP.txt",
+						"folderPath": "output",
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MPS_PP_DEBITADVICE_TEMP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/MPS/PPDebitAdvice"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "MPS_PP_DEBITADVICE_TEMP.txt",
+						"folderPath": "output",
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MPS_PP_MERCHANTFILE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/MPS/TSBP1VNP"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "PP_MerchantFile.txt",
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MPS_PP_MERCHANTFILE_OUTPUT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/MPS/TSBP1VNP"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "MPS_PP_MERCHANTFILE_TEMP.txt",
+						"folderPath": "output",
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MPS_PP_MERCHANTFILE_TEMP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/MPS/TSBP1VNP"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "MPS_PP_MERCHANTFILE_TEMP.txt",
+						"folderPath": "output",
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MerchantEmailTempSQL')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "BILLER_MERCHANT_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "EMAIL_1",
+						"type": "varchar"
+					},
+					{
+						"name": "EMAIL_2",
+						"type": "varchar"
+					},
+					{
+						"name": "EMAIL_3",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "MERCHANT_EMAIL_TEMP"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MerchantProfileTempSQL')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "BILLER_MERCHANT_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "ACCOUNT_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "TAX_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "NAME_TH",
+						"type": "varchar"
+					},
+					{
+						"name": "NAME_EN",
+						"type": "varchar"
+					},
+					{
+						"name": "COMPANY_NAME_TH",
+						"type": "varchar"
+					},
+					{
+						"name": "COMPANY_NAME_EN",
+						"type": "varchar"
+					},
+					{
+						"name": "ACTIVE_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "UPDATE_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "BUSINESS_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "REF1_TH",
+						"type": "varchar"
+					},
+					{
+						"name": "REF1_EN",
+						"type": "varchar"
+					},
+					{
+						"name": "REF3",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE",
+						"type": "varchar"
+					},
+					{
+						"name": "REF2_TH",
+						"type": "varchar"
+					},
+					{
+						"name": "REF2_EN",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "MERCHANT_PROFILE_TEMP"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Log/SCB_ACTIVITY_LOG/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TRANSACTION_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "FUNCTION_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "LOG",
+						"type": "varchar"
+					},
+					{
+						"name": "LOG_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "APPLICATION_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "EVENT",
+						"type": "varchar"
+					},
+					{
+						"name": "EVENT_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "URL",
+						"type": "varchar"
+					},
+					{
+						"name": "MERCHANT_CENTER_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_ADDRESS",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_HOSTNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_USERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_OBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_ADDRESS",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_HOSTNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_USERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_OBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGE_FROM",
+						"type": "text"
+					},
+					{
+						"name": "CHANGE_TO",
+						"type": "text"
+					},
+					{
+						"name": "SEARCH_CRITERIA",
+						"type": "text"
+					},
+					{
+						"name": "RESULT_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "MESSAGE",
+						"type": "text"
+					},
+					{
+						"name": "UPDATE_PII_LOG_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "UPDATE_PII_LOG_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "SCB_ACTIVITY_LOG"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG_OUTPUT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"year": {
+						"type": "string",
+						"defaultValue": "formatDateTime(subtractFromTime(utcnow(),1,'Year'),'yyyy')"
+					},
+					"month": {
+						"type": "string",
+						"defaultValue": "utcnow('MM')"
+					},
+					"date": {
+						"type": "string",
+						"defaultValue": "utcnow('dd')"
+					}
+				},
+				"folder": {
+					"name": "Log/SCB_ACTIVITY_LOG/OUTPUT"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat(utcnow('dd'),'.log')",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@concat(\n    'scbstaff_activity_log/',\n    formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'yyyy'),\n    '/',\n    formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'MM')\n)",
+							"type": "Expression"
+						},
+						"container": "log"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SFTPBlobTemp')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/SFTP"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "b2kmps"
+					},
+					"columnDelimiter": ",",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SFTPOnPrem')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSftpOnPrem",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/SFTP"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "SftpLocation",
+						"folderPath": "/Output/Report"
+					},
+					"columnDelimiter": ",",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"firstRowAsHeader": false,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSftpOnPrem')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SMCSql')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/SMC_IMPORT_MERCHANT_PROFILE"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "MID_L11",
+						"type": "varchar"
+					},
+					{
+						"name": "MID_L11_DESC",
+						"type": "varchar"
+					},
+					{
+						"name": "REMARK",
+						"type": "varchar"
+					},
+					{
+						"name": "UPDATE_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "SMC_IMPORT_MERCHANT_PROFILE"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TerminalProfileTempSql')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "TERMINAL_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "TERMINAL_NAME_TH",
+						"type": "varchar"
+					},
+					{
+						"name": "TERMINAL_NAME_EN",
+						"type": "varchar"
+					},
+					{
+						"name": "MERCHANT_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "ACTIVE_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "UPDATE_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "TERMINAL_PROFILE_TEMP"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSftpOnPrem')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "Sftp",
+				"typeProperties": {
+					"host": "[parameters('AzureSftpOnPrem_properties_typeProperties_host')]",
+					"port": "2022",
+					"skipHostKeyValidation": true,
+					"authenticationType": "Basic",
+					"userName": "[parameters('AzureSftpOnPrem_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('AzureSftpOnPrem_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "AzureIR-ManagedVNet",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSql')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureSql_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AzureIR-ManagedVNet",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlDB')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureSqlDB_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AzureIR-ManagedVNet",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2Kblob')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('B2Kblob_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AzureIR-ManagedVNet",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureIR-ManagedVNet')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "Southeast Asia",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 10,
+							"cleanup": false
+						},
+						"pipelineExternalComputeScaleProperties": {
+							"timeToLive": 60
+						}
+					}
+				},
+				"managedVirtualNetwork": {
+					"type": "ManagedVirtualNetworkReference",
+					"referenceName": "default"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/shir')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_FixLenghtProcessDataFlow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "B2KMPS"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "B2K_MCRMRCH",
+								"type": "DatasetReference"
+							},
+							"name": "mcrmrchFixedLength"
+						},
+						{
+							"dataset": {
+								"referenceName": "B2K_EDCTERM",
+								"type": "DatasetReference"
+							},
+							"name": "edctermFixedLength"
+						},
+						{
+							"dataset": {
+								"referenceName": "B2K_EMSMRMST",
+								"type": "DatasetReference"
+							},
+							"name": "emsmrmstFixedLength"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "B2K_MCRMRCH_OUTPUT",
+								"type": "DatasetReference"
+							},
+							"name": "mcrmrchSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "B2K_EDCTERM_OUTPUT",
+								"type": "DatasetReference"
+							},
+							"name": "edctermSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "B2K_EMSMRMST_OUTPUT",
+								"type": "DatasetReference"
+							},
+							"name": "emsmrmstSink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "mcrmrchDerivedFixedLength"
+						},
+						{
+							"name": "mcrmrchOutputFixedLength"
+						},
+						{
+							"name": "edctermDerivedFixedLength"
+						},
+						{
+							"name": "edctermOutputFixedLength"
+						},
+						{
+							"name": "emsmrmstColumn1"
+						},
+						{
+							"name": "emsmrmstOutputFixedLength"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          data as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> mcrmrchFixedLength",
+						"source(output(",
+						"          data as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> edctermFixedLength",
+						"source(output(",
+						"          data as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> emsmrmstFixedLength",
+						"mcrmrchFixedLength derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
+						"          ACCOUNT_ID = trim(substring(data, 310, 10)),",
+						"          TAX_ID = trim(substring(data, 988, 13)),",
+						"          NAME_TH = trim(substring(data, 1029, 40)),",
+						"          NAME_EN = trim(substring(data, 23, 30)),",
+						"          ACTIVE_STATUS = case(or(substring(data, 210, 1) == '2', substring(data, 210, 1) == '5'), 'A', 'I'),",
+						"          UPDATE_DATE = currentTimestamp(),",
+						"          SOURCE = \"B2K\") ~> mcrmrchDerivedFixedLength",
+						"mcrmrchDerivedFixedLength select(mapColumn(",
+						"          data,",
+						"          BILLER_MERCHANT_ID,",
+						"          ACCOUNT_ID,",
+						"          TAX_ID,",
+						"          NAME_TH,",
+						"          NAME_EN,",
+						"          ACTIVE_STATUS,",
+						"          UPDATE_DATE,",
+						"          SOURCE",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> mcrmrchOutputFixedLength",
+						"edctermFixedLength derive(MERCHANT_ID = trim(substring(data, 11, 16)),",
+						"          Terminal_ID = trim(substring(data, 1, 8)),",
+						"          Terminal_Name_EN = trim(substring(data, 30, 30)),",
+						"          Terminal_Name_TH = trim(substring(data, 30, 30)),",
+						"          UPDATE_DATE = currentTimestamp()) ~> edctermDerivedFixedLength",
+						"edctermDerivedFixedLength select(mapColumn(",
+						"          data,",
+						"          MERCHANT_ID,",
+						"          Terminal_ID,",
+						"          Terminal_Name_EN,",
+						"          Terminal_Name_TH,",
+						"          UPDATE_DATE",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> edctermOutputFixedLength",
+						"emsmrmstFixedLength derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
+						"          EMAIL_1 = trim(substring(data, 24, 70)),",
+						"          EMAIL_2 = trim(substring(data, 94, 70)),",
+						"          EMAIL_3 = trim(substring(data, 164, 70))) ~> emsmrmstColumn1",
+						"emsmrmstColumn1 select(mapColumn(",
+						"          data,",
+						"          BILLER_MERCHANT_ID,",
+						"          EMAIL_1,",
+						"          EMAIL_2,",
+						"          EMAIL_3",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> emsmrmstOutputFixedLength",
+						"mcrmrchOutputFixedLength sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['B2K_MCRMRCH_TEMP.txt'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          BILLER_MERCHANT_ID,",
+						"          ACCOUNT_ID,",
+						"          TAX_ID,",
+						"          NAME_TH,",
+						"          NAME_EN,",
+						"          ACTIVE_STATUS,",
+						"          UPDATE_DATE,",
+						"          SOURCE",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> mcrmrchSink",
+						"edctermOutputFixedLength sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['B2K_EDCTERM_TEMP.txt'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          MERCHANT_ID,",
+						"          Terminal_ID,",
+						"          Terminal_Name_EN,",
+						"          Terminal_Name_TH,",
+						"          UPDATE_DATE",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> edctermSink",
+						"emsmrmstOutputFixedLength sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['B2K_EMSMRMST_TEMP.txt'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          BILLER_MERCHANT_ID,",
+						"          EMAIL_1,",
+						"          EMAIL_2,",
+						"          EMAIL_3",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> emsmrmstSink"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH')]",
+				"[concat(variables('factoryId'), '/datasets/B2K_EDCTERM')]",
+				"[concat(variables('factoryId'), '/datasets/B2K_EMSMRMST')]",
+				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH_OUTPUT')]",
+				"[concat(variables('factoryId'), '/datasets/B2K_EDCTERM_OUTPUT')]",
+				"[concat(variables('factoryId'), '/datasets/B2K_EMSMRMST_OUTPUT')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG_FLOW')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Log"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "MERCHANT_ACTIVITY_LOG",
+								"type": "DatasetReference"
+							},
+							"name": "queryMERCHANTACTIVITYLOG"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "MERCHANT_ACTIVITY_LOG_OUTPUT",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     schemaName as string ('dbo'),",
+						"     tableName as string ('MERCHANT_ACTIVITY_LOG'),",
+						"     startDate as string ('2021-12-15 00:00:00.000'),",
+						"     endDate as string ('2021-12-16 00:00:00.000'),",
+						"     columnName as string ('TRANSACTION_DATE'),",
+						"     fileName as string ('temp')",
+						"}",
+						"source(output(",
+						"          ID as integer,",
+						"          TRANSACTION_DATE as timestamp,",
+						"          FUNCTION_CODE as string,",
+						"          LOG as string,",
+						"          LOG_TYPE as string,",
+						"          APPLICATION_NAME as string,",
+						"          EVENT as string,",
+						"          EVENT_TYPE as string,",
+						"          URL as string,",
+						"          MERCHANT_CENTER_ID as string,",
+						"          SOURCE_ADDRESS as string,",
+						"          SOURCE_HOSTNAME as string,",
+						"          SOURCE_USERNAME as string,",
+						"          SOURCE_OBJECT as string,",
+						"          DESTINATION_ADDRESS as string,",
+						"          DESTINATION_HOSTNAME as string,",
+						"          DESTINATION_USERNAME as string,",
+						"          DESTINATION_OBJECT as string,",
+						"          CHANGE_FROM as string,",
+						"          CHANGE_TO as string,",
+						"          SEARCH_CRITERIA as string,",
+						"          RESULT_STATUS as string,",
+						"          MESSAGE as string,",
+						"          UPDATE_PII_LOG_STATUS as string,",
+						"          UPDATE_PII_LOG_DATE as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: (\"SELECT * FROM {$schemaName}.{$tableName} WHERE {$columnName} BETWEEN '{$startDate}' AND '{$endDate}'\"),",
+						"     format: 'query') ~> queryMERCHANTACTIVITYLOG",
+						"queryMERCHANTACTIVITYLOG select(mapColumn(",
+						"          TRANSACTION_DATE,",
+						"          FUNCTION_CODE,",
+						"          LOG,",
+						"          LOG_TYPE,",
+						"          APPLICATION_NAME,",
+						"          EVENT,",
+						"          EVENT_TYPE,",
+						"          URL,",
+						"          MERCHANT_CENTER_ID,",
+						"          SOURCE_ADDRESS,",
+						"          SOURCE_HOSTNAME,",
+						"          SOURCE_USERNAME,",
+						"          SOURCE_OBJECT,",
+						"          DESTINATION_ADDRESS,",
+						"          DESTINATION_HOSTNAME,",
+						"          DESTINATION_USERNAME,",
+						"          DESTINATION_OBJECT,",
+						"          CHANGE_FROM,",
+						"          CHANGE_TO,",
+						"          SEARCH_CRITERIA,",
+						"          RESULT_STATUS,",
+						"          MESSAGE,",
+						"          UPDATE_PII_LOG_STATUS,",
+						"          UPDATE_PII_LOG_DATE",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['\"{$fileName}\" + \".log\"'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/MERCHANT_ACTIVITY_LOG')]",
+				"[concat(variables('factoryId'), '/datasets/MERCHANT_ACTIVITY_LOG_OUTPUT')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MPS_FixLenghtProcessDataFlow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "B2KMPS"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "MPS_PP_MERCHANTFILE",
+								"type": "DatasetReference"
+							},
+							"name": "ppmerchantFixedLength"
+						},
+						{
+							"dataset": {
+								"referenceName": "MPS_ODSPP",
+								"type": "DatasetReference"
+							},
+							"name": "ODSPP"
+						},
+						{
+							"dataset": {
+								"referenceName": "MPS_PP_DEBITADVICE",
+								"type": "DatasetReference"
+							},
+							"name": "ppdebitadviceFixedLength"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "MPS_PP_MERCHANTFILE_OUTPUT",
+								"type": "DatasetReference"
+							},
+							"name": "ppmerchantSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "MPS_PP_DEBITADVICE_OUTPUT",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "ppmerchantDerivedFixedLength"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "ppmerchantOutputFixedLength"
+						},
+						{
+							"name": "ppdebitadviceOutputFixedLength"
+						},
+						{
+							"name": "filterODSPP"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          data as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> ppmerchantFixedLength",
+						"source(output(",
+						"          Id as string,",
+						"          Biller_id as string,",
+						"          Englishname as string,",
+						"          Thainame as string,",
+						"          REF3 as string,",
+						"          Method_type as string,",
+						"          Method_value as string,",
+						"          MethodPrecedence as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> ODSPP",
+						"source(output(",
+						"          {Biller ID} as string,",
+						"          {Tax ID} as string,",
+						"          {Biller Name - EN} as string,",
+						"          {Biller Name - TH} as string,",
+						"          {Biller Address (1) -TH} as string,",
+						"          {Biller Address (2) -TH} as string,",
+						"          {Biller Address (3) -TH} as string,",
+						"          {Biller Address (4) -TH} as string,",
+						"          {Zip code} as string,",
+						"          {Biller E-Mail} as string,",
+						"          {Report - PDF} as string,",
+						"          {Report - Excel} as string,",
+						"          {Report - CSV} as string,",
+						"          {Branch ID} as string,",
+						"          {Delivery Address } as string,",
+						"          {Withholding Tax} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> ppdebitadviceFixedLength",
+						"ppmerchantFixedLength derive(BILLER_MERCHANT_ID = trim(substring(data, 1, 15)),",
+						"          ACCOUNT_ID = trim(substring(data, 23, 10)),",
+						"          TAX_ID = trim(substring(data, 1, 13)),",
+						"          NAME_TH = trim(substring(data, 1445, 50)),",
+						"          NAME_EN = trim(substring(data, 1395, 50)),",
+						"          COMPANY_NAME_TH = trim(substring(data, 170, 50)),",
+						"          COMPANY_NAME_EN = trim(substring(data, 57, 50)),",
+						"          ACTIVE_STATUS = \"Y\",",
+						"          UPDATE_DATE = currentTimestamp(),",
+						"          BUSINESS_TYPE = trim(substring(data, 107, 2)),",
+						"          REF1_TH = trim(substring(data, 14837, 50)),",
+						"          REF1_EN = trim(substring(data, 14787, 50)),",
+						"          REF2_TH = trim(substring(data, 14937, 50)),",
+						"          REF2_EN = trim(substring(data, 14887, 50)),",
+						"          SOURCE = \"MPS\") ~> ppmerchantDerivedFixedLength",
+						"ppmerchantDerivedFixedLength, filterODSPP join(BILLER_MERCHANT_ID == Biller_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 select(mapColumn(",
+						"          data,",
+						"          BILLER_MERCHANT_ID,",
+						"          ACCOUNT_ID,",
+						"          TAX_ID,",
+						"          NAME_TH,",
+						"          NAME_EN,",
+						"          COMPANY_NAME_TH,",
+						"          COMPANY_NAME_EN,",
+						"          ACTIVE_STATUS,",
+						"          UPDATE_DATE,",
+						"          BUSINESS_TYPE,",
+						"          REF1_TH,",
+						"          REF1_EN,",
+						"          REF2_TH,",
+						"          REF2_EN,",
+						"          SOURCE,",
+						"          Id,",
+						"          Biller_id,",
+						"          Englishname,",
+						"          Thainame,",
+						"          REF3,",
+						"          Method_type,",
+						"          Method_value,",
+						"          MethodPrecedence",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> ppmerchantOutputFixedLength",
+						"ppdebitadviceFixedLength select(mapColumn(",
+						"          BILLER_MERCHANT_ID = {Biller ID},",
+						"          EMAIL_1 = {Biller E-Mail}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> ppdebitadviceOutputFixedLength",
+						"ODSPP filter(REF3 == 'IFB') ~> filterODSPP",
+						"ppmerchantOutputFixedLength sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['MPS_PP_MERCHANTFILE_TEMP.txt'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          BILLER_MERCHANT_ID,",
+						"          ACCOUNT_ID,",
+						"          TAX_ID,",
+						"          NAME_TH,",
+						"          NAME_EN,",
+						"          COMPANY_NAME_TH,",
+						"          COMPANY_NAME_EN,",
+						"          ACTIVE_STATUS,",
+						"          UPDATE_DATE,",
+						"          BUSINESS_TYPE,",
+						"          REF1_TH,",
+						"          REF1_EN,",
+						"          REF2_TH,",
+						"          REF2_EN,",
+						"          SOURCE,",
+						"          REF3",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> ppmerchantSink",
+						"ppdebitadviceOutputFixedLength sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['MPS_PP_DEBITADVICE_TEMP.txt'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/MPS_PP_MERCHANTFILE')]",
+				"[concat(variables('factoryId'), '/datasets/MPS_ODSPP')]",
+				"[concat(variables('factoryId'), '/datasets/MPS_PP_DEBITADVICE')]",
+				"[concat(variables('factoryId'), '/datasets/MPS_PP_MERCHANTFILE_OUTPUT')]",
+				"[concat(variables('factoryId'), '/datasets/MPS_PP_DEBITADVICE_OUTPUT')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG_FLOW')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Log"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "SCB_ACTIVITY_LOG",
+								"type": "DatasetReference"
+							},
+							"name": "querySCBACTIVITYLOG"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "SCB_ACTIVITY_LOG_OUTPUT",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"description": "Export data to SCB_ACTIVITY_LOG_OUTPUT"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     schemaName as string ('dbo'),",
+						"     tableName as string ('SCB_ACTIVITY_LOG'),",
+						"     startDate as string ('2021-12-15 00:00:00.000'),",
+						"     endDate as string ('2021-12-16 00:00:00.000'),",
+						"     columnName as string ('TRANSACTION_DATE'),",
+						"     fileName as string ('temp')",
+						"}",
+						"source(output(",
+						"          ID as integer,",
+						"          TRANSACTION_DATE as timestamp,",
+						"          FUNCTION_CODE as string,",
+						"          LOG as string,",
+						"          LOG_TYPE as string,",
+						"          APPLICATION_NAME as string,",
+						"          EVENT as string,",
+						"          EVENT_TYPE as string,",
+						"          URL as string,",
+						"          MERCHANT_CENTER_ID as string,",
+						"          SOURCE_ADDRESS as string,",
+						"          SOURCE_HOSTNAME as string,",
+						"          SOURCE_USERNAME as string,",
+						"          SOURCE_OBJECT as string,",
+						"          DESTINATION_ADDRESS as string,",
+						"          DESTINATION_HOSTNAME as string,",
+						"          DESTINATION_USERNAME as string,",
+						"          DESTINATION_OBJECT as string,",
+						"          CHANGE_FROM as string,",
+						"          CHANGE_TO as string,",
+						"          SEARCH_CRITERIA as string,",
+						"          RESULT_STATUS as string,",
+						"          MESSAGE as string,",
+						"          UPDATE_PII_LOG_STATUS as string,",
+						"          UPDATE_PII_LOG_DATE as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: (\"SELECT * FROM {$schemaName}.{$tableName} WHERE {$columnName} BETWEEN '{$startDate}' AND '{$endDate}'\"),",
+						"     format: 'query') ~> querySCBACTIVITYLOG",
+						"querySCBACTIVITYLOG select(mapColumn(",
+						"          TRANSACTION_DATE,",
+						"          FUNCTION_CODE,",
+						"          LOG,",
+						"          LOG_TYPE,",
+						"          APPLICATION_NAME,",
+						"          EVENT,",
+						"          EVENT_TYPE,",
+						"          URL,",
+						"          MERCHANT_CENTER_ID,",
+						"          SOURCE_ADDRESS,",
+						"          SOURCE_HOSTNAME,",
+						"          SOURCE_USERNAME,",
+						"          SOURCE_OBJECT,",
+						"          DESTINATION_ADDRESS,",
+						"          DESTINATION_HOSTNAME,",
+						"          DESTINATION_USERNAME,",
+						"          DESTINATION_OBJECT,",
+						"          CHANGE_FROM,",
+						"          CHANGE_TO,",
+						"          SEARCH_CRITERIA,",
+						"          RESULT_STATUS,",
+						"          MESSAGE,",
+						"          UPDATE_PII_LOG_STATUS,",
+						"          UPDATE_PII_LOG_DATE",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(\"{$fileName}\" + \".log\")],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SCB_ACTIVITY_LOG')]",
+				"[concat(variables('factoryId'), '/datasets/SCB_ACTIVITY_LOG_OUTPUT')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/default')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
+			"apiVersion": "2018-06-01",
+			"properties": {},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/default/az_blob_b2k')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"privateLinkResourceId": "[parameters('az_blob_b2k_properties_privateLinkResourceId')]",
+				"groupId": "[parameters('az_blob_b2k_properties_groupId')]",
+				"fqdns": "[parameters('az_blob_b2k_properties_fqdns')]"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/default/az_sql_b2k')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"privateLinkResourceId": "[parameters('az_sql_b2k_properties_privateLinkResourceId')]",
+				"groupId": "[parameters('az_sql_b2k_properties_groupId')]",
+				"fqdns": "[parameters('az_sql_b2k_properties_fqdns')]"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+			]
+		}
+	]
+}

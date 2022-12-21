@@ -1,0 +1,170 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "Merchant-Portal-Adf"
+		},
+		"AzureSftpOnPrem_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'AzureSftpOnPrem'"
+		},
+		"AzureSql_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSql'"
+		},
+		"AzureSqlDB_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDB'"
+		},
+		"B2Kblob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'B2Kblob'"
+		},
+		"AzureSftpOnPrem_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "94.74.112.153"
+		},
+		"AzureSftpOnPrem_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "ttb_pbiz_transfer"
+		},
+		"az_blob_b2k_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Storage/storageAccounts/merchantportalblob"
+		},
+		"az_blob_b2k_properties_groupId": {
+			"type": "string",
+			"defaultValue": "blob"
+		},
+		"az_blob_b2k_properties_fqdns": {
+			"type": "array",
+			"defaultValue": [
+				"merchantportalblob.blob.core.windows.net"
+			]
+		},
+		"az_sql_b2k_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Sql/servers/hfympcdb"
+		},
+		"az_sql_b2k_properties_groupId": {
+			"type": "string",
+			"defaultValue": "sqlServer"
+		},
+		"az_sql_b2k_properties_fqdns": {
+			"type": "array",
+			"defaultValue": [
+				"hfympcdb.database.windows.net"
+			]
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "Merchant-Portal-Adf_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AzureSftpOnPrem_password": {
+						"value": "[parameters('AzureSftpOnPrem_password')]"
+					},
+					"AzureSql_connectionString": {
+						"value": "[parameters('AzureSql_connectionString')]"
+					},
+					"AzureSqlDB_connectionString": {
+						"value": "[parameters('AzureSqlDB_connectionString')]"
+					},
+					"B2Kblob_connectionString": {
+						"value": "[parameters('B2Kblob_connectionString')]"
+					},
+					"az_blob_b2k_properties_privateLinkResourceId": {
+						"value": "[parameters('az_blob_b2k_properties_privateLinkResourceId')]"
+					},
+					"az_blob_b2k_properties_groupId": {
+						"value": "[parameters('az_blob_b2k_properties_groupId')]"
+					},
+					"az_blob_b2k_properties_fqdns": {
+						"value": "[parameters('az_blob_b2k_properties_fqdns')]"
+					},
+					"az_sql_b2k_properties_privateLinkResourceId": {
+						"value": "[parameters('az_sql_b2k_properties_privateLinkResourceId')]"
+					},
+					"az_sql_b2k_properties_groupId": {
+						"value": "[parameters('az_sql_b2k_properties_groupId')]"
+					},
+					"az_sql_b2k_properties_fqdns": {
+						"value": "[parameters('az_sql_b2k_properties_fqdns')]"
+					},
+					"AzureSftpOnPrem_properties_typeProperties_host": {
+						"value": "[parameters('AzureSftpOnPrem_properties_typeProperties_host')]"
+					},
+					"AzureSftpOnPrem_properties_typeProperties_userName": {
+						"value": "[parameters('AzureSftpOnPrem_properties_typeProperties_userName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "Merchant-Portal-Adf_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'Merchant-Portal-Adf_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "Merchant-Portal-Adf_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'Merchant-Portal-Adf_ArmTemplate_1')]"
+			]
+		}
+	]
+}

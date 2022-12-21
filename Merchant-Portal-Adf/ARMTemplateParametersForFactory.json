@@ -1,0 +1,49 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "Merchant-Portal-Adf"
+		},
+		"AzureSftpOnPrem_password": {
+			"value": ""
+		},
+		"AzureSql_connectionString": {
+			"value": ""
+		},
+		"AzureSqlDB_connectionString": {
+			"value": ""
+		},
+		"B2Kblob_connectionString": {
+			"value": ""
+		},
+		"AzureSftpOnPrem_properties_typeProperties_host": {
+			"value": "94.74.112.153"
+		},
+		"AzureSftpOnPrem_properties_typeProperties_userName": {
+			"value": "ttb_pbiz_transfer"
+		},
+		"az_blob_b2k_properties_privateLinkResourceId": {
+			"value": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Storage/storageAccounts/merchantportalblob"
+		},
+		"az_blob_b2k_properties_groupId": {
+			"value": "blob"
+		},
+		"az_blob_b2k_properties_fqdns": {
+			"value": [
+				"merchantportalblob.blob.core.windows.net"
+			]
+		},
+		"az_sql_b2k_properties_privateLinkResourceId": {
+			"value": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Sql/servers/hfympcdb"
+		},
+		"az_sql_b2k_properties_groupId": {
+			"value": "sqlServer"
+		},
+		"az_sql_b2k_properties_fqdns": {
+			"value": [
+				"hfympcdb.database.windows.net"
+			]
+		}
+	}
+}
