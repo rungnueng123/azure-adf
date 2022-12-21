@@ -1,0 +1,126 @@
+{
+	"name": "SCB_ACTIVITY_LOG",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDB",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Log/SCB_ACTIVITY_LOG/Database"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TRANSACTION_DATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "FUNCTION_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "LOG",
+				"type": "varchar"
+			},
+			{
+				"name": "LOG_TYPE",
+				"type": "varchar"
+			},
+			{
+				"name": "APPLICATION_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "EVENT",
+				"type": "varchar"
+			},
+			{
+				"name": "EVENT_TYPE",
+				"type": "varchar"
+			},
+			{
+				"name": "URL",
+				"type": "varchar"
+			},
+			{
+				"name": "MERCHANT_CENTER_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "SOURCE_ADDRESS",
+				"type": "varchar"
+			},
+			{
+				"name": "SOURCE_HOSTNAME",
+				"type": "varchar"
+			},
+			{
+				"name": "SOURCE_USERNAME",
+				"type": "varchar"
+			},
+			{
+				"name": "SOURCE_OBJECT",
+				"type": "varchar"
+			},
+			{
+				"name": "DESTINATION_ADDRESS",
+				"type": "varchar"
+			},
+			{
+				"name": "DESTINATION_HOSTNAME",
+				"type": "varchar"
+			},
+			{
+				"name": "DESTINATION_USERNAME",
+				"type": "varchar"
+			},
+			{
+				"name": "DESTINATION_OBJECT",
+				"type": "varchar"
+			},
+			{
+				"name": "CHANGE_FROM",
+				"type": "text"
+			},
+			{
+				"name": "CHANGE_TO",
+				"type": "text"
+			},
+			{
+				"name": "SEARCH_CRITERIA",
+				"type": "text"
+			},
+			{
+				"name": "RESULT_STATUS",
+				"type": "varchar"
+			},
+			{
+				"name": "MESSAGE",
+				"type": "text"
+			},
+			{
+				"name": "UPDATE_PII_LOG_STATUS",
+				"type": "varchar"
+			},
+			{
+				"name": "UPDATE_PII_LOG_DATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "SCB_ACTIVITY_LOG"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

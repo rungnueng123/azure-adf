@@ -1,0 +1,194 @@
+{
+	"name": "MPS_FixLenghtProcessDataFlow",
+	"properties": {
+		"folder": {
+			"name": "B2KMPS"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "MPS_PP_MERCHANTFILE",
+						"type": "DatasetReference"
+					},
+					"name": "ppmerchantFixedLength"
+				},
+				{
+					"dataset": {
+						"referenceName": "MPS_ODSPP",
+						"type": "DatasetReference"
+					},
+					"name": "ODSPP"
+				},
+				{
+					"dataset": {
+						"referenceName": "MPS_PP_DEBITADVICE",
+						"type": "DatasetReference"
+					},
+					"name": "ppdebitadviceFixedLength"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "MPS_PP_MERCHANTFILE_OUTPUT",
+						"type": "DatasetReference"
+					},
+					"name": "ppmerchantSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "MPS_PP_DEBITADVICE_OUTPUT",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "ppmerchantDerivedFixedLength"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "ppmerchantOutputFixedLength"
+				},
+				{
+					"name": "ppdebitadviceOutputFixedLength"
+				},
+				{
+					"name": "filterODSPP"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          data as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ppmerchantFixedLength",
+				"source(output(",
+				"          Id as string,",
+				"          Biller_id as string,",
+				"          Englishname as string,",
+				"          Thainame as string,",
+				"          REF3 as string,",
+				"          Method_type as string,",
+				"          Method_value as string,",
+				"          MethodPrecedence as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ODSPP",
+				"source(output(",
+				"          {Biller ID} as string,",
+				"          {Tax ID} as string,",
+				"          {Biller Name - EN} as string,",
+				"          {Biller Name - TH} as string,",
+				"          {Biller Address (1) -TH} as string,",
+				"          {Biller Address (2) -TH} as string,",
+				"          {Biller Address (3) -TH} as string,",
+				"          {Biller Address (4) -TH} as string,",
+				"          {Zip code} as string,",
+				"          {Biller E-Mail} as string,",
+				"          {Report - PDF} as string,",
+				"          {Report - Excel} as string,",
+				"          {Report - CSV} as string,",
+				"          {Branch ID} as string,",
+				"          {Delivery Address } as string,",
+				"          {Withholding Tax} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ppdebitadviceFixedLength",
+				"ppmerchantFixedLength derive(BILLER_MERCHANT_ID = trim(substring(data, 1, 15)),",
+				"          ACCOUNT_ID = trim(substring(data, 23, 10)),",
+				"          TAX_ID = trim(substring(data, 1, 13)),",
+				"          NAME_TH = trim(substring(data, 1445, 50)),",
+				"          NAME_EN = trim(substring(data, 1395, 50)),",
+				"          COMPANY_NAME_TH = trim(substring(data, 170, 50)),",
+				"          COMPANY_NAME_EN = trim(substring(data, 57, 50)),",
+				"          ACTIVE_STATUS = \"Y\",",
+				"          UPDATE_DATE = currentTimestamp(),",
+				"          BUSINESS_TYPE = trim(substring(data, 107, 2)),",
+				"          REF1_TH = trim(substring(data, 14837, 50)),",
+				"          REF1_EN = trim(substring(data, 14787, 50)),",
+				"          REF2_TH = trim(substring(data, 14937, 50)),",
+				"          REF2_EN = trim(substring(data, 14887, 50)),",
+				"          SOURCE = \"MPS\") ~> ppmerchantDerivedFixedLength",
+				"ppmerchantDerivedFixedLength, filterODSPP join(BILLER_MERCHANT_ID == Biller_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 select(mapColumn(",
+				"          data,",
+				"          BILLER_MERCHANT_ID,",
+				"          ACCOUNT_ID,",
+				"          TAX_ID,",
+				"          NAME_TH,",
+				"          NAME_EN,",
+				"          COMPANY_NAME_TH,",
+				"          COMPANY_NAME_EN,",
+				"          ACTIVE_STATUS,",
+				"          UPDATE_DATE,",
+				"          BUSINESS_TYPE,",
+				"          REF1_TH,",
+				"          REF1_EN,",
+				"          REF2_TH,",
+				"          REF2_EN,",
+				"          SOURCE,",
+				"          Id,",
+				"          Biller_id,",
+				"          Englishname,",
+				"          Thainame,",
+				"          REF3,",
+				"          Method_type,",
+				"          Method_value,",
+				"          MethodPrecedence",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> ppmerchantOutputFixedLength",
+				"ppdebitadviceFixedLength select(mapColumn(",
+				"          BILLER_MERCHANT_ID = {Biller ID},",
+				"          EMAIL_1 = {Biller E-Mail}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> ppdebitadviceOutputFixedLength",
+				"ODSPP filter(REF3 == 'IFB') ~> filterODSPP",
+				"ppmerchantOutputFixedLength sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['MPS_PP_MERCHANTFILE_TEMP.txt'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          BILLER_MERCHANT_ID,",
+				"          ACCOUNT_ID,",
+				"          TAX_ID,",
+				"          NAME_TH,",
+				"          NAME_EN,",
+				"          COMPANY_NAME_TH,",
+				"          COMPANY_NAME_EN,",
+				"          ACTIVE_STATUS,",
+				"          UPDATE_DATE,",
+				"          BUSINESS_TYPE,",
+				"          REF1_TH,",
+				"          REF1_EN,",
+				"          REF2_TH,",
+				"          REF2_EN,",
+				"          SOURCE,",
+				"          REF3",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> ppmerchantSink",
+				"ppdebitadviceOutputFixedLength sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['MPS_PP_DEBITADVICE_TEMP.txt'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

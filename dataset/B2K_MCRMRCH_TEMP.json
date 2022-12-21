@@ -1,0 +1,61 @@
+{
+	"name": "B2K_MCRMRCH_TEMP",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "B2Kblob",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "B2KMPS/B2K/MCRMRCH"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "B2K_MCRMRCH_TEMP.txt",
+				"folderPath": "output",
+				"container": "b2kmps"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "BILLER_MERCHANT_ID",
+				"type": "String"
+			},
+			{
+				"name": "ACCOUNT_ID",
+				"type": "String"
+			},
+			{
+				"name": "TAX_ID",
+				"type": "String"
+			},
+			{
+				"name": "NAME_TH",
+				"type": "String"
+			},
+			{
+				"name": "NAME_EN",
+				"type": "String"
+			},
+			{
+				"name": "ACTIVE_STATUS",
+				"type": "String"
+			},
+			{
+				"name": "UPDATE_DATE",
+				"type": "String"
+			},
+			{
+				"name": "SOURCE",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

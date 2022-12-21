@@ -1,0 +1,28 @@
+{
+	"name": "MPS_PP_MERCHANTFILE_TEMP",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "B2Kblob",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "B2KMPS/MPS/TSBP1VNP"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "MPS_PP_MERCHANTFILE_TEMP.txt",
+				"folderPath": "output",
+				"container": "b2kmps"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

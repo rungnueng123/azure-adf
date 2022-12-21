@@ -1,0 +1,111 @@
+{
+	"name": "SCB_ACTIVITY_LOG_FLOW",
+	"properties": {
+		"folder": {
+			"name": "Log"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SCB_ACTIVITY_LOG",
+						"type": "DatasetReference"
+					},
+					"name": "querySCBACTIVITYLOG"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SCB_ACTIVITY_LOG_OUTPUT",
+						"type": "DatasetReference"
+					},
+					"name": "sink1",
+					"description": "Export data to SCB_ACTIVITY_LOG_OUTPUT"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     schemaName as string ('dbo'),",
+				"     tableName as string ('SCB_ACTIVITY_LOG'),",
+				"     startDate as string ('2021-12-15 00:00:00.000'),",
+				"     endDate as string ('2021-12-16 00:00:00.000'),",
+				"     columnName as string ('TRANSACTION_DATE'),",
+				"     fileName as string ('temp')",
+				"}",
+				"source(output(",
+				"          ID as integer,",
+				"          TRANSACTION_DATE as timestamp,",
+				"          FUNCTION_CODE as string,",
+				"          LOG as string,",
+				"          LOG_TYPE as string,",
+				"          APPLICATION_NAME as string,",
+				"          EVENT as string,",
+				"          EVENT_TYPE as string,",
+				"          URL as string,",
+				"          MERCHANT_CENTER_ID as string,",
+				"          SOURCE_ADDRESS as string,",
+				"          SOURCE_HOSTNAME as string,",
+				"          SOURCE_USERNAME as string,",
+				"          SOURCE_OBJECT as string,",
+				"          DESTINATION_ADDRESS as string,",
+				"          DESTINATION_HOSTNAME as string,",
+				"          DESTINATION_USERNAME as string,",
+				"          DESTINATION_OBJECT as string,",
+				"          CHANGE_FROM as string,",
+				"          CHANGE_TO as string,",
+				"          SEARCH_CRITERIA as string,",
+				"          RESULT_STATUS as string,",
+				"          MESSAGE as string,",
+				"          UPDATE_PII_LOG_STATUS as string,",
+				"          UPDATE_PII_LOG_DATE as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: (\"SELECT * FROM {$schemaName}.{$tableName} WHERE {$columnName} BETWEEN '{$startDate}' AND '{$endDate}'\"),",
+				"     format: 'query') ~> querySCBACTIVITYLOG",
+				"querySCBACTIVITYLOG select(mapColumn(",
+				"          TRANSACTION_DATE,",
+				"          FUNCTION_CODE,",
+				"          LOG,",
+				"          LOG_TYPE,",
+				"          APPLICATION_NAME,",
+				"          EVENT,",
+				"          EVENT_TYPE,",
+				"          URL,",
+				"          MERCHANT_CENTER_ID,",
+				"          SOURCE_ADDRESS,",
+				"          SOURCE_HOSTNAME,",
+				"          SOURCE_USERNAME,",
+				"          SOURCE_OBJECT,",
+				"          DESTINATION_ADDRESS,",
+				"          DESTINATION_HOSTNAME,",
+				"          DESTINATION_USERNAME,",
+				"          DESTINATION_OBJECT,",
+				"          CHANGE_FROM,",
+				"          CHANGE_TO,",
+				"          SEARCH_CRITERIA,",
+				"          RESULT_STATUS,",
+				"          MESSAGE,",
+				"          UPDATE_PII_LOG_STATUS,",
+				"          UPDATE_PII_LOG_DATE",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:[(\"{$fileName}\" + \".log\")],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

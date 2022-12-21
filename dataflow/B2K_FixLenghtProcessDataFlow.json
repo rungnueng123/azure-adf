@@ -1,0 +1,187 @@
+{
+	"name": "B2K_FixLenghtProcessDataFlow",
+	"properties": {
+		"folder": {
+			"name": "B2KMPS"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "B2K_MCRMRCH",
+						"type": "DatasetReference"
+					},
+					"name": "mcrmrchFixedLength"
+				},
+				{
+					"dataset": {
+						"referenceName": "B2K_EDCTERM",
+						"type": "DatasetReference"
+					},
+					"name": "edctermFixedLength"
+				},
+				{
+					"dataset": {
+						"referenceName": "B2K_EMSMRMST",
+						"type": "DatasetReference"
+					},
+					"name": "emsmrmstFixedLength"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "B2K_MCRMRCH_OUTPUT",
+						"type": "DatasetReference"
+					},
+					"name": "mcrmrchSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "B2K_EDCTERM_OUTPUT",
+						"type": "DatasetReference"
+					},
+					"name": "edctermSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "B2K_EMSMRMST_OUTPUT",
+						"type": "DatasetReference"
+					},
+					"name": "emsmrmstSink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "mcrmrchDerivedFixedLength"
+				},
+				{
+					"name": "mcrmrchOutputFixedLength"
+				},
+				{
+					"name": "edctermDerivedFixedLength"
+				},
+				{
+					"name": "edctermOutputFixedLength"
+				},
+				{
+					"name": "emsmrmstColumn1"
+				},
+				{
+					"name": "emsmrmstOutputFixedLength"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          data as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> mcrmrchFixedLength",
+				"source(output(",
+				"          data as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> edctermFixedLength",
+				"source(output(",
+				"          data as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> emsmrmstFixedLength",
+				"mcrmrchFixedLength derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
+				"          ACCOUNT_ID = trim(substring(data, 310, 10)),",
+				"          TAX_ID = trim(substring(data, 988, 13)),",
+				"          NAME_TH = trim(substring(data, 1029, 40)),",
+				"          NAME_EN = trim(substring(data, 23, 30)),",
+				"          ACTIVE_STATUS = case(or(substring(data, 210, 1) == '2', substring(data, 210, 1) == '5'), 'A', 'I'),",
+				"          UPDATE_DATE = currentTimestamp(),",
+				"          SOURCE = \"B2K\") ~> mcrmrchDerivedFixedLength",
+				"mcrmrchDerivedFixedLength select(mapColumn(",
+				"          data,",
+				"          BILLER_MERCHANT_ID,",
+				"          ACCOUNT_ID,",
+				"          TAX_ID,",
+				"          NAME_TH,",
+				"          NAME_EN,",
+				"          ACTIVE_STATUS,",
+				"          UPDATE_DATE,",
+				"          SOURCE",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> mcrmrchOutputFixedLength",
+				"edctermFixedLength derive(MERCHANT_ID = trim(substring(data, 11, 16)),",
+				"          Terminal_ID = trim(substring(data, 1, 8)),",
+				"          Terminal_Name_EN = trim(substring(data, 30, 30)),",
+				"          Terminal_Name_TH = trim(substring(data, 30, 30)),",
+				"          UPDATE_DATE = currentTimestamp()) ~> edctermDerivedFixedLength",
+				"edctermDerivedFixedLength select(mapColumn(",
+				"          data,",
+				"          MERCHANT_ID,",
+				"          Terminal_ID,",
+				"          Terminal_Name_EN,",
+				"          Terminal_Name_TH,",
+				"          UPDATE_DATE",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> edctermOutputFixedLength",
+				"emsmrmstFixedLength derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
+				"          EMAIL_1 = trim(substring(data, 24, 70)),",
+				"          EMAIL_2 = trim(substring(data, 94, 70)),",
+				"          EMAIL_3 = trim(substring(data, 164, 70))) ~> emsmrmstColumn1",
+				"emsmrmstColumn1 select(mapColumn(",
+				"          data,",
+				"          BILLER_MERCHANT_ID,",
+				"          EMAIL_1,",
+				"          EMAIL_2,",
+				"          EMAIL_3",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> emsmrmstOutputFixedLength",
+				"mcrmrchOutputFixedLength sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['B2K_MCRMRCH_TEMP.txt'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          BILLER_MERCHANT_ID,",
+				"          ACCOUNT_ID,",
+				"          TAX_ID,",
+				"          NAME_TH,",
+				"          NAME_EN,",
+				"          ACTIVE_STATUS,",
+				"          UPDATE_DATE,",
+				"          SOURCE",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> mcrmrchSink",
+				"edctermOutputFixedLength sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['B2K_EDCTERM_TEMP.txt'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          MERCHANT_ID,",
+				"          Terminal_ID,",
+				"          Terminal_Name_EN,",
+				"          Terminal_Name_TH,",
+				"          UPDATE_DATE",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> edctermSink",
+				"emsmrmstOutputFixedLength sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['B2K_EMSMRMST_TEMP.txt'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          BILLER_MERCHANT_ID,",
+				"          EMAIL_1,",
+				"          EMAIL_2,",
+				"          EMAIL_3",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> emsmrmstSink"
+			]
+		}
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"name": "Merchant-Portal-Adf",
+	"properties": {
+		"globalConfigurations": {
+			"PipelineBillingEnabled": "false"
+		}
+	},
+	"location": "southeastasia",
+	"identity": {
+		"type": "SystemAssigned,UserAssigned",
+		"principalId": "8bee5d8d-6010-47c5-97df-6d01f2b83c8c",
+		"tenantId": "6a55e929-b275-4379-94db-0413380b0533",
+		"userAssignedIdentities": {
+			"/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourcegroups/HFY-Merchant-Portal/providers/Microsoft.ManagedIdentity/userAssignedIdentities/SmcManageIdentity": {
+				"clientId": "e5024f45-a51c-4b40-9ffe-6afeef17024c",
+				"principalId": "0c4a2b9b-a149-48eb-8db5-4005e9916856"
+			}
+		}
+	}
+}

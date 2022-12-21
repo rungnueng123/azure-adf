@@ -1,0 +1,27 @@
+{
+	"name": "SFTPOnPrem",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSftpOnPrem",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "B2KMPS/SFTP"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "SftpLocation",
+				"folderPath": "/Output/Report"
+			},
+			"columnDelimiter": ",",
+			"encodingName": "WINDOWS-874",
+			"escapeChar": "\\",
+			"firstRowAsHeader": false,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

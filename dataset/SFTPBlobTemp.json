@@ -1,0 +1,26 @@
+{
+	"name": "SFTPBlobTemp",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "B2Kblob",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "B2KMPS/SFTP"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "b2kmps"
+			},
+			"columnDelimiter": ",",
+			"encodingName": "WINDOWS-874",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

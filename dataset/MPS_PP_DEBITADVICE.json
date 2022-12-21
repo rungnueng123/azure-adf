@@ -1,0 +1,79 @@
+{
+	"name": "MPS_PP_DEBITADVICE",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "B2Kblob",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "B2KMPS/MPS/PPDebitAdvice"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@concat(\n    'MPS_PP_DebitAdvice_Info_D',\n    utcnow('yyyyMMdd'),\n    '.txt'\n)",
+					"type": "Expression"
+				},
+				"container": "b2kmps"
+			},
+			"columnDelimiter": "|",
+			"encodingName": "WINDOWS-874",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

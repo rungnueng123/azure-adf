@@ -1,0 +1,34 @@
+{
+	"name": "MERCHANT_ACTIVITY_LOG_OUTPUT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "B2Kblob",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Log/MERCHANT_ACTIVITY_LOG/OUTPUT"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@concat(utcnow('dd'),'.log')",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@concat(\n    'merchant_activity_log/',\n    formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'yyyy'),\n    '/',\n    formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'MM')\n)",
+					"type": "Expression"
+				},
+				"container": "log"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

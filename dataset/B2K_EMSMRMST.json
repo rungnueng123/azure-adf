@@ -1,0 +1,30 @@
+{
+	"name": "B2K_EMSMRMST",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "B2Kblob",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "B2KMPS/B2K/EMSMRMST"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@concat(\n    'B2K_EMSMRMST_',\n    utcnow('yyyyMMdd'),\n    '.txt'\n)",
+					"type": "Expression"
+				},
+				"container": "b2kmps"
+			},
+			"columnDelimiter": "|",
+			"encodingName": "WINDOWS-874",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

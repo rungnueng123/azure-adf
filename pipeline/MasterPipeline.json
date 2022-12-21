@@ -1,0 +1,86 @@
+{
+	"name": "MasterPipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get File From SFTP",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "SFTP to Blob",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Insert B2K To DB",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Get File From SFTP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "B2K Blob to DB",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Insert MPS To DB",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Get File From SFTP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "MPS Blob to DB",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Send Email Error",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Get File From SFTP",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Send Email",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"folder": {
+			"name": "B2KMPS"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-13T09:46:48Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
