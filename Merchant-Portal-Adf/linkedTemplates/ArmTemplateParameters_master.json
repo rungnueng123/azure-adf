@@ -5,6 +5,9 @@
 		"factoryName": {
 			"value": "Merchant-Portal-Adf"
 		},
+		"AzureFunctionKafKa_functionKey": {
+			"value": ""
+		},
 		"AzureSftpOnPrem_password": {
 			"value": ""
 		},
@@ -16,6 +19,9 @@
 		},
 		"B2Kblob_connectionString": {
 			"value": ""
+		},
+		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
+			"value": "https://smc-pii-log.azurewebsites.net"
 		},
 		"AzureSftpOnPrem_properties_typeProperties_host": {
 			"value": "94.74.112.153"

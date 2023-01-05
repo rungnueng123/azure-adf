@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "Merchant-Portal-Adf"
 		},
+		"AzureFunctionKafKa_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'AzureFunctionKafKa'"
+		},
 		"AzureSftpOnPrem_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'AzureSftpOnPrem'"
@@ -22,6 +26,10 @@
 		"B2Kblob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'B2Kblob'"
+		},
+		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://smc-pii-log.azurewebsites.net"
 		},
 		"az_blob_b2k_properties_privateLinkResourceId": {
 			"type": "string",
@@ -113,6 +121,24 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AzureFunctionKafKa')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureFunction",
+				"typeProperties": {
+					"functionAppUrl": "[parameters('AzureFunctionKafKa_properties_typeProperties_functionAppUrl')]",
+					"functionKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureFunctionKafKa_functionKey')]"
+					},
+					"authentication": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/shir')]",
 			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
 			"apiVersion": "2018-06-01",
@@ -128,6 +154,48 @@
 			"apiVersion": "2018-06-01",
 			"properties": {},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Send Log Kafka')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Azure Function1",
+						"type": "AzureFunctionActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"functionName": "piilog",
+							"method": "GET",
+							"headers": {}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureFunctionKafKa",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "KafKa"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureFunctionKafKa')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AzureIR-ManagedVNet')]",
@@ -554,76 +622,6 @@
 					"quoteChar": "\""
 				},
 				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/B2K_EMSMRMST_TEMP')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "B2Kblob",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/B2K/EMSMRMST"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "B2K_EMSMRMST_TEMP.txt",
-						"folderPath": "output",
-						"container": "b2kmps"
-					},
-					"columnDelimiter": "|",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/B2K_MCRMRCH')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "B2Kblob",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/B2K/MCRMRCH"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@concat(\n    'B2K_MCRMRCH_',\n    utcnow('yyyyMMdd'),\n    '.txt'\n)",
-							"type": "Expression"
-						},
-						"container": "b2kmps"
-					},
-					"columnDelimiter": "|",
-					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"type": "String"
-					}
-				]
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"

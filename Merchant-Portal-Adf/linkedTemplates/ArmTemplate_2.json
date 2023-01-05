@@ -13,6 +13,136 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/TerminalProfileTempSql')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "TERMINAL_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "TERMINAL_NAME_TH",
+						"type": "varchar"
+					},
+					{
+						"name": "TERMINAL_NAME_EN",
+						"type": "varchar"
+					},
+					{
+						"name": "MERCHANT_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "ACTIVE_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "UPDATE_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "TERMINAL_PROFILE_TEMP"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SFTP to Blob')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "SftpReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*",
+									"enablePartitionDiscovery": false,
+									"disableChunking": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SFTPOnPrem",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SFTPBlobTemp",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "B2KMPS"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/B2K_FixLenghtProcessDataFlow')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1071,7 +1201,8 @@
 				"lastPublishTime": "2022-12-15T07:06:00Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/B2K_FixLenghtProcessDataFlow')]"
+				"[concat(variables('factoryId'), '/dataflows/B2K_FixLenghtProcessDataFlow')]",
+				"[concat(variables('factoryId'), '/datasets/TerminalProfileTempSql')]"
 			]
 		},
 		{
@@ -1625,6 +1756,7 @@
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/SFTP to Blob')]",
 				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]",
 				"[concat(variables('factoryId'), '/pipelines/MPS Blob to DB')]"
 			]

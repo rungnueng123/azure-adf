@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "Merchant-Portal-Adf"
 		},
+		"AzureFunctionKafKa_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'AzureFunctionKafKa'"
+		},
 		"AzureSftpOnPrem_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'AzureSftpOnPrem'"
@@ -22,6 +26,10 @@
 		"B2Kblob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'B2Kblob'"
+		},
+		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://smc-pii-log.azurewebsites.net"
 		},
 		"AzureSftpOnPrem_properties_typeProperties_host": {
 			"type": "string",
@@ -86,6 +94,9 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"AzureFunctionKafKa_functionKey": {
+						"value": "[parameters('AzureFunctionKafKa_functionKey')]"
+					},
 					"AzureSftpOnPrem_password": {
 						"value": "[parameters('AzureSftpOnPrem_password')]"
 					},
@@ -97,6 +108,9 @@
 					},
 					"B2Kblob_connectionString": {
 						"value": "[parameters('B2Kblob_connectionString')]"
+					},
+					"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
+						"value": "[parameters('AzureFunctionKafKa_properties_typeProperties_functionAppUrl')]"
 					},
 					"az_blob_b2k_properties_privateLinkResourceId": {
 						"value": "[parameters('az_blob_b2k_properties_privateLinkResourceId')]"

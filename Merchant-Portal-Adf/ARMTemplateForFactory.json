@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "Merchant-Portal-Adf"
 		},
+		"AzureFunctionKafKa_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'AzureFunctionKafKa'"
+		},
 		"AzureSftpOnPrem_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'AzureSftpOnPrem'"
@@ -22,6 +26,10 @@
 		"B2Kblob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'B2Kblob'"
+		},
+		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://smc-pii-log.azurewebsites.net"
 		},
 		"AzureSftpOnPrem_properties_typeProperties_host": {
 			"type": "string",
@@ -1214,6 +1222,48 @@
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Send Log Kafka')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Azure Function1",
+						"type": "AzureFunctionActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"functionName": "piilog",
+							"method": "GET",
+							"headers": {}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureFunctionKafKa",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "KafKa"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureFunctionKafKa')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/B2K_EDCMERCH')]",
@@ -2614,6 +2664,24 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureFunctionKafKa')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureFunction",
+				"typeProperties": {
+					"functionAppUrl": "[parameters('AzureFunctionKafKa_properties_typeProperties_functionAppUrl')]",
+					"functionKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureFunctionKafKa_functionKey')]"
+					},
+					"authentication": "Anonymous"
+				}
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AzureSftpOnPrem')]",
