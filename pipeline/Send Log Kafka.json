@@ -1,0 +1,32 @@
+{
+	"name": "Send Log Kafka",
+	"properties": {
+		"activities": [
+			{
+				"name": "Azure Function1",
+				"type": "AzureFunctionActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"functionName": "PiiLog",
+					"method": "GET"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureFunctionKafKa",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "KafKa"
+		},
+		"annotations": []
+	}
+}
