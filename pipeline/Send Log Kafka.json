@@ -15,7 +15,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"functionName": "PiiLog",
+					"functionName": "piilog",
 					"method": "GET"
 				},
 				"linkedServiceName": {
