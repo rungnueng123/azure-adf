@@ -3493,14 +3493,14 @@
 					"recurrence": {
 						"frequency": "Day",
 						"interval": 1,
-						"startTime": "2023-01-09T11:52:00",
+						"startTime": "2023-01-09T12:00:00",
 						"timeZone": "SE Asia Standard Time",
 						"schedule": {
 							"minutes": [
-								56
+								0
 							],
 							"hours": [
-								11
+								12
 							]
 						}
 					}
