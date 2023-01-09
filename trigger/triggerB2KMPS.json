@@ -1,0 +1,25 @@
+{
+	"name": "triggerB2KMPS",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2023-01-09T00:00:00",
+				"timeZone": "SE Asia Standard Time",
+				"schedule": {
+					"minutes": [
+						5
+					],
+					"hours": [
+						12
+					]
+				}
+			}
+		}
+	}
+}
