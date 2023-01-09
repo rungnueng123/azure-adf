@@ -6,7 +6,7 @@
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "MasterPipeline",
+					"referenceName": "MasterB2KMPSPipeline",
 					"type": "PipelineReference"
 				}
 			}
