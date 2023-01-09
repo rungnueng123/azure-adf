@@ -13,36 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/B2K_EMSMRMST_OUTPUT')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "B2Kblob",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/B2K/EMSMRMST"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "B2K_EMSMRMST_TEMP.txt",
-						"folderPath": "output",
-						"container": "b2kmps"
-					},
-					"columnDelimiter": "|",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/B2K_EMSMRMST_TEMP')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1016,6 +986,47 @@
 					"quoteChar": "\""
 				},
 				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SMCSql')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/SMC_IMPORT_MERCHANT_PROFILE"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "MID_L11",
+						"type": "varchar"
+					},
+					{
+						"name": "MID_L11_DESC",
+						"type": "varchar"
+					},
+					{
+						"name": "REMARK",
+						"type": "varchar"
+					},
+					{
+						"name": "UPDATE_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "SMC_IMPORT_MERCHANT_PROFILE"
+				}
 			},
 			"dependsOn": []
 		}
