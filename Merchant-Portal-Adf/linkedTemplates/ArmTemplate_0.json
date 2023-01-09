@@ -356,7 +356,7 @@
 				"typeProperties": {
 					"recurrence": {
 						"frequency": "Minute",
-						"interval": 5,
+						"interval": 1,
 						"startTime": "2023-01-09T11:15:00",
 						"timeZone": "SE Asia Standard Time"
 					}
