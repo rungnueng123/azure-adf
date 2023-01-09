@@ -1,0 +1,37 @@
+{
+	"name": "MasterActivityPipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Execute Merchant",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "MERCHANT_ACTIVITY_LOG",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute SCB",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "SCB_ACTIVITY_LOG",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"folder": {
+			"name": "Log"
+		},
+		"annotations": []
+	}
+}
