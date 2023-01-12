@@ -109,7 +109,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Copy data1",
+						"name": "Get File SFTP To Blob Storage",
 						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
@@ -1306,7 +1306,7 @@
 						}
 					},
 					{
-						"name": "Data flow1",
+						"name": "Merchant Activity Log",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [
 							{
@@ -1567,7 +1567,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Data flow1",
+						"name": "Scb Activity Log",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [
 							{
@@ -1797,7 +1797,7 @@
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "Get File From SFTP",
+								"activity": "Insert B2K To DB",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1822,6 +1822,18 @@
 								"dependencyConditions": [
 									"Failed"
 								]
+							},
+							{
+								"activity": "Insert B2K To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							},
+							{
+								"activity": "Insert MPS To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
 							}
 						],
 						"userProperties": [],
@@ -1832,6 +1844,33 @@
 							},
 							"waitOnCompletion": true,
 							"parameters": {}
+						}
+					},
+					{
+						"name": "updateMerchantProfile",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Insert MPS To DB",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[updateMerchantProfile]"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureSqlDB",
+							"type": "LinkedServiceReference"
 						}
 					}
 				],
