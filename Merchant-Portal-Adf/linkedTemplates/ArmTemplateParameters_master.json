@@ -21,7 +21,7 @@
 			"value": ""
 		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
-			"value": "https://smc-pii-log.azurewebsites.net"
+			"value": "https://scbsmcseafunc001.azurewebsites.net"
 		},
 		"AzureSftpOnPrem_properties_typeProperties_host": {
 			"value": "94.74.112.153"

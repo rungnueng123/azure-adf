@@ -29,7 +29,7 @@
 		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 			"type": "string",
-			"defaultValue": "https://smc-pii-log.azurewebsites.net"
+			"defaultValue": "https://scbsmcseafunc001.azurewebsites.net"
 		},
 		"AzureSftpOnPrem_properties_typeProperties_host": {
 			"type": "string",
