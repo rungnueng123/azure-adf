@@ -11,9 +11,6 @@
 		"AzureSftpOnPrem_password": {
 			"value": ""
 		},
-		"AzureSql_connectionString": {
-			"value": ""
-		},
 		"AzureSqlDB_connectionString": {
 			"value": ""
 		},

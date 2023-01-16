@@ -15,10 +15,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'AzureSftpOnPrem'"
 		},
-		"AzureSql_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureSql'"
-		},
 		"AzureSqlDB_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDB'"
@@ -99,9 +95,6 @@
 					},
 					"AzureSftpOnPrem_password": {
 						"value": "[parameters('AzureSftpOnPrem_password')]"
-					},
-					"AzureSql_connectionString": {
-						"value": "[parameters('AzureSql_connectionString')]"
 					},
 					"AzureSqlDB_connectionString": {
 						"value": "[parameters('AzureSqlDB_connectionString')]"

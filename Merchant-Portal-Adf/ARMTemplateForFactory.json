@@ -15,10 +15,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'AzureSftpOnPrem'"
 		},
-		"AzureSql_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureSql'"
-		},
 		"AzureSqlDB_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDB'"
@@ -2795,25 +2791,6 @@
 						"type": "SecureString",
 						"value": "[parameters('AzureSftpOnPrem_password')]"
 					}
-				},
-				"connectVia": {
-					"referenceName": "AzureIR-ManagedVNet",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureSql')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "SqlServer",
-				"typeProperties": {
-					"connectionString": "[parameters('AzureSql_connectionString')]"
 				},
 				"connectVia": {
 					"referenceName": "AzureIR-ManagedVNet",
