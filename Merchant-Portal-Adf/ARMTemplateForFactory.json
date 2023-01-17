@@ -508,7 +508,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "B2KMPS"
+					"name": "SMC_B2KMPS"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-15T07:06:00Z"
@@ -653,7 +653,7 @@
 					}
 				},
 				"folder": {
-					"name": "Log"
+					"name": "SMC_AchieveLog"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-16T03:36:51Z"
@@ -830,7 +830,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "B2KMPS"
+					"name": "SMC_B2KMPS"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
@@ -884,7 +884,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "Log"
+					"name": "SMC_AchieveLog"
 				},
 				"annotations": []
 			},
@@ -1027,7 +1027,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "B2KMPS"
+					"name": "SMC_B2KMPS"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
@@ -1173,7 +1173,7 @@
 					}
 				},
 				"folder": {
-					"name": "Log"
+					"name": "SMC_AchieveLog"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-16T03:36:51Z"
@@ -1257,7 +1257,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "B2KMPS"
+					"name": "SMC_B2KMPS"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
@@ -1308,7 +1308,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "B2KMPS"
+					"name": "SMC_B2KMPS"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
@@ -1349,7 +1349,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "KafKa"
+					"name": "SMC_PIILog"
 				},
 				"annotations": []
 			},
@@ -3628,6 +3628,30 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AzureManageIdentity')]",
+			"type": "Microsoft.DataFactory/factories/credentials",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {
+					"resourceId": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourcegroups/HFY-Merchant-Portal/providers/Microsoft.ManagedIdentity/userAssignedIdentities/SmcManageIdentity"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/credentialblob')]",
+			"type": "Microsoft.DataFactory/factories/credentials",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {
+					"resourceId": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourcegroups/HFY-Merchant-Portal/providers/Microsoft.ManagedIdentity/userAssignedIdentities/SmcManageIdentity"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/default')]",
 			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
 			"apiVersion": "2018-06-01",
@@ -3659,30 +3683,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/credentialblob')]",
-			"type": "Microsoft.DataFactory/factories/credentials",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "ManagedIdentity",
-				"typeProperties": {
-					"resourceId": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourcegroups/HFY-Merchant-Portal/providers/Microsoft.ManagedIdentity/userAssignedIdentities/SmcManageIdentity"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureManageIdentity')]",
-			"type": "Microsoft.DataFactory/factories/credentials",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "ManagedIdentity",
-				"typeProperties": {
-					"resourceId": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourcegroups/HFY-Merchant-Portal/providers/Microsoft.ManagedIdentity/userAssignedIdentities/SmcManageIdentity"
-				}
-			},
-			"dependsOn": []
 		}
 	]
 }

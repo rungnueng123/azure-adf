@@ -110,7 +110,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "B2KMPS"
+					"name": "SMC_B2KMPS"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
@@ -146,10 +146,15 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/default')]",
-			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
+			"name": "[concat(parameters('factoryName'), '/AzureManageIdentity')]",
+			"type": "Microsoft.DataFactory/factories/credentials",
 			"apiVersion": "2018-06-01",
-			"properties": {},
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {
+					"resourceId": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourcegroups/HFY-Merchant-Portal/providers/Microsoft.ManagedIdentity/userAssignedIdentities/SmcManageIdentity"
+				}
+			},
 			"dependsOn": []
 		},
 		{
@@ -165,15 +170,10 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AzureManageIdentity')]",
-			"type": "Microsoft.DataFactory/factories/credentials",
+			"name": "[concat(parameters('factoryName'), '/default')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
 			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "ManagedIdentity",
-				"typeProperties": {
-					"resourceId": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourcegroups/HFY-Merchant-Portal/providers/Microsoft.ManagedIdentity/userAssignedIdentities/SmcManageIdentity"
-				}
-			},
+			"properties": {},
 			"dependsOn": []
 		},
 		{
@@ -210,7 +210,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "KafKa"
+					"name": "SMC_PIILog"
 				},
 				"annotations": []
 			},

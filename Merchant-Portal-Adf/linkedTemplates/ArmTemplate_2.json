@@ -212,7 +212,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "B2KMPS"
+					"name": "SMC_B2KMPS"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
@@ -1272,7 +1272,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "B2KMPS"
+					"name": "SMC_B2KMPS"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-15T07:06:00Z"
@@ -1411,7 +1411,7 @@
 					}
 				},
 				"folder": {
-					"name": "Log"
+					"name": "SMC_AchieveLog"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-16T03:36:51Z"
@@ -1587,7 +1587,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "B2KMPS"
+					"name": "SMC_B2KMPS"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
@@ -1729,7 +1729,7 @@
 					}
 				},
 				"folder": {
-					"name": "Log"
+					"name": "SMC_AchieveLog"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-16T03:36:51Z"
@@ -1778,7 +1778,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "Log"
+					"name": "SMC_AchieveLog"
 				},
 				"annotations": []
 			},
@@ -1921,7 +1921,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "B2KMPS"
+					"name": "SMC_B2KMPS"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
