@@ -1,0 +1,10 @@
+{
+	"name": "AzureKeyVaultDB",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://HFY-SMC.vault.azure.net/"
+		}
+	}
+}
