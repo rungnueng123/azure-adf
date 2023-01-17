@@ -4,7 +4,11 @@
 		"annotations": [],
 		"type": "AzureKeyVault",
 		"typeProperties": {
-			"baseUrl": "https://HFY-SMC.vault.azure.net/"
+			"baseUrl": "https://HFY-SMC.vault.azure.net/",
+			"credential": {
+				"referenceName": "AzureManageIdentity",
+				"type": "CredentialReference"
+			}
 		}
 	}
 }
