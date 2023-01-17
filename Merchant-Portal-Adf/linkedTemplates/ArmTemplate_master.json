@@ -17,11 +17,8 @@
 		},
 		"AzureSqlDB_connectionString": {
 			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureSqlDB'"
-		},
-		"B2Kblob_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'B2Kblob'"
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDB'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=hfympcdb.database.windows.net;Initial Catalog=mpcdb"
 		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 			"type": "string",
@@ -34,6 +31,10 @@
 		"AzureSftpOnPrem_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "ttb_pbiz_transfer"
+		},
+		"B2Kblob_properties_typeProperties_serviceEndpoint": {
+			"type": "string",
+			"defaultValue": "https://merchantportalblob.blob.core.windows.net/"
 		},
 		"az_blob_b2k_properties_privateLinkResourceId": {
 			"type": "string",
@@ -99,11 +100,17 @@
 					"AzureSqlDB_connectionString": {
 						"value": "[parameters('AzureSqlDB_connectionString')]"
 					},
-					"B2Kblob_connectionString": {
-						"value": "[parameters('B2Kblob_connectionString')]"
-					},
 					"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 						"value": "[parameters('AzureFunctionKafKa_properties_typeProperties_functionAppUrl')]"
+					},
+					"AzureSftpOnPrem_properties_typeProperties_host": {
+						"value": "[parameters('AzureSftpOnPrem_properties_typeProperties_host')]"
+					},
+					"AzureSftpOnPrem_properties_typeProperties_userName": {
+						"value": "[parameters('AzureSftpOnPrem_properties_typeProperties_userName')]"
+					},
+					"B2Kblob_properties_typeProperties_serviceEndpoint": {
+						"value": "[parameters('B2Kblob_properties_typeProperties_serviceEndpoint')]"
 					},
 					"az_blob_b2k_properties_privateLinkResourceId": {
 						"value": "[parameters('az_blob_b2k_properties_privateLinkResourceId')]"
@@ -122,12 +129,6 @@
 					},
 					"az_sql_b2k_properties_fqdns": {
 						"value": "[parameters('az_sql_b2k_properties_fqdns')]"
-					},
-					"AzureSftpOnPrem_properties_typeProperties_host": {
-						"value": "[parameters('AzureSftpOnPrem_properties_typeProperties_host')]"
-					},
-					"AzureSftpOnPrem_properties_typeProperties_userName": {
-						"value": "[parameters('AzureSftpOnPrem_properties_typeProperties_userName')]"
 					}
 				}
 			},

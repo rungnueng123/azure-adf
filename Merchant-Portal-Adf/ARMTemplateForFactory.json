@@ -17,11 +17,8 @@
 		},
 		"AzureSqlDB_connectionString": {
 			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureSqlDB'"
-		},
-		"B2Kblob_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'B2Kblob'"
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDB'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=hfympcdb.database.windows.net;Initial Catalog=mpcdb"
 		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 			"type": "string",
@@ -34,6 +31,10 @@
 		"AzureSftpOnPrem_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "ttb_pbiz_transfer"
+		},
+		"B2Kblob_properties_typeProperties_serviceEndpoint": {
+			"type": "string",
+			"defaultValue": "https://merchantportalblob.blob.core.windows.net/"
 		},
 		"az_blob_b2k_properties_privateLinkResourceId": {
 			"type": "string",
@@ -2793,12 +2794,12 @@
 					}
 				},
 				"connectVia": {
-					"referenceName": "AzureIR-ManagedVNet",
+					"referenceName": "shir",
 					"type": "IntegrationRuntimeReference"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]"
 			]
 		},
 		{
@@ -2809,15 +2810,15 @@
 				"annotations": [],
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
-					"connectionString": "[parameters('AzureSqlDB_connectionString')]"
-				},
-				"connectVia": {
-					"referenceName": "AzureIR-ManagedVNet",
-					"type": "IntegrationRuntimeReference"
+					"connectionString": "[parameters('AzureSqlDB_connectionString')]",
+					"credential": {
+						"referenceName": "AzureManageIdentity",
+						"type": "CredentialReference"
+					}
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
+				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
 			]
 		},
 		{
@@ -2828,15 +2829,16 @@
 				"annotations": [],
 				"type": "AzureBlobStorage",
 				"typeProperties": {
-					"connectionString": "[parameters('B2Kblob_connectionString')]"
-				},
-				"connectVia": {
-					"referenceName": "AzureIR-ManagedVNet",
-					"type": "IntegrationRuntimeReference"
+					"serviceEndpoint": "[parameters('B2Kblob_properties_typeProperties_serviceEndpoint')]",
+					"accountKind": "StorageV2",
+					"credential": {
+						"referenceName": "credentialblob",
+						"type": "CredentialReference"
+					}
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
+				"[concat(variables('factoryId'), '/credentials/credentialblob')]"
 			]
 		},
 		{
@@ -3657,6 +3659,30 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/credentialblob')]",
+			"type": "Microsoft.DataFactory/factories/credentials",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {
+					"resourceId": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourcegroups/HFY-Merchant-Portal/providers/Microsoft.ManagedIdentity/userAssignedIdentities/SmcManageIdentity"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureManageIdentity')]",
+			"type": "Microsoft.DataFactory/factories/credentials",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {
+					"resourceId": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourcegroups/HFY-Merchant-Portal/providers/Microsoft.ManagedIdentity/userAssignedIdentities/SmcManageIdentity"
+				}
+			},
+			"dependsOn": []
 		}
 	]
 }
