@@ -4,13 +4,10 @@
 		"annotations": [],
 		"type": "AzureSqlDatabase",
 		"typeProperties": {
-			"connectionString": {
-				"type": "AzureKeyVaultSecret",
-				"store": {
-					"referenceName": "AzureKeyVaultDB",
-					"type": "LinkedServiceReference"
-				},
-				"secretName": "sqlconnectionadf"
+			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=hfympcdb.database.windows.net;Initial Catalog=mpcdb",
+			"credential": {
+				"referenceName": "AzureManageIdentity",
+				"type": "CredentialReference"
 			}
 		},
 		"connectVia": {
