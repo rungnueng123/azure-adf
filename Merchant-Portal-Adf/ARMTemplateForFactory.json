@@ -2792,15 +2792,9 @@
 						"type": "SecureString",
 						"value": "[parameters('AzureSftpOnPrem_password')]"
 					}
-				},
-				"connectVia": {
-					"referenceName": "shir",
-					"type": "IntegrationRuntimeReference"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AzureSqlDB')]",

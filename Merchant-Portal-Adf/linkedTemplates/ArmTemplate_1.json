@@ -13,6 +13,38 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EMSMRMST')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EMSMRMST"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat(\n    'B2K_EMSMRMST_',\n    utcnow('yyyyMMdd'),\n    '.txt'\n)",
+							"type": "Expression"
+						},
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/B2K_EMSMRMST_OUTPUT')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -984,35 +1016,6 @@
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SFTPOnPrem')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSftpOnPrem",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/SFTP"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "SftpLocation",
-						"folderPath": "/Output/Report"
-					},
-					"columnDelimiter": ",",
-					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
-					"firstRowAsHeader": false,
 					"quoteChar": "\""
 				},
 				"schema": []

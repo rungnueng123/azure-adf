@@ -136,6 +136,27 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AzureSftpOnPrem')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "Sftp",
+				"typeProperties": {
+					"host": "[parameters('AzureSftpOnPrem_properties_typeProperties_host')]",
+					"port": "2022",
+					"skipHostKeyValidation": true,
+					"authenticationType": "Basic",
+					"userName": "[parameters('AzureSftpOnPrem_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('AzureSftpOnPrem_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/shir')]",
 			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
 			"apiVersion": "2018-06-01",
@@ -219,30 +240,34 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AzureSftpOnPrem')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/SFTPOnPrem')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"annotations": [],
-				"type": "Sftp",
-				"typeProperties": {
-					"host": "[parameters('AzureSftpOnPrem_properties_typeProperties_host')]",
-					"port": "2022",
-					"skipHostKeyValidation": true,
-					"authenticationType": "Basic",
-					"userName": "[parameters('AzureSftpOnPrem_properties_typeProperties_userName')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('AzureSftpOnPrem_password')]"
-					}
+				"linkedServiceName": {
+					"referenceName": "AzureSftpOnPrem",
+					"type": "LinkedServiceReference"
 				},
-				"connectVia": {
-					"referenceName": "shir",
-					"type": "IntegrationRuntimeReference"
-				}
+				"folder": {
+					"name": "B2KMPS/SFTP"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "SftpLocation",
+						"folderPath": "/Output/Report"
+					},
+					"columnDelimiter": ",",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"firstRowAsHeader": false,
+					"quoteChar": "\""
+				},
+				"schema": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureSftpOnPrem')]"
 			]
 		},
 		{
@@ -559,40 +584,6 @@
 						"type": "String"
 					}
 				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/B2K_EMSMRMST')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "B2Kblob",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/B2K/EMSMRMST"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@concat(\n    'B2K_EMSMRMST_',\n    utcnow('yyyyMMdd'),\n    '.txt'\n)",
-							"type": "Expression"
-						},
-						"container": "b2kmps"
-					},
-					"columnDelimiter": "|",
-					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
