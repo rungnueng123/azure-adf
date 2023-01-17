@@ -13,6 +13,57 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM_TEMP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EDCTERM"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "B2K_EDCTERM_TEMP.txt",
+						"folderPath": "b2k/output",
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "MERCHANT_ID",
+						"type": "String"
+					},
+					{
+						"name": "Terminal_ID",
+						"type": "String"
+					},
+					{
+						"name": "Terminal_Name_EN",
+						"type": "String"
+					},
+					{
+						"name": "Terminal_Name_TH",
+						"type": "String"
+					},
+					{
+						"name": "UPDATE_DATE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/B2K_EMSMRMST')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -33,6 +84,7 @@
 							"value": "@concat(\n    'B2K_EMSMRMST_',\n    utcnow('yyyyMMdd'),\n    '.txt'\n)",
 							"type": "Expression"
 						},
+						"folderPath": "b2k",
 						"container": "b2kmps"
 					},
 					"columnDelimiter": "|",
@@ -62,7 +114,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EMSMRMST_TEMP.txt",
-						"folderPath": "output",
+						"folderPath": "b2k/output",
 						"container": "b2kmps"
 					},
 					"columnDelimiter": "|",
@@ -92,7 +144,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EMSMRMST_TEMP.txt",
-						"folderPath": "output",
+						"folderPath": "b2k/output",
 						"container": "b2kmps"
 					},
 					"columnDelimiter": "|",
@@ -125,6 +177,7 @@
 							"value": "@concat(\n    'B2K_MCRMRCH_',\n    utcnow('yyyyMMdd'),\n    '.txt'\n)",
 							"type": "Expression"
 						},
+						"folderPath": "b2k",
 						"container": "b2kmps"
 					},
 					"columnDelimiter": "|",
@@ -158,7 +211,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_MCRMRCH_TEMP.txt",
-						"folderPath": "output",
+						"folderPath": "b2k/output",
 						"container": "b2kmps"
 					},
 					"columnDelimiter": "|",
@@ -188,7 +241,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_MCRMRCH_TEMP.txt",
-						"folderPath": "output",
+						"folderPath": "b2k/output",
 						"container": "b2kmps"
 					},
 					"columnDelimiter": "|",
@@ -418,6 +471,7 @@
 							"value": "@concat(\n    'MPS_ODS_PP_APINOTI_D',\n    utcnow('yyyyMMdd'),\n    '.DAT'\n)",
 							"type": "Expression"
 						},
+						"folderPath": "mps",
 						"container": "b2kmps"
 					},
 					"columnDelimiter": ",",
@@ -475,6 +529,7 @@
 							"value": "@concat(\n    'MPS_PP_DebitAdvice_Info_D',\n    utcnow('yyyyMMdd'),\n    '.txt'\n)",
 							"type": "Expression"
 						},
+						"folderPath": "mps",
 						"container": "b2kmps"
 					},
 					"columnDelimiter": "|",
@@ -553,7 +608,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "MPS_PP_DEBITADVICE_TEMP.txt",
-						"folderPath": "output",
+						"folderPath": "mps/output",
 						"container": "b2kmps"
 					},
 					"columnDelimiter": "|",
@@ -583,7 +638,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "MPS_PP_DEBITADVICE_TEMP.txt",
-						"folderPath": "output",
+						"folderPath": "mps/output",
 						"container": "b2kmps"
 					},
 					"columnDelimiter": "|",
@@ -613,6 +668,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "PP_MerchantFile.txt",
+						"folderPath": "mps",
 						"container": "b2kmps"
 					},
 					"columnDelimiter": "|",
@@ -646,7 +702,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "MPS_PP_MERCHANTFILE_TEMP.txt",
-						"folderPath": "output",
+						"folderPath": "mps/output",
 						"container": "b2kmps"
 					},
 					"columnDelimiter": "|",
@@ -676,7 +732,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "MPS_PP_MERCHANTFILE_TEMP.txt",
-						"folderPath": "output",
+						"folderPath": "mps/output",
 						"container": "b2kmps"
 					},
 					"columnDelimiter": "|",
@@ -988,34 +1044,6 @@
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SFTPBlobTemp')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "B2Kblob",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/SFTP"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "b2kmps"
-					},
-					"columnDelimiter": ",",
-					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
 					"quoteChar": "\""
 				},
 				"schema": []

@@ -110,7 +110,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "SMC_B2KMPS"
+					"name": "SMC_Send_Error_Email"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
@@ -240,7 +240,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/SFTPOnPrem')]",
+			"name": "[concat(parameters('factoryName'), '/SFTPB2KOnPrem')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -249,7 +249,38 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "B2KMPS/SFTP"
+					"name": "B2KMPS/SFTP/B2K"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "SftpLocation",
+						"folderPath": "/Output/Report"
+					},
+					"columnDelimiter": ",",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"firstRowAsHeader": false,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSftpOnPrem')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SFTPMPSOnPrem')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSftpOnPrem",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/SFTP/MPS"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -385,6 +416,7 @@
 							"value": "@concat(\n    'B2K_EDCMERCH_',\n    utcnow('yyyyMMdd'),\n    '.txt'\n)",
 							"type": "Expression"
 						},
+						"folderPath": "b2k",
 						"container": "b2kmps"
 					},
 					"columnDelimiter": "|",
@@ -420,7 +452,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EDCMERCH_TEMP.txt",
-						"folderPath": "output",
+						"folderPath": "b2k/output",
 						"container": "b2kmps"
 					},
 					"columnDelimiter": "|",
@@ -452,7 +484,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EDCMERCH_TEMP.txt",
-						"folderPath": "output",
+						"folderPath": "b2k/output",
 						"container": "b2kmps"
 					},
 					"columnDelimiter": "|",
@@ -487,6 +519,7 @@
 							"value": "@concat(\n    'B2K_EDCTERM_',\n    utcnow('yyyyMMdd'),\n    '.txt'\n)",
 							"type": "Expression"
 						},
+						"folderPath": "b2k",
 						"container": "b2kmps"
 					},
 					"columnDelimiter": "|",
@@ -522,7 +555,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EDCTERM_TEMP.txt",
-						"folderPath": "output",
+						"folderPath": "b2k/output",
 						"container": "b2kmps"
 					},
 					"columnDelimiter": "|",
@@ -531,59 +564,6 @@
 					"quoteChar": "\""
 				},
 				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM_TEMP')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "B2Kblob",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/B2K/EDCTERM"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "B2K_EDCTERM_TEMP.txt",
-						"folderPath": "output",
-						"container": "b2kmps"
-					},
-					"columnDelimiter": "|",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "MERCHANT_ID",
-						"type": "String"
-					},
-					{
-						"name": "Terminal_ID",
-						"type": "String"
-					},
-					{
-						"name": "Terminal_Name_EN",
-						"type": "String"
-					},
-					{
-						"name": "Terminal_Name_TH",
-						"type": "String"
-					},
-					{
-						"name": "UPDATE_DATE",
-						"type": "String"
-					}
-				]
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
