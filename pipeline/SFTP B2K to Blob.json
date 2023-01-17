@@ -1,5 +1,5 @@
 {
-	"name": "SFTP MPS to Blob",
+	"name": "SFTP B2K to Blob",
 	"properties": {
 		"activities": [
 			{
@@ -51,20 +51,20 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "SFTPMPSOnPrem",
+						"referenceName": "SFTPB2KOnPrem",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "SFTPMPSBlobTemp",
+						"referenceName": "SFTPB2KBlobTemp",
 						"type": "DatasetReference"
 					}
 				]
 			}
 		],
 		"folder": {
-			"name": "SMC_MPS"
+			"name": "SMC_B2K"
 		},
 		"annotations": [],
 		"lastPublishTime": "2022-12-13T09:46:48Z"

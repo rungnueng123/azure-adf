@@ -17,6 +17,7 @@
 					"value": "@concat(\n    'B2K_EDCTERM_',\n    utcnow('yyyyMMdd'),\n    '.txt'\n)",
 					"type": "Expression"
 				},
+				"folderPath": "b2k",
 				"container": "b2kmps"
 			},
 			"columnDelimiter": "|",

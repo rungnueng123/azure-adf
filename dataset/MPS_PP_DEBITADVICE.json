@@ -17,6 +17,7 @@
 					"value": "@concat(\n    'MPS_PP_DebitAdvice_Info_D',\n    utcnow('yyyyMMdd'),\n    '.txt'\n)",
 					"type": "Expression"
 				},
+				"folderPath": "mps",
 				"container": "b2kmps"
 			},
 			"columnDelimiter": "|",

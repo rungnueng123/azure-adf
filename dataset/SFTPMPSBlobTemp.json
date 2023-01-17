@@ -1,25 +1,24 @@
 {
-	"name": "B2K_EDCMERCH_TEMP",
+	"name": "SFTPMPSBlobTemp",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "B2Kblob",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "B2KMPS/B2K/EDCMERCH"
+			"name": "B2KMPS/SFTP/MPS"
 		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "B2K_EDCMERCH_TEMP.txt",
-				"folderPath": "b2k/output",
+				"folderPath": "mps",
 				"container": "b2kmps"
 			},
-			"columnDelimiter": "|",
+			"columnDelimiter": ",",
+			"encodingName": "WINDOWS-874",
 			"escapeChar": "\\",
-			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
 		"schema": []

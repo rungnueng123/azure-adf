@@ -19,9 +19,9 @@
 						"referenceName": "MPS_FixLenghtProcessDataFlow",
 						"type": "DataFlowReference"
 					},
-					"integrationRuntime": {
-						"referenceName": "AzureIR-ManagedVNet",
-						"type": "IntegrationRuntimeReference"
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
 					},
 					"traceLevel": "Fine"
 				}
@@ -146,7 +146,7 @@
 			}
 		],
 		"folder": {
-			"name": "SMC_B2KMPS"
+			"name": "SMC_MPS"
 		},
 		"annotations": [],
 		"lastPublishTime": "2022-12-13T09:46:48Z"

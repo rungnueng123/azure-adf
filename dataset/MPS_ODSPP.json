@@ -17,6 +17,7 @@
 					"value": "@concat(\n    'MPS_ODS_PP_APINOTI_D',\n    utcnow('yyyyMMdd'),\n    '.DAT'\n)",
 					"type": "Expression"
 				},
+				"folderPath": "mps",
 				"container": "b2kmps"
 			},
 			"columnDelimiter": ",",

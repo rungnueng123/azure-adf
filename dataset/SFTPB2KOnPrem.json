@@ -1,12 +1,12 @@
 {
-	"name": "SFTPOnPrem",
+	"name": "SFTPB2KOnPrem",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureSftpOnPrem",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "B2KMPS/SFTP"
+			"name": "B2KMPS/SFTP/B2K"
 		},
 		"annotations": [],
 		"type": "DelimitedText",

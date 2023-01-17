@@ -1,25 +1,24 @@
 {
-	"name": "B2K_EDCMERCH_TEMP",
+	"name": "SFTPMPSOnPrem",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "B2Kblob",
+			"referenceName": "AzureSftpOnPrem",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "B2KMPS/B2K/EDCMERCH"
+			"name": "B2KMPS/SFTP/MPS"
 		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobStorageLocation",
-				"fileName": "B2K_EDCMERCH_TEMP.txt",
-				"folderPath": "b2k/output",
-				"container": "b2kmps"
+				"type": "SftpLocation",
+				"folderPath": "/Output/Report"
 			},
-			"columnDelimiter": "|",
+			"columnDelimiter": ",",
+			"encodingName": "WINDOWS-874",
 			"escapeChar": "\\",
-			"firstRowAsHeader": true,
+			"firstRowAsHeader": false,
 			"quoteChar": "\""
 		},
 		"schema": []

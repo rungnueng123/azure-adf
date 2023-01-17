@@ -1,18 +1,19 @@
 {
-	"name": "SFTPBlobTemp",
+	"name": "SFTPB2KBlobTemp",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "B2Kblob",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "B2KMPS/SFTP"
+			"name": "B2KMPS/SFTP/B2K"
 		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"folderPath": "b2k",
 				"container": "b2kmps"
 			},
 			"columnDelimiter": ",",

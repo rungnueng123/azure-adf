@@ -14,7 +14,7 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": "B2K_EDCTERM_TEMP.txt",
-				"folderPath": "output",
+				"folderPath": "b2k/output",
 				"container": "b2kmps"
 			},
 			"columnDelimiter": "|",

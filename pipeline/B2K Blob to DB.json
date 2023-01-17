@@ -19,9 +19,9 @@
 						"referenceName": "B2K_FixLenghtProcessDataFlow",
 						"type": "DataFlowReference"
 					},
-					"integrationRuntime": {
-						"referenceName": "AzureIR-ManagedVNet",
-						"type": "IntegrationRuntimeReference"
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
 					},
 					"traceLevel": "Fine"
 				}
@@ -415,7 +415,7 @@
 			}
 		],
 		"folder": {
-			"name": "SMC_B2KMPS"
+			"name": "SMC_B2K"
 		},
 		"annotations": [],
 		"lastPublishTime": "2022-12-15T07:06:00Z"

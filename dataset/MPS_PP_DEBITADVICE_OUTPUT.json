@@ -14,7 +14,7 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": "MPS_PP_DEBITADVICE_TEMP.txt",
-				"folderPath": "output",
+				"folderPath": "mps/output",
 				"container": "b2kmps"
 			},
 			"columnDelimiter": "|",
