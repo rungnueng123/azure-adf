@@ -10,10 +10,10 @@
 			"skipHostKeyValidation": true,
 			"authenticationType": "Basic",
 			"userName": "ttb_pbiz_transfer",
-			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQEU5Rjc1Q0EzLThEMzYtNEQ2Mi05NjUzLTdFNTBDMERENkYxOV8wZWQxNWY1Ni02YTFhLTRhZDEtOWZhYi05YzZkNzgyNjRlZmIiDQp9"
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJmYjBjZjIzNC0xM2M1LTRhNjEtYWI5Yy0zMTljMDA0N2NlZDUiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
 		},
 		"connectVia": {
-			"referenceName": "AzureIR-ManagedVNet",
+			"referenceName": "shir",
 			"type": "IntegrationRuntimeReference"
 		}
 	}
