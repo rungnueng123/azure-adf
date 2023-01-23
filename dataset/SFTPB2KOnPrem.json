@@ -13,7 +13,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "SftpLocation",
-				"folderPath": "/Output/Report"
+				"folderPath": "/NASDATA/B2K/SMC"
 			},
 			"columnDelimiter": ",",
 			"encodingName": "WINDOWS-874",

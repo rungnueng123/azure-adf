@@ -13,7 +13,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "SftpLocation",
-				"folderPath": "/Output/Report"
+				"folderPath": "/Mpay"
 			},
 			"columnDelimiter": ",",
 			"encodingName": "WINDOWS-874",
