@@ -2830,7 +2830,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "SftpLocation",
-						"folderPath": "/Output/Report"
+						"folderPath": "/NASDATA/B2K/SMC"
 					},
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
@@ -2892,7 +2892,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "SftpLocation",
-						"folderPath": "/Output/Report"
+						"folderPath": "/Mpay"
 					},
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
@@ -3117,7 +3117,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/triggerMPS')]",
+			"name": "[concat(parameters('factoryName'), '/triggerB2K')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -3126,7 +3126,7 @@
 				"pipelines": [
 					{
 						"pipelineReference": {
-							"referenceName": "MasterMPSPipeline",
+							"referenceName": "MasterB2KPipeline",
 							"type": "PipelineReference"
 						},
 						"parameters": {}
@@ -3137,7 +3137,7 @@
 					"recurrence": {
 						"frequency": "Day",
 						"interval": 1,
-						"startTime": "2023-01-09T00:00:00",
+						"startTime": "2023-01-17T12:00:00",
 						"timeZone": "SE Asia Standard Time",
 						"schedule": {
 							"minutes": [
@@ -3151,7 +3151,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/MasterMPSPipeline')]"
+				"[concat(variables('factoryId'), '/pipelines/MasterB2KPipeline')]"
 			]
 		},
 		{
@@ -3190,6 +3190,44 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/Send Log Kafka')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/triggerMPS')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "MasterMPSPipeline",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-01-09T00:00:00",
+						"timeZone": "SE Asia Standard Time",
+						"schedule": {
+							"minutes": [
+								5
+							],
+							"hours": [
+								12
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/MasterMPSPipeline')]"
 			]
 		},
 		{
@@ -3919,44 +3957,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/triggerB2K')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "MasterB2KPipeline",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2023-01-17T12:00:00",
-						"timeZone": "SE Asia Standard Time",
-						"schedule": {
-							"minutes": [
-								5
-							],
-							"hours": [
-								12
-							]
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/MasterB2KPipeline')]"
 			]
 		}
 	]

@@ -13,7 +13,7 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/triggerB2K')]",
+			"name": "[concat(parameters('factoryName'), '/triggerMPS')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -22,7 +22,7 @@
 				"pipelines": [
 					{
 						"pipelineReference": {
-							"referenceName": "MasterB2KPipeline",
+							"referenceName": "MasterMPSPipeline",
 							"type": "PipelineReference"
 						},
 						"parameters": {}
@@ -33,7 +33,7 @@
 					"recurrence": {
 						"frequency": "Day",
 						"interval": 1,
-						"startTime": "2023-01-17T12:00:00",
+						"startTime": "2023-01-09T00:00:00",
 						"timeZone": "SE Asia Standard Time",
 						"schedule": {
 							"minutes": [
