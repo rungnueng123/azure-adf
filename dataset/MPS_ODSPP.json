@@ -14,7 +14,7 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
-					"value": "@concat(\n    'MPS_ODS_PP_APINOTI_D',\n    utcnow('yyyyMMdd'),\n    '.DAT'\n)",
+					"value": "@concat(\n    'MPS_ODS_PP_APINOTI_D',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n    '.DAT'\n)",
 					"type": "Expression"
 				},
 				"folderPath": "mps",

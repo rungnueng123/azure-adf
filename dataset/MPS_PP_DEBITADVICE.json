@@ -14,7 +14,7 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
-					"value": "@concat(\n    'MPS_PP_DebitAdvice_Info_D',\n    utcnow('yyyyMMdd'),\n    '.txt'\n)",
+					"value": "@concat(\n    'MPS_PP_DebitAdvice_Info_D',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
 					"type": "Expression"
 				},
 				"folderPath": "mps",
