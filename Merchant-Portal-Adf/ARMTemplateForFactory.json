@@ -628,9 +628,9 @@
 								}
 							},
 							"staging": {},
-							"integrationRuntime": {
-								"referenceName": "AzureIR-ManagedVNet",
-								"type": "IntegrationRuntimeReference"
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
 							},
 							"traceLevel": "Fine"
 						}
@@ -658,8 +658,7 @@
 				"lastPublishTime": "2022-12-16T03:36:51Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/MERCHANT_ACTIVITY_LOG_FLOW')]",
-				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
+				"[concat(variables('factoryId'), '/dataflows/MERCHANT_ACTIVITY_LOG_FLOW')]"
 			]
 		},
 		{
@@ -1185,9 +1184,9 @@
 								}
 							},
 							"staging": {},
-							"integrationRuntime": {
-								"referenceName": "AzureIR-ManagedVNet",
-								"type": "IntegrationRuntimeReference"
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
 							},
 							"traceLevel": "Fine"
 						}
@@ -1268,8 +1267,7 @@
 				"lastPublishTime": "2022-12-16T03:36:51Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/SCB_ACTIVITY_LOG_FLOW')]",
-				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
+				"[concat(variables('factoryId'), '/dataflows/SCB_ACTIVITY_LOG_FLOW')]"
 			]
 		},
 		{
