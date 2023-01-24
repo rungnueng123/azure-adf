@@ -185,10 +185,10 @@
 						"timeZone": "SE Asia Standard Time",
 						"schedule": {
 							"minutes": [
-								5
+								0
 							],
 							"hours": [
-								12
+								1
 							]
 						}
 					}
@@ -436,6 +436,9 @@
 						},
 						{
 							"name": "emsmrmstOutputFixedLength"
+						},
+						{
+							"name": "filterSequenceKey"
 						}
 					],
 					"scriptLines": [
@@ -506,7 +509,8 @@
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> emsmrmstOutputFixedLength",
-						"mcrmrchOutputFixedLength sink(allowSchemaDrift: true,",
+						"mcrmrchOutputFixedLength filter(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '') ~> filterSequenceKey",
+						"filterSequenceKey sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     partitionFileNames:['B2K_MCRMRCH_TEMP.txt'],",
 						"     skipDuplicateMapInputs: true,",
@@ -729,6 +733,12 @@
 						},
 						{
 							"name": "filterODSPP"
+						},
+						{
+							"name": "filterSequenceKey"
+						},
+						{
+							"name": "filterType"
 						}
 					],
 					"scriptLines": [
@@ -786,8 +796,10 @@
 						"          REF1_EN = trim(substring(data, 14787, 50)),",
 						"          REF2_TH = trim(substring(data, 14937, 50)),",
 						"          REF2_EN = trim(substring(data, 14887, 50)),",
-						"          SOURCE = \"MPS\") ~> ppmerchantDerivedFixedLength",
-						"ppmerchantDerivedFixedLength, filterODSPP join(BILLER_MERCHANT_ID == Biller_id,",
+						"          SOURCE = \"MPS\",",
+						"          BILLER_TYPE = trim(substring(data,1526, 4)),",
+						"          BANK_TYPE = trim(substring(data,1495, 4))) ~> ppmerchantDerivedFixedLength",
+						"filterType, filterODSPP join(BILLER_MERCHANT_ID == Biller_id,",
 						"     joinType:'left',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
@@ -827,7 +839,9 @@
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> ppdebitadviceOutputFixedLength",
 						"ODSPP filter(REF3 == 'IFB') ~> filterODSPP",
-						"ppmerchantOutputFixedLength sink(allowSchemaDrift: true,",
+						"ppmerchantOutputFixedLength filter(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '' && REF1_TH != '' && REF1_EN != '') ~> filterSequenceKey",
+						"ppmerchantDerivedFixedLength filter(BILLER_TYPE == 'TQRC' && BANK_TYPE == 'SCB') ~> filterType",
+						"filterSequenceKey sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     partitionFileNames:['MPS_PP_MERCHANTFILE_TEMP.txt'],",
 						"     skipDuplicateMapInputs: true,",
@@ -2189,10 +2203,10 @@
 						"timeZone": "SE Asia Standard Time",
 						"schedule": {
 							"minutes": [
-								5
+								0
 							],
 							"hours": [
-								12
+								1
 							]
 						}
 					}
@@ -2227,10 +2241,10 @@
 						"timeZone": "SE Asia Standard Time",
 						"schedule": {
 							"minutes": [
-								5
+								0
 							],
 							"hours": [
-								12
+								1
 							]
 						}
 					}
