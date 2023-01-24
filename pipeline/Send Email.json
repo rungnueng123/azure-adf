@@ -15,7 +15,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": "https://prod-01.southeastasia.logic.azure.com:443/workflows/574a4364ea014978a5e573fd832871a6/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=rzP-r-CJIJFejAAZ9Fv3mSv9t1VMp5S1JuTi6PttD70",
+					"url": "https://scbsmcsealga001streamit.azurewebsites.net:443/api/office365/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=cfLIj70oa1IrxcgRuUqgoUAzsypE0WJ6cZdcjAimnmI",
 					"method": "POST",
 					"headers": {
 						"Content-Type": "application/json"
@@ -25,9 +25,9 @@
 						"subject": "subject test",
 						"toname": "rungnueng",
 						"html": "test body",
-						"container": "knowledge-sharing-temp",
-						"attachmentPath": "/Untitle.jpeg",
-						"endpoint": "https://merchant-portal-dah2ggfzeegsf6g3.z01.azurefd.net/dev/blob/"
+						"container": "webcontent/content",
+						"attachmentPath": "/banner_B20221125025735966.jpg",
+						"endpoint": "https://merchantportalblob.z23.web.core.windows.net/"
 					}
 				}
 			}
