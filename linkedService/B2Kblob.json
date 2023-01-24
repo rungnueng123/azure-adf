@@ -5,7 +5,11 @@
 		"type": "AzureBlobStorage",
 		"typeProperties": {
 			"serviceEndpoint": "https://merchantportalblob.blob.core.windows.net/",
-			"accountKind": "StorageV2"
+			"accountKind": "BlobStorage",
+			"credential": {
+				"referenceName": "AzureManageIdentity",
+				"type": "CredentialReference"
+			}
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/linkedservices"
