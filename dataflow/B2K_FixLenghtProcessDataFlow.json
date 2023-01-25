@@ -73,6 +73,9 @@
 				},
 				{
 					"name": "filterSequenceKey"
+				},
+				{
+					"name": "filterSequence"
 				}
 			],
 			"scriptLines": [
@@ -144,6 +147,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> emsmrmstOutputFixedLength",
 				"mcrmrchOutputFixedLength filter(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '') ~> filterSequenceKey",
+				"edctermOutputFixedLength filter(MERCHANT_ID != '' && Terminal_ID != '' && Terminal_Name_EN != '' && Terminal_Name_TH != '') ~> filterSequence",
 				"filterSequenceKey sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['B2K_MCRMRCH_TEMP.txt'],",
@@ -160,7 +164,7 @@
 				"          SOURCE",
 				"     ),",
 				"     partitionBy('hash', 1)) ~> mcrmrchSink",
-				"edctermOutputFixedLength sink(allowSchemaDrift: true,",
+				"filterSequence sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['B2K_EDCTERM_TEMP.txt'],",
 				"     skipDuplicateMapInputs: true,",
