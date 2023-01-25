@@ -331,13 +331,13 @@
 					"serviceEndpoint": "[parameters('B2Kblob_properties_typeProperties_serviceEndpoint')]",
 					"accountKind": "StorageV2",
 					"credential": {
-						"referenceName": "credentialblob",
+						"referenceName": "AzureManageIdentity",
 						"type": "CredentialReference"
 					}
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/credentials/credentialblob')]"
+				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
 			]
 		},
 		{
