@@ -7,7 +7,7 @@
 			"serviceEndpoint": "https://merchantportalblob.blob.core.windows.net/",
 			"accountKind": "StorageV2",
 			"credential": {
-				"referenceName": "credentialblob",
+				"referenceName": "AzureManageIdentity",
 				"type": "CredentialReference"
 			}
 		}
