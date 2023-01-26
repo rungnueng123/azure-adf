@@ -63,6 +63,10 @@
 			"defaultValue": [
 				"hfympcdb.database.windows.net"
 			]
+		},
+		"KeyVaultADF_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://HFY-SMC.vault.azure.net/"
 		}
 	},
 	"variables": {
@@ -3973,6 +3977,25 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/KeyVaultADF')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('KeyVaultADF_properties_typeProperties_baseUrl')]",
+					"credential": {
+						"referenceName": "AzureManageIdentity",
+						"type": "CredentialReference"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
 			]
 		}
 	]

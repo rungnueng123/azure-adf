@@ -47,6 +47,9 @@
 			"value": [
 				"hfympcdb.database.windows.net"
 			]
+		},
+		"KeyVaultADF_properties_typeProperties_baseUrl": {
+			"value": "https://HFY-SMC.vault.azure.net/"
 		}
 	}
 }

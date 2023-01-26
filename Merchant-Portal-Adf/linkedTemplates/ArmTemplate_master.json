@@ -64,6 +64,10 @@
 				"hfympcdb.database.windows.net"
 			]
 		},
+		"KeyVaultADF_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://HFY-SMC.vault.azure.net/"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -129,6 +133,9 @@
 					},
 					"az_sql_b2k_properties_fqdns": {
 						"value": "[parameters('az_sql_b2k_properties_fqdns')]"
+					},
+					"KeyVaultADF_properties_typeProperties_baseUrl": {
+						"value": "[parameters('KeyVaultADF_properties_typeProperties_baseUrl')]"
 					}
 				}
 			},
