@@ -36,6 +36,10 @@
 			"type": "string",
 			"defaultValue": "https://merchantportalblob.blob.core.windows.net/"
 		},
+		"KeyVaultADF_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://HFY-SMC.vault.azure.net/"
+		},
 		"az_blob_b2k_properties_privateLinkResourceId": {
 			"type": "string",
 			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Storage/storageAccounts/merchantportalblob"
@@ -63,10 +67,6 @@
 			"defaultValue": [
 				"hfympcdb.database.windows.net"
 			]
-		},
-		"KeyVaultADF_properties_typeProperties_baseUrl": {
-			"type": "string",
-			"defaultValue": "https://HFY-SMC.vault.azure.net/"
 		}
 	},
 	"variables": {
@@ -1451,7 +1451,14 @@
 					{
 						"name": "Send Email Error",
 						"type": "WebActivity",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Get Key Vault",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -1461,7 +1468,10 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"url": "https://scbsmcsealga001streamit.azurewebsites.net:443/api/office365/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=cfLIj70oa1IrxcgRuUqgoUAzsypE0WJ6cZdcjAimnmI",
+							"url": {
+								"value": "@concat(\n    variables('hostUrl'),\n    variables('serviceUrl'),\n\t'?api-version=',\n\tvariables('api-version'),\n\t'&sp=',\n\tvariables('sp'),\n\t'&sv=',\n\tvariables('sv'),\n\t'&sig=',\n\tactivity('Get Key Vault').output.value\n)",
+								"type": "Expression"
+							},
 							"method": "POST",
 							"headers": {
 								"Content-Type": "application/json"
@@ -1476,11 +1486,58 @@
 								"endpoint": "https://merchantportalblob.z23.web.core.windows.net/"
 							}
 						}
+					},
+					{
+						"name": "Get Key Vault",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://hfy-smc.vault.azure.net/secrets/smc-azure-lga-sig?api-version=7.0",
+							"method": "GET",
+							"headers": {},
+							"authentication": {
+								"resource": "https://vault.azure.net",
+								"credential": {
+									"referenceName": "AzureManageIdentity",
+									"type": "CredentialReference"
+								}
+							}
+						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"variables": {
+					"hostUrl": {
+						"type": "String",
+						"defaultValue": "https://scbsmcsealga001streamit.azurewebsites.net:443"
+					},
+					"serviceUrl": {
+						"type": "String",
+						"defaultValue": "/api/office365/triggers/manual/invoke"
+					},
+					"api-version": {
+						"type": "String",
+						"defaultValue": "2022-05-01"
+					},
+					"sp": {
+						"type": "String",
+						"defaultValue": "/triggers/manual/run"
+					},
+					"sv": {
+						"type": "String",
+						"defaultValue": "1.0"
+					}
 				},
 				"folder": {
 					"name": "SMC_Send_Error_Email"
@@ -1488,7 +1545,9 @@
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Send Log Kafka')]",
@@ -3081,6 +3140,25 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/KeyVaultADF')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('KeyVaultADF_properties_typeProperties_baseUrl')]",
+					"credential": {
+						"referenceName": "AzureManageIdentity",
+						"type": "CredentialReference"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/triggerActivityLog')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -3977,25 +4055,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/KeyVaultADF')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureKeyVault",
-				"typeProperties": {
-					"baseUrl": "[parameters('KeyVaultADF_properties_typeProperties_baseUrl')]",
-					"credential": {
-						"referenceName": "AzureManageIdentity",
-						"type": "CredentialReference"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
 			]
 		}
 	]
