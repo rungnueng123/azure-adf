@@ -1,0 +1,14 @@
+{
+	"name": "KeyVaultADF",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://HFY-SMC.vault.azure.net/",
+			"credential": {
+				"referenceName": "AzureManageIdentity",
+				"type": "CredentialReference"
+			}
+		}
+	}
+}
