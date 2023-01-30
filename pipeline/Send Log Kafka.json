@@ -22,6 +22,26 @@
 					"referenceName": "AzureFunctionKafKa",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "Send Email Error",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Azure Function1",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Send Email",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
 			}
 		],
 		"folder": {
