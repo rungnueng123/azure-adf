@@ -31,7 +31,7 @@
 						"Content-Type": "application/json"
 					},
 					"body": {
-						"value": "{\"to\": \"rungnueng.luangkamchorn@stream.co.th\",\"subject\": \"subject test\",\"toname\": \"rungnueng\",\"html\": \"test body\", \"container\": \"knowledge-sharing-temp\",\"attachmentPath\": \"/1.png\",\"endpoint\": \"https://merchantportalblob.z23.web.core.windows.net/webcontent/\",\"isSendMST\": false}",
+						"value": "{\n    \"to\": \"rungnueng.luangkamchorn@stream.co.th\",\n    \"subject\": \"subject test\",\n    \"toname\": \"rungnueng\",\n    \"html\": \"test body\",\n    \"container\": \"knowledge-sharing-temp\",\n    \"attachmentPath\": \"/1.png\",\n    \"endpoint\": \"https://merchantportalblob.z23.web.core.windows.net/webcontent/\",\n    \"isSendMST\": true\n}",
 						"type": "Expression"
 					}
 				}
