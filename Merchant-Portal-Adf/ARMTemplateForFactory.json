@@ -854,7 +854,14 @@
 					{
 						"name": "Execute Merchant",
 						"type": "ExecutePipeline",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Execute SCB",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
@@ -878,6 +885,33 @@
 							"waitOnCompletion": true,
 							"parameters": {}
 						}
+					},
+					{
+						"name": "Send Email Error",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute SCB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							},
+							{
+								"activity": "Execute Merchant",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
 					}
 				],
 				"policy": {
@@ -891,7 +925,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/MERCHANT_ACTIVITY_LOG')]",
-				"[concat(variables('factoryId'), '/pipelines/SCB_ACTIVITY_LOG')]"
+				"[concat(variables('factoryId'), '/pipelines/SCB_ACTIVITY_LOG')]",
+				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
 			]
 		},
 		{
@@ -1477,13 +1512,8 @@
 								"Content-Type": "application/json"
 							},
 							"body": {
-								"to": "rungnueng.luangkamchorn@stream.co.th",
-								"subject": "subject test",
-								"toname": "rungnueng",
-								"html": "test body",
-								"container": "webcontent/content",
-								"attachmentPath": "/banner_B20221125025735966.jpg",
-								"endpoint": "https://merchantportalblob.z23.web.core.windows.net/"
+								"value": "{\"to\": \"rungnueng.luangkamchorn@stream.co.th\",\"subject\": \"subject test\",\"toname\": \"rungnueng\",\"html\": \"test body\", \"container\": \"knowledge-sharing-temp\",\"attachmentPath\": \"/1.png\",\"endpoint\": \"https://merchantportalblob.z23.web.core.windows.net/webcontent/\",\"isSendMST\": false}",
+								"type": "Expression"
 							}
 						}
 					},
@@ -1576,6 +1606,27 @@
 							"referenceName": "AzureFunctionKafKa",
 							"type": "LinkedServiceReference"
 						}
+					},
+					{
+						"name": "Send Email Error",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Azure Function1",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
 					}
 				],
 				"policy": {
@@ -1588,7 +1639,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureFunctionKafKa')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureFunctionKafKa')]",
+				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
 			]
 		},
 		{
