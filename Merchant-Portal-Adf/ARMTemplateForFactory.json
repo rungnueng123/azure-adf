@@ -2214,16 +2214,6 @@
 					{
 						"name": "MESSAGE",
 						"type": "text"
-					},
-					{
-						"name": "UPDATE_PII_LOG_STATUS",
-						"type": "varchar"
-					},
-					{
-						"name": "UPDATE_PII_LOG_DATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
 					}
 				],
 				"typeProperties": {
@@ -3702,9 +3692,7 @@
 						"          CHANGE_TO,",
 						"          SEARCH_CRITERIA,",
 						"          RESULT_STATUS,",
-						"          MESSAGE,",
-						"          UPDATE_PII_LOG_STATUS,",
-						"          UPDATE_PII_LOG_DATE",
+						"          MESSAGE",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select1",
