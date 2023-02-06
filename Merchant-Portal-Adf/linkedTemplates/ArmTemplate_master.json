@@ -11,10 +11,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'functionKey' of 'AzureFunctionKafKa'"
 		},
-		"AzureSftpOnPrem_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'AzureSftpOnPrem'"
-		},
 		"AzureSqlDB_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDB'",
@@ -24,14 +20,6 @@
 			"type": "string",
 			"defaultValue": "https://scbsmcseafunc001.azurewebsites.net"
 		},
-		"AzureSftpOnPrem_properties_typeProperties_host": {
-			"type": "string",
-			"defaultValue": "94.74.112.153"
-		},
-		"AzureSftpOnPrem_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "ttb_pbiz_transfer"
-		},
 		"B2Kblob_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
 			"defaultValue": "https://merchantportalblob.blob.core.windows.net/"
@@ -39,6 +27,22 @@
 		"KeyVaultADF_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://hfy-smc.vault.azure.net/"
+		},
+		"SmcSftpB2k_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "benseni.se.scb.co.th"
+		},
+		"SmcSftpB2k_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "smcadfusr"
+		},
+		"SmcSftpMps_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "GreenOak.se.scb.co.th"
+		},
+		"SmcSftpMps_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "se\\SMCUsrSit"
 		},
 		"az_blob_b2k_properties_privateLinkResourceId": {
 			"type": "string",
@@ -98,20 +102,11 @@
 					"AzureFunctionKafKa_functionKey": {
 						"value": "[parameters('AzureFunctionKafKa_functionKey')]"
 					},
-					"AzureSftpOnPrem_password": {
-						"value": "[parameters('AzureSftpOnPrem_password')]"
-					},
 					"AzureSqlDB_connectionString": {
 						"value": "[parameters('AzureSqlDB_connectionString')]"
 					},
 					"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 						"value": "[parameters('AzureFunctionKafKa_properties_typeProperties_functionAppUrl')]"
-					},
-					"AzureSftpOnPrem_properties_typeProperties_host": {
-						"value": "[parameters('AzureSftpOnPrem_properties_typeProperties_host')]"
-					},
-					"AzureSftpOnPrem_properties_typeProperties_userName": {
-						"value": "[parameters('AzureSftpOnPrem_properties_typeProperties_userName')]"
 					},
 					"B2Kblob_properties_typeProperties_serviceEndpoint": {
 						"value": "[parameters('B2Kblob_properties_typeProperties_serviceEndpoint')]"
@@ -174,6 +169,18 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"SmcSftpB2k_properties_typeProperties_host": {
+						"value": "[parameters('SmcSftpB2k_properties_typeProperties_host')]"
+					},
+					"SmcSftpB2k_properties_typeProperties_userName": {
+						"value": "[parameters('SmcSftpB2k_properties_typeProperties_userName')]"
+					},
+					"SmcSftpMps_properties_typeProperties_host": {
+						"value": "[parameters('SmcSftpMps_properties_typeProperties_host')]"
+					},
+					"SmcSftpMps_properties_typeProperties_userName": {
+						"value": "[parameters('SmcSftpMps_properties_typeProperties_userName')]"
 					}
 				}
 			},

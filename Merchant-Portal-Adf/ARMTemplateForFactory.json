@@ -11,10 +11,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'functionKey' of 'AzureFunctionKafKa'"
 		},
-		"AzureSftpOnPrem_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'AzureSftpOnPrem'"
-		},
 		"AzureSqlDB_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDB'",
@@ -24,14 +20,6 @@
 			"type": "string",
 			"defaultValue": "https://scbsmcseafunc001.azurewebsites.net"
 		},
-		"AzureSftpOnPrem_properties_typeProperties_host": {
-			"type": "string",
-			"defaultValue": "94.74.112.153"
-		},
-		"AzureSftpOnPrem_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "ttb_pbiz_transfer"
-		},
 		"B2Kblob_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
 			"defaultValue": "https://merchantportalblob.blob.core.windows.net/"
@@ -39,6 +27,22 @@
 		"KeyVaultADF_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://hfy-smc.vault.azure.net/"
+		},
+		"SmcSftpB2k_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "benseni.se.scb.co.th"
+		},
+		"SmcSftpB2k_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "smcadfusr"
+		},
+		"SmcSftpMps_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "GreenOak.se.scb.co.th"
+		},
+		"SmcSftpMps_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "se\\SMCUsrSit"
 		},
 		"az_blob_b2k_properties_privateLinkResourceId": {
 			"type": "string",
@@ -2922,7 +2926,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "AzureSftpOnPrem",
+					"referenceName": "SmcSftpB2k",
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
@@ -2944,7 +2948,7 @@
 				"schema": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSftpOnPrem')]"
+				"[concat(variables('factoryId'), '/linkedServices/SmcSftpB2k')]"
 			]
 		},
 		{
@@ -2984,7 +2988,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "AzureSftpOnPrem",
+					"referenceName": "SmcSftpMps",
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
@@ -2995,7 +2999,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "SftpLocation",
-						"folderPath": "/Mpay"
+						"folderPath": "/mpay/SIT"
 					},
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
@@ -3006,7 +3010,7 @@
 				"schema": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSftpOnPrem')]"
+				"[concat(variables('factoryId'), '/linkedServices/SmcSftpMps')]"
 			]
 		},
 		{
@@ -3122,27 +3126,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AzureSftpOnPrem')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "Sftp",
-				"typeProperties": {
-					"host": "[parameters('AzureSftpOnPrem_properties_typeProperties_host')]",
-					"port": "2022",
-					"skipHostKeyValidation": true,
-					"authenticationType": "Basic",
-					"userName": "[parameters('AzureSftpOnPrem_properties_typeProperties_userName')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('AzureSftpOnPrem_password')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/AzureSqlDB')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -3198,6 +3181,70 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SmcSftpB2k')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "Sftp",
+				"typeProperties": {
+					"host": "[parameters('SmcSftpB2k_properties_typeProperties_host')]",
+					"port": "911",
+					"skipHostKeyValidation": true,
+					"authenticationType": "Basic",
+					"userName": "[parameters('SmcSftpB2k_properties_typeProperties_userName')]",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "KeyVaultADF",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "smc-b2k-sftp-password"
+					}
+				},
+				"connectVia": {
+					"referenceName": "shir",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]",
+				"[concat(variables('factoryId'), '/linkedServices/KeyVaultADF')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SmcSftpMps')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "Sftp",
+				"typeProperties": {
+					"host": "[parameters('SmcSftpMps_properties_typeProperties_host')]",
+					"port": "911",
+					"skipHostKeyValidation": true,
+					"authenticationType": "Basic",
+					"userName": "[parameters('SmcSftpMps_properties_typeProperties_userName')]",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "KeyVaultADF",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "smc-msp-sftp-password"
+					}
+				},
+				"connectVia": {
+					"referenceName": "shir",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]",
+				"[concat(variables('factoryId'), '/linkedServices/KeyVaultADF')]"
 			]
 		},
 		{

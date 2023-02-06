@@ -11,10 +11,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'functionKey' of 'AzureFunctionKafKa'"
 		},
-		"AzureSftpOnPrem_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'AzureSftpOnPrem'"
-		},
 		"AzureSqlDB_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDB'",
@@ -23,14 +19,6 @@
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 			"type": "string",
 			"defaultValue": "https://scbsmcseafunc001.azurewebsites.net"
-		},
-		"AzureSftpOnPrem_properties_typeProperties_host": {
-			"type": "string",
-			"defaultValue": "94.74.112.153"
-		},
-		"AzureSftpOnPrem_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "ttb_pbiz_transfer"
 		},
 		"B2Kblob_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
@@ -87,27 +75,6 @@
 						"value": "[parameters('AzureFunctionKafKa_functionKey')]"
 					},
 					"authentication": "Anonymous"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureSftpOnPrem')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "Sftp",
-				"typeProperties": {
-					"host": "[parameters('AzureSftpOnPrem_properties_typeProperties_host')]",
-					"port": "2022",
-					"skipHostKeyValidation": true,
-					"authenticationType": "Basic",
-					"userName": "[parameters('AzureSftpOnPrem_properties_typeProperties_userName')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('AzureSftpOnPrem_password')]"
-					}
 				}
 			},
 			"dependsOn": []
@@ -253,68 +220,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SFTPB2KOnPrem')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSftpOnPrem",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/SFTP/B2K"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "SftpLocation",
-						"folderPath": "/NASDATA/B2K/SMC"
-					},
-					"columnDelimiter": ",",
-					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
-					"firstRowAsHeader": false,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSftpOnPrem')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SFTPMPSOnPrem')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSftpOnPrem",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/SFTP/MPS"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "SftpLocation",
-						"folderPath": "/Mpay"
-					},
-					"columnDelimiter": ",",
-					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
-					"firstRowAsHeader": false,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSftpOnPrem')]"
 			]
 		},
 		{
@@ -631,6 +536,126 @@
 						"type": "String"
 					}
 				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM_OUTPUT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EDCTERM"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "B2K_EDCTERM_TEMP.txt",
+						"folderPath": "b2k/output",
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM_TEMP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EDCTERM"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "B2K_EDCTERM_TEMP.txt",
+						"folderPath": "b2k/output",
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "MERCHANT_ID",
+						"type": "String"
+					},
+					{
+						"name": "Terminal_ID",
+						"type": "String"
+					},
+					{
+						"name": "Terminal_Name_EN",
+						"type": "String"
+					},
+					{
+						"name": "Terminal_Name_TH",
+						"type": "String"
+					},
+					{
+						"name": "UPDATE_DATE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EMSMRMST')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EMSMRMST"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat(\n    'B2K_EMSMRMST_',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
+							"type": "Expression"
+						},
+						"folderPath": "b2k",
+						"container": "b2kmps"
+					},
+					"columnDelimiter": "|",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"

@@ -8,26 +8,29 @@
 		"AzureFunctionKafKa_functionKey": {
 			"value": ""
 		},
-		"AzureSftpOnPrem_password": {
-			"value": ""
-		},
 		"AzureSqlDB_connectionString": {
 			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=hfympcdb.database.windows.net;Initial Catalog=mpcdb"
 		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 			"value": "https://scbsmcseafunc001.azurewebsites.net"
 		},
-		"AzureSftpOnPrem_properties_typeProperties_host": {
-			"value": "94.74.112.153"
-		},
-		"AzureSftpOnPrem_properties_typeProperties_userName": {
-			"value": "ttb_pbiz_transfer"
-		},
 		"B2Kblob_properties_typeProperties_serviceEndpoint": {
 			"value": "https://merchantportalblob.blob.core.windows.net/"
 		},
 		"KeyVaultADF_properties_typeProperties_baseUrl": {
 			"value": "https://hfy-smc.vault.azure.net/"
+		},
+		"SmcSftpB2k_properties_typeProperties_host": {
+			"value": "benseni.se.scb.co.th"
+		},
+		"SmcSftpB2k_properties_typeProperties_userName": {
+			"value": "smcadfusr"
+		},
+		"SmcSftpMps_properties_typeProperties_host": {
+			"value": "GreenOak.se.scb.co.th"
+		},
+		"SmcSftpMps_properties_typeProperties_userName": {
+			"value": "se\\SMCUsrSit"
 		},
 		"az_blob_b2k_properties_privateLinkResourceId": {
 			"value": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Storage/storageAccounts/merchantportalblob"
