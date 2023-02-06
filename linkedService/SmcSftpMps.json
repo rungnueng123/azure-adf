@@ -17,6 +17,10 @@
 				},
 				"secretName": "smc-msp-sftp-password"
 			}
+		},
+		"connectVia": {
+			"referenceName": "shir",
+			"type": "IntegrationRuntimeReference"
 		}
 	}
 }
