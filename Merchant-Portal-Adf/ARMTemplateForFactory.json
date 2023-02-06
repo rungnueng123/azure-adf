@@ -38,7 +38,7 @@
 		},
 		"KeyVaultADF_properties_typeProperties_baseUrl": {
 			"type": "string",
-			"defaultValue": "https://HFY-SMC.vault.azure.net/"
+			"defaultValue": "https://hfy-smc.vault.azure.net/"
 		},
 		"az_blob_b2k_properties_privateLinkResourceId": {
 			"type": "string",
