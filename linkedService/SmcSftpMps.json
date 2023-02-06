@@ -1,0 +1,22 @@
+{
+	"name": "SmcSftpMps",
+	"properties": {
+		"annotations": [],
+		"type": "Sftp",
+		"typeProperties": {
+			"host": "GreenOak.se.scb.co.th",
+			"port": "911",
+			"skipHostKeyValidation": true,
+			"authenticationType": "Basic",
+			"userName": "se\\SMCUsrSit",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "KeyVaultADF",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "smc-msp-sftp-password"
+			}
+		}
+	}
+}
