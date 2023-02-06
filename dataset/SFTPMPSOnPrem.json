@@ -2,7 +2,7 @@
 	"name": "SFTPMPSOnPrem",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "AzureSftpOnPrem",
+			"referenceName": "SmcSftpMps",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
@@ -13,7 +13,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "SftpLocation",
-				"folderPath": "/Mpay"
+				"folderPath": "/mpay/SIT"
 			},
 			"columnDelimiter": ",",
 			"encodingName": "WINDOWS-874",

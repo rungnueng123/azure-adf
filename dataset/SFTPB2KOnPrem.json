@@ -2,7 +2,7 @@
 	"name": "SFTPB2KOnPrem",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "AzureSftpOnPrem",
+			"referenceName": "SmcSftpB2k",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
