@@ -17,6 +17,10 @@
 				},
 				"secretName": "smc-b2k-sftp-password"
 			}
+		},
+		"connectVia": {
+			"referenceName": "shir",
+			"type": "IntegrationRuntimeReference"
 		}
 	}
 }
