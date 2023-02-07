@@ -223,8 +223,7 @@
 				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
-						"type": "FtpServerLocation",
-						"folderPath": "/SIT"
+						"type": "FtpServerLocation"
 					},
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
