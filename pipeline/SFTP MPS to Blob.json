@@ -18,10 +18,11 @@
 					"source": {
 						"type": "DelimitedTextSource",
 						"storeSettings": {
-							"type": "SftpReadSettings",
+							"type": "FtpReadSettings",
 							"recursive": true,
 							"wildcardFileName": "*",
 							"enablePartitionDiscovery": false,
+							"useBinaryTransfer": true,
 							"disableChunking": false
 						},
 						"formatSettings": {
@@ -51,7 +52,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "SFTPMPSOnPrem",
+						"referenceName": "FTPMPSOnPrem",
 						"type": "DatasetReference"
 					}
 				],

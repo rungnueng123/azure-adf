@@ -1,8 +1,8 @@
 {
-	"name": "SFTPMPSBlobTemp",
+	"name": "FTPMPSOnPrem",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "B2Kblob",
+			"referenceName": "SmcFtpMps",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
@@ -12,9 +12,8 @@
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobStorageLocation",
-				"folderPath": "mps",
-				"container": "file-upload"
+				"type": "FtpServerLocation",
+				"folderPath": "/SIT"
 			},
 			"columnDelimiter": ",",
 			"encodingName": "WINDOWS-874",
@@ -22,6 +21,5 @@
 			"quoteChar": "\""
 		},
 		"schema": []
-	},
-	"type": "Microsoft.DataFactory/factories/datasets"
+	}
 }

@@ -1,20 +1,18 @@
 {
-	"name": "SFTPMPSBlobTemp",
+	"name": "FTPB2KOnPrem",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "B2Kblob",
+			"referenceName": "SmcFtpB2k",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "B2KMPS/SFTP/MPS"
+			"name": "B2KMPS/SFTP/B2K"
 		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobStorageLocation",
-				"folderPath": "mps",
-				"container": "file-upload"
+				"type": "FtpServerLocation"
 			},
 			"columnDelimiter": ",",
 			"encodingName": "WINDOWS-874",
@@ -22,6 +20,5 @@
 			"quoteChar": "\""
 		},
 		"schema": []
-	},
-	"type": "Microsoft.DataFactory/factories/datasets"
+	}
 }
