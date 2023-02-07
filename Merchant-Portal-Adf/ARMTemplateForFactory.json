@@ -1855,7 +1855,7 @@
 							"type": "Expression"
 						},
 						"folderPath": "b2k",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"encodingName": "WINDOWS-874",
@@ -1891,7 +1891,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EDCMERCH_TEMP.txt",
 						"folderPath": "b2k/output",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
@@ -1923,7 +1923,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EDCMERCH_TEMP.txt",
 						"folderPath": "b2k/output",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
@@ -1958,7 +1958,7 @@
 							"type": "Expression"
 						},
 						"folderPath": "b2k",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"encodingName": "WINDOWS-874",
@@ -1994,7 +1994,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EDCTERM_TEMP.txt",
 						"folderPath": "b2k/output",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
@@ -2026,7 +2026,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EDCTERM_TEMP.txt",
 						"folderPath": "b2k/output",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
@@ -2082,7 +2082,7 @@
 							"type": "Expression"
 						},
 						"folderPath": "b2k",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"encodingName": "WINDOWS-874",
@@ -2114,7 +2114,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EMSMRMST_TEMP.txt",
 						"folderPath": "b2k/output",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
@@ -2146,7 +2146,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EMSMRMST_TEMP.txt",
 						"folderPath": "b2k/output",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
@@ -2181,7 +2181,7 @@
 							"type": "Expression"
 						},
 						"folderPath": "b2k",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"encodingName": "WINDOWS-874",
@@ -2217,7 +2217,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_MCRMRCH_TEMP.txt",
 						"folderPath": "b2k/output",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
@@ -2249,7 +2249,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_MCRMRCH_TEMP.txt",
 						"folderPath": "b2k/output",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
@@ -2533,7 +2533,7 @@
 							"type": "Expression"
 						},
 						"folderPath": "mps",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
@@ -2593,7 +2593,7 @@
 							"type": "Expression"
 						},
 						"folderPath": "mps",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"encodingName": "WINDOWS-874",
@@ -2674,7 +2674,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "MPS_PP_DEBITADVICE_TEMP.txt",
 						"folderPath": "mps/output",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
@@ -2706,7 +2706,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "MPS_PP_DEBITADVICE_TEMP.txt",
 						"folderPath": "mps/output",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
@@ -2738,7 +2738,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "PP_MerchantFile.txt",
 						"folderPath": "mps",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"encodingName": "WINDOWS-874",
@@ -2774,7 +2774,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "MPS_PP_MERCHANTFILE_TEMP.txt",
 						"folderPath": "mps/output",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
@@ -2806,7 +2806,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "MPS_PP_MERCHANTFILE_TEMP.txt",
 						"folderPath": "mps/output",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"escapeChar": "\\",

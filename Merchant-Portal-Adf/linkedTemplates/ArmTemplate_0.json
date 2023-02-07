@@ -421,7 +421,7 @@
 							"type": "Expression"
 						},
 						"folderPath": "b2k",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"encodingName": "WINDOWS-874",
@@ -457,7 +457,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EDCMERCH_TEMP.txt",
 						"folderPath": "b2k/output",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
@@ -489,7 +489,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EDCMERCH_TEMP.txt",
 						"folderPath": "b2k/output",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
@@ -524,7 +524,7 @@
 							"type": "Expression"
 						},
 						"folderPath": "b2k",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"encodingName": "WINDOWS-874",
@@ -560,7 +560,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EDCTERM_TEMP.txt",
 						"folderPath": "b2k/output",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
@@ -592,7 +592,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EDCTERM_TEMP.txt",
 						"folderPath": "b2k/output",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
@@ -648,7 +648,7 @@
 							"type": "Expression"
 						},
 						"folderPath": "b2k",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
 					"encodingName": "WINDOWS-874",
