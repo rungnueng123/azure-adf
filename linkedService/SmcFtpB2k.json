@@ -1,5 +1,6 @@
 {
 	"name": "SmcFtpB2k",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"annotations": [],
 		"type": "FtpServer",
@@ -10,14 +11,7 @@
 			"enableServerCertificateValidation": false,
 			"authenticationType": "Basic",
 			"userName": "smcadfusr",
-			"password": {
-				"type": "AzureKeyVaultSecret",
-				"store": {
-					"referenceName": "KeyVaultADF",
-					"type": "LinkedServiceReference"
-				},
-				"secretName": "smc-b2k-sftp-password"
-			}
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJhNTc5MGVlMS1jNDdjLTRjZDMtYTUxOS0yMjMxNzUzN2IxZWIiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
 		},
 		"connectVia": {
 			"referenceName": "shir",
