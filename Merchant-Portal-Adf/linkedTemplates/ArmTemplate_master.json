@@ -16,6 +16,14 @@
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDB'",
 			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=hfympcdb.database.windows.net;Initial Catalog=mpcdb"
 		},
+		"SmcFtpB2k_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'SmcFtpB2k'"
+		},
+		"SmcFtpMps_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'SmcFtpMps'"
+		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 			"type": "string",
 			"defaultValue": "https://scbsmcseafunc001.azurewebsites.net"
@@ -105,6 +113,12 @@
 					"AzureSqlDB_connectionString": {
 						"value": "[parameters('AzureSqlDB_connectionString')]"
 					},
+					"SmcFtpB2k_password": {
+						"value": "[parameters('SmcFtpB2k_password')]"
+					},
+					"SmcFtpMps_password": {
+						"value": "[parameters('SmcFtpMps_password')]"
+					},
 					"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 						"value": "[parameters('AzureFunctionKafKa_properties_typeProperties_functionAppUrl')]"
 					},
@@ -113,6 +127,18 @@
 					},
 					"KeyVaultADF_properties_typeProperties_baseUrl": {
 						"value": "[parameters('KeyVaultADF_properties_typeProperties_baseUrl')]"
+					},
+					"SmcFtpB2k_properties_typeProperties_host": {
+						"value": "[parameters('SmcFtpB2k_properties_typeProperties_host')]"
+					},
+					"SmcFtpB2k_properties_typeProperties_userName": {
+						"value": "[parameters('SmcFtpB2k_properties_typeProperties_userName')]"
+					},
+					"SmcFtpMps_properties_typeProperties_host": {
+						"value": "[parameters('SmcFtpMps_properties_typeProperties_host')]"
+					},
+					"SmcFtpMps_properties_typeProperties_userName": {
+						"value": "[parameters('SmcFtpMps_properties_typeProperties_userName')]"
 					},
 					"az_blob_b2k_properties_privateLinkResourceId": {
 						"value": "[parameters('az_blob_b2k_properties_privateLinkResourceId')]"
@@ -169,18 +195,6 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
-					},
-					"SmcFtpB2k_properties_typeProperties_host": {
-						"value": "[parameters('SmcFtpB2k_properties_typeProperties_host')]"
-					},
-					"SmcFtpB2k_properties_typeProperties_userName": {
-						"value": "[parameters('SmcFtpB2k_properties_typeProperties_userName')]"
-					},
-					"SmcFtpMps_properties_typeProperties_host": {
-						"value": "[parameters('SmcFtpMps_properties_typeProperties_host')]"
-					},
-					"SmcFtpMps_properties_typeProperties_userName": {
-						"value": "[parameters('SmcFtpMps_properties_typeProperties_userName')]"
 					}
 				}
 			},
