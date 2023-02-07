@@ -15,7 +15,7 @@
 				"type": "AzureBlobStorageLocation",
 				"fileName": "B2K_EMSMRMST_TEMP.txt",
 				"folderPath": "b2k/output",
-				"container": "b2kmps"
+				"container": "file-upload"
 			},
 			"columnDelimiter": "|",
 			"escapeChar": "\\",

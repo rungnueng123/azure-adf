@@ -15,7 +15,7 @@
 				"type": "AzureBlobStorageLocation",
 				"fileName": "MPS_PP_MERCHANTFILE_TEMP.txt",
 				"folderPath": "mps/output",
-				"container": "b2kmps"
+				"container": "file-upload"
 			},
 			"columnDelimiter": "|",
 			"escapeChar": "\\",
