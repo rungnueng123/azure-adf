@@ -20,16 +20,16 @@
 		"KeyVaultADF_properties_typeProperties_baseUrl": {
 			"value": "https://hfy-smc.vault.azure.net/"
 		},
-		"SmcSftpB2k_properties_typeProperties_host": {
+		"SmcFtpB2k_properties_typeProperties_host": {
 			"value": "benseni.se.scb.co.th"
 		},
-		"SmcSftpB2k_properties_typeProperties_userName": {
+		"SmcFtpB2k_properties_typeProperties_userName": {
 			"value": "smcadfusr"
 		},
-		"SmcSftpMps_properties_typeProperties_host": {
+		"SmcFtpMps_properties_typeProperties_host": {
 			"value": "GreenOak.se.scb.co.th"
 		},
-		"SmcSftpMps_properties_typeProperties_userName": {
+		"SmcFtpMps_properties_typeProperties_userName": {
 			"value": "se\\SMCUsrSit"
 		},
 		"az_blob_b2k_properties_privateLinkResourceId": {

@@ -28,19 +28,19 @@
 			"type": "string",
 			"defaultValue": "https://hfy-smc.vault.azure.net/"
 		},
-		"SmcSftpB2k_properties_typeProperties_host": {
+		"SmcFtpB2k_properties_typeProperties_host": {
 			"type": "string",
 			"defaultValue": "benseni.se.scb.co.th"
 		},
-		"SmcSftpB2k_properties_typeProperties_userName": {
+		"SmcFtpB2k_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "smcadfusr"
 		},
-		"SmcSftpMps_properties_typeProperties_host": {
+		"SmcFtpMps_properties_typeProperties_host": {
 			"type": "string",
 			"defaultValue": "GreenOak.se.scb.co.th"
 		},
-		"SmcSftpMps_properties_typeProperties_userName": {
+		"SmcFtpMps_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "se\\SMCUsrSit"
 		},
@@ -170,17 +170,17 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
-					"SmcSftpB2k_properties_typeProperties_host": {
-						"value": "[parameters('SmcSftpB2k_properties_typeProperties_host')]"
+					"SmcFtpB2k_properties_typeProperties_host": {
+						"value": "[parameters('SmcFtpB2k_properties_typeProperties_host')]"
 					},
-					"SmcSftpB2k_properties_typeProperties_userName": {
-						"value": "[parameters('SmcSftpB2k_properties_typeProperties_userName')]"
+					"SmcFtpB2k_properties_typeProperties_userName": {
+						"value": "[parameters('SmcFtpB2k_properties_typeProperties_userName')]"
 					},
-					"SmcSftpMps_properties_typeProperties_host": {
-						"value": "[parameters('SmcSftpMps_properties_typeProperties_host')]"
+					"SmcFtpMps_properties_typeProperties_host": {
+						"value": "[parameters('SmcFtpMps_properties_typeProperties_host')]"
 					},
-					"SmcSftpMps_properties_typeProperties_userName": {
-						"value": "[parameters('SmcSftpMps_properties_typeProperties_userName')]"
+					"SmcFtpMps_properties_typeProperties_userName": {
+						"value": "[parameters('SmcFtpMps_properties_typeProperties_userName')]"
 					}
 				}
 			},

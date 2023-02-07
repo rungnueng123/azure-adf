@@ -28,19 +28,19 @@
 			"type": "string",
 			"defaultValue": "https://hfy-smc.vault.azure.net/"
 		},
-		"SmcSftpB2k_properties_typeProperties_host": {
+		"SmcFtpB2k_properties_typeProperties_host": {
 			"type": "string",
 			"defaultValue": "benseni.se.scb.co.th"
 		},
-		"SmcSftpB2k_properties_typeProperties_userName": {
+		"SmcFtpB2k_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "smcadfusr"
 		},
-		"SmcSftpMps_properties_typeProperties_host": {
+		"SmcFtpMps_properties_typeProperties_host": {
 			"type": "string",
 			"defaultValue": "GreenOak.se.scb.co.th"
 		},
-		"SmcSftpMps_properties_typeProperties_userName": {
+		"SmcFtpMps_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "se\\SMCUsrSit"
 		},
@@ -1519,10 +1519,11 @@
 							"source": {
 								"type": "DelimitedTextSource",
 								"storeSettings": {
-									"type": "SftpReadSettings",
+									"type": "FtpReadSettings",
 									"recursive": true,
 									"wildcardFileName": "*",
 									"enablePartitionDiscovery": false,
+									"useBinaryTransfer": true,
 									"disableChunking": false
 								},
 								"formatSettings": {
@@ -1552,7 +1553,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "SFTPB2KOnPrem",
+								"referenceName": "FTPB2KOnPrem",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -1577,7 +1578,7 @@
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/SFTPB2KOnPrem')]",
+				"[concat(variables('factoryId'), '/datasets/FTPB2KOnPrem')]",
 				"[concat(variables('factoryId'), '/datasets/SFTPB2KBlobTemp')]"
 			]
 		},
@@ -1603,10 +1604,11 @@
 							"source": {
 								"type": "DelimitedTextSource",
 								"storeSettings": {
-									"type": "SftpReadSettings",
+									"type": "FtpReadSettings",
 									"recursive": true,
 									"wildcardFileName": "*",
 									"enablePartitionDiscovery": false,
+									"useBinaryTransfer": true,
 									"disableChunking": false
 								},
 								"formatSettings": {
@@ -1636,7 +1638,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "SFTPMPSOnPrem",
+								"referenceName": "FTPMPSOnPrem",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -1661,7 +1663,7 @@
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/SFTPMPSOnPrem')]",
+				"[concat(variables('factoryId'), '/datasets/FTPMPSOnPrem')]",
 				"[concat(variables('factoryId'), '/datasets/SFTPMPSBlobTemp')]"
 			]
 		},
@@ -2291,6 +2293,65 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FTPB2KOnPrem')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SmcFtpB2k",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/SFTP/B2K"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "FtpServerLocation"
+					},
+					"columnDelimiter": ",",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SmcFtpB2k')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FTPMPSOnPrem')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SmcFtpMps",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/SFTP/MPS"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "FtpServerLocation",
+						"folderPath": "/SIT"
+					},
+					"columnDelimiter": ",",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SmcFtpMps')]"
 			]
 		},
 		{
@@ -3091,7 +3152,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"folderPath": "b2k",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
@@ -3102,37 +3163,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SFTPB2KOnPrem')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SmcSftpB2k",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/SFTP/B2K"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "SftpLocation",
-						"folderPath": "/NASDATA/B2K/SMC"
-					},
-					"columnDelimiter": ",",
-					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
-					"firstRowAsHeader": false,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SmcSftpB2k')]"
 			]
 		},
 		{
@@ -3153,7 +3183,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"folderPath": "mps",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
@@ -3164,37 +3194,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SFTPMPSOnPrem')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SmcSftpMps",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/SFTP/MPS"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "SftpLocation",
-						"folderPath": "/mpay/SIT"
-					},
-					"columnDelimiter": ",",
-					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
-					"firstRowAsHeader": false,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SmcSftpMps')]"
 			]
 		},
 		{
@@ -3368,18 +3367,19 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/SmcSftpB2k')]",
+			"name": "[concat(parameters('factoryName'), '/SmcFtpB2k')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"type": "Sftp",
+				"type": "FtpServer",
 				"typeProperties": {
-					"host": "[parameters('SmcSftpB2k_properties_typeProperties_host')]",
-					"port": "911",
-					"skipHostKeyValidation": true,
+					"host": "[parameters('SmcFtpB2k_properties_typeProperties_host')]",
+					"port": "991",
+					"enableSsl": true,
+					"enableServerCertificateValidation": false,
 					"authenticationType": "Basic",
-					"userName": "[parameters('SmcSftpB2k_properties_typeProperties_userName')]",
+					"userName": "[parameters('SmcFtpB2k_properties_typeProperties_userName')]",
 					"password": {
 						"type": "AzureKeyVaultSecret",
 						"store": {
@@ -3400,18 +3400,19 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/SmcSftpMps')]",
+			"name": "[concat(parameters('factoryName'), '/SmcFtpMps')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"type": "Sftp",
+				"type": "FtpServer",
 				"typeProperties": {
-					"host": "[parameters('SmcSftpMps_properties_typeProperties_host')]",
-					"port": "911",
-					"skipHostKeyValidation": true,
+					"host": "[parameters('SmcFtpMps_properties_typeProperties_host')]",
+					"port": "991",
+					"enableSsl": true,
+					"enableServerCertificateValidation": false,
 					"authenticationType": "Basic",
-					"userName": "[parameters('SmcSftpMps_properties_typeProperties_userName')]",
+					"userName": "[parameters('SmcFtpMps_properties_typeProperties_userName')]",
 					"password": {
 						"type": "AzureKeyVaultSecret",
 						"store": {

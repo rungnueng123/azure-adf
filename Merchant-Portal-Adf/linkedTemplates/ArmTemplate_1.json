@@ -974,7 +974,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"folderPath": "b2k",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
@@ -1003,7 +1003,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"folderPath": "mps",
-						"container": "b2kmps"
+						"container": "file-upload"
 					},
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
