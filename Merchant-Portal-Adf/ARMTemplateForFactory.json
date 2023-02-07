@@ -934,7 +934,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/MasterB2KPipeline')]",
+			"name": "[concat(parameters('factoryName'), '/MasterB2KPipeline_001')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1053,7 +1053,99 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/MasterMPSPipeline')]",
+			"name": "[concat(parameters('factoryName'), '/MasterB2KPipeline_002')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Insert B2K To DB",
+						"description": "Process collect B2K file from blob",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "B2K Blob to DB",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Send Email Error",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Insert B2K To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							},
+							{
+								"activity": "updateMerchantProfile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "updateMerchantProfile",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Insert B2K To DB",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[updateMerchantProfile]"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureSqlDB",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "SMC_B2K"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]",
+				"[concat(variables('factoryId'), '/pipelines/Send Email')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MasterMPSPipeline_001')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1166,6 +1258,98 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/SFTP MPS to Blob')]",
+				"[concat(variables('factoryId'), '/pipelines/MPS Blob to DB')]",
+				"[concat(variables('factoryId'), '/pipelines/Send Email')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MasterMPSPipeline_002')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Insert MPS To DB",
+						"description": "Process collect MPS file from blob",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "MPS Blob to DB",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Send Email Error",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Insert MPS To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							},
+							{
+								"activity": "updateMerchantProfile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "updateMerchantProfile",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Insert MPS To DB",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[updateMerchantProfile]"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureSqlDB",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "SMC_MPS"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/MPS Blob to DB')]",
 				"[concat(variables('factoryId'), '/pipelines/Send Email')]",
 				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
@@ -3295,7 +3479,7 @@
 				"pipelines": [
 					{
 						"pipelineReference": {
-							"referenceName": "MasterB2KPipeline",
+							"referenceName": "MasterB2KPipeline_001",
 							"type": "PipelineReference"
 						},
 						"parameters": {}
@@ -3320,7 +3504,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/MasterB2KPipeline')]"
+				"[concat(variables('factoryId'), '/pipelines/MasterB2KPipeline_001')]"
 			]
 		},
 		{
@@ -3371,7 +3555,7 @@
 				"pipelines": [
 					{
 						"pipelineReference": {
-							"referenceName": "MasterMPSPipeline",
+							"referenceName": "MasterMPSPipeline_001",
 							"type": "PipelineReference"
 						},
 						"parameters": {}
@@ -3396,7 +3580,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/MasterMPSPipeline')]"
+				"[concat(variables('factoryId'), '/pipelines/MasterMPSPipeline_001')]"
 			]
 		},
 		{

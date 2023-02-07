@@ -2062,7 +2062,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/MasterB2KPipeline')]",
+			"name": "[concat(parameters('factoryName'), '/MasterB2KPipeline_001')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -2179,40 +2179,20 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/MasterMPSPipeline')]",
+			"name": "[concat(parameters('factoryName'), '/MasterB2KPipeline_002')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Get File From SFTP",
+						"name": "Insert B2K To DB",
+						"description": "Process collect B2K file from blob",
 						"type": "ExecutePipeline",
 						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "SFTP MPS to Blob",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Insert MPS To DB",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Get File From SFTP",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "MPS Blob to DB",
+								"referenceName": "B2K Blob to DB",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -2224,13 +2204,7 @@
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "Get File From SFTP",
-								"dependencyConditions": [
-									"Failed"
-								]
-							},
-							{
-								"activity": "Insert MPS To DB",
+								"activity": "Insert B2K To DB",
 								"dependencyConditions": [
 									"Failed"
 								]
@@ -2257,7 +2231,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "Insert MPS To DB",
+								"activity": "Insert B2K To DB",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -2285,14 +2259,13 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "SMC_MPS"
+					"name": "SMC_B2K"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/SFTP MPS to Blob')]",
-				"[concat(variables('factoryId'), '/pipelines/MPS Blob to DB')]"
+				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]"
 			]
 		}
 	]
