@@ -1,35 +1,16 @@
 {
-	"name": "MasterMPSPipeline_001",
+	"name": "MasterB2KPipeline_002",
 	"properties": {
 		"activities": [
 			{
-				"name": "Get File From SFTP",
+				"name": "Insert B2K To DB",
+				"description": "Process collect B2K file from blob",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "SFTP MPS to Blob",
-						"type": "PipelineReference"
-					},
-					"waitOnCompletion": true
-				}
-			},
-			{
-				"name": "Insert MPS To DB",
-				"type": "ExecutePipeline",
-				"dependsOn": [
-					{
-						"activity": "Get File From SFTP",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"pipeline": {
-						"referenceName": "MPS Blob to DB",
+						"referenceName": "B2K Blob to DB",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
@@ -40,13 +21,7 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "Get File From SFTP",
-						"dependencyConditions": [
-							"Failed"
-						]
-					},
-					{
-						"activity": "Insert MPS To DB",
+						"activity": "Insert B2K To DB",
 						"dependencyConditions": [
 							"Failed"
 						]
@@ -72,7 +47,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "Insert MPS To DB",
+						"activity": "Insert B2K To DB",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -96,7 +71,7 @@
 			}
 		],
 		"folder": {
-			"name": "SMC_MPS"
+			"name": "SMC_B2K"
 		},
 		"annotations": [],
 		"lastPublishTime": "2022-12-13T09:46:48Z"

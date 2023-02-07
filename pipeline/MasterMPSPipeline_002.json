@@ -1,31 +1,12 @@
 {
-	"name": "MasterMPSPipeline_001",
+	"name": "MasterMPSPipeline_002",
 	"properties": {
 		"activities": [
 			{
-				"name": "Get File From SFTP",
+				"name": "Insert MPS To DB",
+				"description": "Process collect MPS file from blob",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
-				"userProperties": [],
-				"typeProperties": {
-					"pipeline": {
-						"referenceName": "SFTP MPS to Blob",
-						"type": "PipelineReference"
-					},
-					"waitOnCompletion": true
-				}
-			},
-			{
-				"name": "Insert MPS To DB",
-				"type": "ExecutePipeline",
-				"dependsOn": [
-					{
-						"activity": "Get File From SFTP",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
@@ -39,12 +20,6 @@
 				"name": "Send Email Error",
 				"type": "ExecutePipeline",
 				"dependsOn": [
-					{
-						"activity": "Get File From SFTP",
-						"dependencyConditions": [
-							"Failed"
-						]
-					},
 					{
 						"activity": "Insert MPS To DB",
 						"dependencyConditions": [
