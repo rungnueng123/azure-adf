@@ -1,0 +1,27 @@
+{
+	"name": "SmcFtpMps",
+	"properties": {
+		"annotations": [],
+		"type": "FtpServer",
+		"typeProperties": {
+			"host": "GreenOak.se.scb.co.th",
+			"port": "991",
+			"enableSsl": true,
+			"enableServerCertificateValidation": false,
+			"authenticationType": "Basic",
+			"userName": "se\\SMCUsrSit",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "KeyVaultADF",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "smc-msp-sftp-password"
+			}
+		},
+		"connectVia": {
+			"referenceName": "shir",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
