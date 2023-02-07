@@ -2,7 +2,7 @@
 	"name": "Merchant-Portal-Adf",
 	"properties": {
 		"globalConfigurations": {
-			"PipelineBillingEnabled": "true"
+			"PipelineBillingEnabled": "false"
 		}
 	},
 	"location": "southeastasia",
