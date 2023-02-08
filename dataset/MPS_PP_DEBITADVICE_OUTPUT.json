@@ -14,7 +14,10 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": "MPS_PP_DEBITADVICE_TEMP.txt",
-				"folderPath": "mps/output",
+				"folderPath": {
+					"value": "@concat(\n    'mps/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+					"type": "Expression"
+				},
 				"container": "file-upload"
 			},
 			"columnDelimiter": "|",

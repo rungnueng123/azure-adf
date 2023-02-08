@@ -14,7 +14,10 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": "B2K_EDCTERM_TEMP.txt",
-				"folderPath": "b2k/output",
+				"folderPath": {
+					"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+					"type": "Expression"
+				},
 				"container": "file-upload"
 			},
 			"columnDelimiter": "|",

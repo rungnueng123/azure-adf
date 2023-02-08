@@ -17,7 +17,10 @@
 					"value": "@concat(\n    'MPS_PP_DebitAdvice_Info_D',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
 					"type": "Expression"
 				},
-				"folderPath": "mps",
+				"folderPath": {
+					"value": "@concat(\n    'mps/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd')\n)",
+					"type": "Expression"
+				},
 				"container": "file-upload"
 			},
 			"columnDelimiter": "|",
