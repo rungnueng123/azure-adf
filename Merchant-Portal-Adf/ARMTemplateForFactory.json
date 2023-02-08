@@ -3215,7 +3215,10 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"folderPath": "b2k",
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd')\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": ",",
@@ -3246,7 +3249,10 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"folderPath": "mps",
+						"folderPath": {
+							"value": "@concat(\n    'mps/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd')\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": ",",
