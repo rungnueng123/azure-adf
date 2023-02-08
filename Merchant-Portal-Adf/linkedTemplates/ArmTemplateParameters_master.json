@@ -18,7 +18,7 @@
 			"value": ""
 		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
-			"value": "https://scbsmcseafunc001.azurewebsites.net"
+			"value": "https://scbsmcseafunc001streamit.azurewebsites.net"
 		},
 		"B2Kblob_properties_typeProperties_serviceEndpoint": {
 			"value": "https://merchantportalblob.blob.core.windows.net/"

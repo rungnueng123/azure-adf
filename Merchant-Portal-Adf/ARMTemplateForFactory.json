@@ -26,7 +26,7 @@
 		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 			"type": "string",
-			"defaultValue": "https://scbsmcseafunc001.azurewebsites.net"
+			"defaultValue": "https://scbsmcseafunc001streamit.azurewebsites.net"
 		},
 		"B2Kblob_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
@@ -1862,7 +1862,10 @@
 							"value": "@concat(\n    'B2K_EDCMERCH_',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
 							"type": "Expression"
 						},
-						"folderPath": "b2k",
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd')\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
@@ -1898,7 +1901,10 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EDCMERCH_TEMP.txt",
-						"folderPath": "b2k/output",
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
@@ -1930,7 +1936,10 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EDCMERCH_TEMP.txt",
-						"folderPath": "b2k/output",
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
@@ -1965,7 +1974,10 @@
 							"value": "@concat(\n    'B2K_EDCTERM_',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
 							"type": "Expression"
 						},
-						"folderPath": "b2k",
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd')\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
@@ -2001,7 +2013,10 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EDCTERM_TEMP.txt",
-						"folderPath": "b2k/output",
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
@@ -2033,7 +2048,10 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EDCTERM_TEMP.txt",
-						"folderPath": "b2k/output",
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
@@ -2089,7 +2107,10 @@
 							"value": "@concat(\n    'B2K_EMSMRMST_',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
 							"type": "Expression"
 						},
-						"folderPath": "b2k",
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd')\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
@@ -2121,7 +2142,10 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EMSMRMST_TEMP.txt",
-						"folderPath": "b2k/output",
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
@@ -2153,7 +2177,10 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EMSMRMST_TEMP.txt",
-						"folderPath": "b2k/output",
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
@@ -2188,7 +2215,10 @@
 							"value": "@concat(\n    'B2K_MCRMRCH_',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
 							"type": "Expression"
 						},
-						"folderPath": "b2k",
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd')\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
@@ -2224,7 +2254,10 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_MCRMRCH_TEMP.txt",
-						"folderPath": "b2k/output",
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
@@ -2256,7 +2289,10 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_MCRMRCH_TEMP.txt",
-						"folderPath": "b2k/output",
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
@@ -2540,7 +2576,10 @@
 							"value": "@concat(\n    'MPS_ODS_PP_APINOTI_D',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n    '.DAT'\n)",
 							"type": "Expression"
 						},
-						"folderPath": "mps",
+						"folderPath": {
+							"value": "@concat(\n    'mps/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd')\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": ",",
@@ -2600,7 +2639,10 @@
 							"value": "@concat(\n    'MPS_PP_DebitAdvice_Info_D',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
 							"type": "Expression"
 						},
-						"folderPath": "mps",
+						"folderPath": {
+							"value": "@concat(\n    'mps/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd')\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
@@ -2681,7 +2723,10 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "MPS_PP_DEBITADVICE_TEMP.txt",
-						"folderPath": "mps/output",
+						"folderPath": {
+							"value": "@concat(\n    'mps/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
@@ -2713,7 +2758,10 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "MPS_PP_DEBITADVICE_TEMP.txt",
-						"folderPath": "mps/output",
+						"folderPath": {
+							"value": "@concat(\n    'mps/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
@@ -2745,7 +2793,10 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "PP_MerchantFile.txt",
-						"folderPath": "mps",
+						"folderPath": {
+							"value": "@concat(\n    'mps/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd')\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
@@ -2781,7 +2832,10 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "MPS_PP_MERCHANTFILE_TEMP.txt",
-						"folderPath": "mps/output",
+						"folderPath": {
+							"value": "@concat(\n    'mps/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
@@ -2813,7 +2867,10 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "MPS_PP_MERCHANTFILE_TEMP.txt",
-						"folderPath": "mps/output",
+						"folderPath": {
+							"value": "@concat(\n    'mps/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
