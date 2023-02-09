@@ -74,33 +74,6 @@
 				}
 			},
 			{
-				"name": "updateMerchantProfile",
-				"type": "SqlServerStoredProcedure",
-				"dependsOn": [
-					{
-						"activity": "Insert MPS To DB",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"storedProcedureName": "[dbo].[updateMerchantProfile]"
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDB",
-					"type": "LinkedServiceReference"
-				}
-			},
-			{
 				"name": "Set PipelineStep 1",
 				"description": "Error key message",
 				"type": "SetVariable",
@@ -142,7 +115,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "updateMerchantProfile",
+						"activity": "Update Merchant Profile",
 						"dependencyConditions": [
 							"Failed"
 						]
@@ -152,6 +125,26 @@
 				"typeProperties": {
 					"variableName": "pipelineStep",
 					"value": "SMC_MPS"
+				}
+			},
+			{
+				"name": "Update Merchant Profile",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Insert MPS To DB",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Update Merchant Profile",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
 				}
 			}
 		],
