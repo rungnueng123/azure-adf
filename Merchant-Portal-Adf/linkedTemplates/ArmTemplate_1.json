@@ -13,6 +13,39 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM_OUTPUT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EDCTERM"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "B2K_EDCTERM_TEMP.txt",
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
+						"container": "file-upload"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM_TEMP')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -865,95 +898,6 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "MERCHANT_EMAIL_TEMP"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MerchantProfileTempSQL')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDB",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/Database"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "BILLER_MERCHANT_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "ACCOUNT_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "TAX_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "NAME_TH",
-						"type": "varchar"
-					},
-					{
-						"name": "NAME_EN",
-						"type": "varchar"
-					},
-					{
-						"name": "COMPANY_NAME_TH",
-						"type": "varchar"
-					},
-					{
-						"name": "COMPANY_NAME_EN",
-						"type": "varchar"
-					},
-					{
-						"name": "ACTIVE_STATUS",
-						"type": "varchar"
-					},
-					{
-						"name": "UPDATE_DATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "BUSINESS_TYPE",
-						"type": "varchar"
-					},
-					{
-						"name": "REF1_TH",
-						"type": "varchar"
-					},
-					{
-						"name": "REF1_EN",
-						"type": "varchar"
-					},
-					{
-						"name": "REF3",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE",
-						"type": "varchar"
-					},
-					{
-						"name": "REF2_TH",
-						"type": "varchar"
-					},
-					{
-						"name": "REF2_EN",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "MERCHANT_PROFILE_TEMP"
 				}
 			},
 			"dependsOn": []
