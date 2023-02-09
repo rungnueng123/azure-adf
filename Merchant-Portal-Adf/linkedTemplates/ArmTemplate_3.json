@@ -58,21 +58,21 @@
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "Get File From SFTP",
+								"activity": "Set PipelineStep 1",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							},
 							{
-								"activity": "Insert MPS To DB",
+								"activity": "Set PipelineStep 2",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							},
 							{
-								"activity": "updateMerchantProfile",
+								"activity": "Set PipelineStep 3",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -112,11 +112,68 @@
 							"referenceName": "AzureSqlDB",
 							"type": "LinkedServiceReference"
 						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get File From SFTP",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "SMC_MPS"
+						}
+					},
+					{
+						"name": "Set PipelineStep 2",
+						"description": "SMC_MPS",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Insert MPS To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "SMC_MPS"
+						}
+					},
+					{
+						"name": "Set PipelineStep 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "updateMerchantProfile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "SMC_MPS"
+						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					}
 				},
 				"folder": {
 					"name": "SMC_MPS"
@@ -152,15 +209,9 @@
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "Insert MPS To DB",
+								"activity": "Set PipelineStep 2",
 								"dependencyConditions": [
-									"Failed"
-								]
-							},
-							{
-								"activity": "updateMerchantProfile",
-								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -200,11 +251,51 @@
 							"referenceName": "AzureSqlDB",
 							"type": "LinkedServiceReference"
 						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Insert MPS To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "SMC_MPS"
+						}
+					},
+					{
+						"name": "Set PipelineStep 2",
+						"description": "",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "updateMerchantProfile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "SMC_MPS"
+						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					}
 				},
 				"folder": {
 					"name": "SMC_MPS"

@@ -2471,15 +2471,15 @@
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "Execute SCB",
+								"activity": "Set PipelineStep 1",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							},
 							{
-								"activity": "Execute Merchant",
+								"activity": "Set PipelineStep 2",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -2490,13 +2490,57 @@
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
-							"parameters": {}
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Execute SCB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "SMC_AchieveLog"
+						}
+					},
+					{
+						"name": "Set PipelineStep 2",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Execute Merchant",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "SMC_AchieveLog"
 						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					}
 				},
 				"folder": {
 					"name": "SMC_AchieveLog"
@@ -2554,21 +2598,21 @@
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "Get File From SFTP",
+								"activity": "Set PipelineStep 1",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							},
 							{
-								"activity": "Insert B2K To DB",
+								"activity": "Set PipelineStep 2",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							},
 							{
-								"activity": "updateMerchantProfile",
+								"activity": "Set PipelineStep 3",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -2608,11 +2652,68 @@
 							"referenceName": "AzureSqlDB",
 							"type": "LinkedServiceReference"
 						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get File From SFTP",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "SMC_B2K"
+						}
+					},
+					{
+						"name": "Set PipelineStep 2",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Insert B2K To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "SMC_B2K"
+						}
+					},
+					{
+						"name": "Set PipelineStep 3",
+						"description": "SMC_B2K",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "updateMerchantProfile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "SMC_B2K"
+						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					}
 				},
 				"folder": {
 					"name": "SMC_B2K"
@@ -2651,15 +2752,15 @@
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "Insert B2K To DB",
+								"activity": "Set PipelineStep 2",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							},
 							{
-								"activity": "updateMerchantProfile",
+								"activity": "Set PipelineStep 1",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -2699,11 +2800,50 @@
 							"referenceName": "AzureSqlDB",
 							"type": "LinkedServiceReference"
 						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Insert B2K To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "SMC_B2K"
+						}
+					},
+					{
+						"name": "Set PipelineStep 2",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "updateMerchantProfile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "SMC_B2K"
+						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					}
 				},
 				"folder": {
 					"name": "SMC_B2K"
