@@ -1,0 +1,29 @@
+{
+	"name": "SFTPB2K",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Sftp1",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "B2KMPS/SFTP/B2K"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "SftpLocation",
+				"fileName": {
+					"value": "@concat(\n    '*',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n\t'.txt,'\n)",
+					"type": "Expression"
+				},
+				"folderPath": "/Output/Report"
+			},
+			"columnDelimiter": ",",
+			"encodingName": "WINDOWS-874",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
