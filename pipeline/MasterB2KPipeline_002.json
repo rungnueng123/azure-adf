@@ -21,15 +21,15 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "Insert B2K To DB",
+						"activity": "Set PipelineStep 2",
 						"dependencyConditions": [
-							"Failed"
+							"Succeeded"
 						]
 					},
 					{
-						"activity": "updateMerchantProfile",
+						"activity": "Set PipelineStep 1",
 						"dependencyConditions": [
-							"Failed"
+							"Succeeded"
 						]
 					}
 				],
@@ -68,8 +68,47 @@
 					"referenceName": "AzureSqlDB",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "Set PipelineStep 1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Insert B2K To DB",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineStep",
+					"value": "SMC_B2K"
+				}
+			},
+			{
+				"name": "Set PipelineStep 2",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "updateMerchantProfile",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineStep",
+					"value": "SMC_B2K"
+				}
 			}
 		],
+		"variables": {
+			"pipelineStep": {
+				"type": "String"
+			}
+		},
 		"folder": {
 			"name": "SMC_B2K"
 		},

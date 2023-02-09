@@ -21,15 +21,9 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "Insert MPS To DB",
+						"activity": "Set PipelineStep 2",
 						"dependencyConditions": [
-							"Failed"
-						]
-					},
-					{
-						"activity": "updateMerchantProfile",
-						"dependencyConditions": [
-							"Failed"
+							"Succeeded"
 						]
 					}
 				],
@@ -68,8 +62,48 @@
 					"referenceName": "AzureSqlDB",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "Set PipelineStep 1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Insert MPS To DB",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineStep",
+					"value": "SMC_MPS"
+				}
+			},
+			{
+				"name": "Set PipelineStep 2",
+				"description": "",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "updateMerchantProfile",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineStep",
+					"value": "SMC_MPS"
+				}
 			}
 		],
+		"variables": {
+			"pipelineStep": {
+				"type": "String"
+			}
+		},
 		"folder": {
 			"name": "SMC_MPS"
 		},

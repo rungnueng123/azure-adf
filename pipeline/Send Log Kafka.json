@@ -28,9 +28,9 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "Azure Function1",
+						"activity": "Set PipelineStep 1",
 						"dependencyConditions": [
-							"Failed"
+							"Succeeded"
 						]
 					}
 				],
@@ -42,8 +42,30 @@
 					},
 					"waitOnCompletion": true
 				}
+			},
+			{
+				"name": "Set PipelineStep 1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Azure Function1",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineStep",
+					"value": "SMC_PIILog"
+				}
 			}
 		],
+		"variables": {
+			"pipelineStep": {
+				"type": "String"
+			}
+		},
 		"folder": {
 			"name": "SMC_PIILog"
 		},

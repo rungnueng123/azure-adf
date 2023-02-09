@@ -61,6 +61,12 @@
 				}
 			}
 		],
+		"parameters": {
+			"pipelineStep": {
+				"type": "string",
+				"defaultValue": "Send Email"
+			}
+		},
 		"variables": {
 			"hostUrl": {
 				"type": "String",

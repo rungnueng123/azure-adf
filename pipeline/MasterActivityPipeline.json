@@ -40,15 +40,15 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "Execute SCB",
+						"activity": "Set PipelineStep 1",
 						"dependencyConditions": [
-							"Failed"
+							"Succeeded"
 						]
 					},
 					{
-						"activity": "Execute Merchant",
+						"activity": "Set PipelineStep 2",
 						"dependencyConditions": [
-							"Failed"
+							"Succeeded"
 						]
 					}
 				],
@@ -58,10 +58,55 @@
 						"referenceName": "Send Email",
 						"type": "PipelineReference"
 					},
-					"waitOnCompletion": true
+					"waitOnCompletion": true,
+					"parameters": {
+						"pipelineStep": {
+							"value": "@variables('pipelineStep')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Set PipelineStep 1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Execute SCB",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineStep",
+					"value": "SMC_AchieveLog"
+				}
+			},
+			{
+				"name": "Set PipelineStep 2",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Execute Merchant",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineStep",
+					"value": "SMC_AchieveLog"
 				}
 			}
 		],
+		"variables": {
+			"pipelineStep": {
+				"type": "String"
+			}
+		},
 		"folder": {
 			"name": "SMC_AchieveLog"
 		},
