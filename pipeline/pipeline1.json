@@ -1,9 +1,9 @@
 {
-	"name": "SFTP B2K to Blob",
+	"name": "pipeline1",
 	"properties": {
 		"activities": [
 			{
-				"name": "Get File EDCMERCH SFTP To Blob Storage",
+				"name": "PP_APINOTI SFTP To Blob Storage",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -18,14 +18,13 @@
 					"source": {
 						"type": "DelimitedTextSource",
 						"storeSettings": {
-							"type": "FtpReadSettings",
+							"type": "SftpReadSettings",
 							"recursive": true,
 							"wildcardFileName": {
-								"value": "@concat(\n\t'B2K_EDCMERCH_',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
+								"value": "@concat(\n\t'MPS_ODS_PP_APINOTI_D',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n\t'.DAT'\n)",
 								"type": "Expression"
 							},
 							"enablePartitionDiscovery": false,
-							"useBinaryTransfer": true,
 							"disableChunking": false
 						},
 						"formatSettings": {
@@ -55,19 +54,19 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "FTPB2KOnPrem",
+						"referenceName": "SFTPB2K",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "SFTPB2KBlobTemp",
+						"referenceName": "SFTPMPSBlobTemp",
 						"type": "DatasetReference"
 					}
 				]
 			},
 			{
-				"name": "Get File EDCTERM SFTP To Blob Storage_copy1",
+				"name": "PP_DebitAdvice SFTP To Blob Storage_copy1",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -82,14 +81,13 @@
 					"source": {
 						"type": "DelimitedTextSource",
 						"storeSettings": {
-							"type": "FtpReadSettings",
+							"type": "SftpReadSettings",
 							"recursive": true,
 							"wildcardFileName": {
-								"value": "@concat(\n\t'B2K_EDCTERM_',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
+								"value": "@concat(\n\t'MPS_PP_DebitAdvice_Info_D',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
 								"type": "Expression"
 							},
 							"enablePartitionDiscovery": false,
-							"useBinaryTransfer": true,
 							"disableChunking": false
 						},
 						"formatSettings": {
@@ -119,19 +117,19 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "FTPB2KOnPrem",
+						"referenceName": "SFTPB2K",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "SFTPB2KBlobTemp",
+						"referenceName": "SFTPMPSBlobTemp",
 						"type": "DatasetReference"
 					}
 				]
 			},
 			{
-				"name": "Get File EMSMRMST SFTP To Blob Storage_copy1_copy1",
+				"name": "PP_MerchantFile SFTP To Blob Storage_copy1_copy1",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -146,14 +144,13 @@
 					"source": {
 						"type": "DelimitedTextSource",
 						"storeSettings": {
-							"type": "FtpReadSettings",
+							"type": "SftpReadSettings",
 							"recursive": true,
 							"wildcardFileName": {
-								"value": "@concat(\n\t'B2K_EMSMRMST_',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
+								"value": "@concat(\n\t'PP_MerchantFile',\n\t'.txt'\n)",
 								"type": "Expression"
 							},
 							"enablePartitionDiscovery": false,
-							"useBinaryTransfer": true,
 							"disableChunking": false
 						},
 						"formatSettings": {
@@ -183,87 +180,21 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "FTPB2KOnPrem",
+						"referenceName": "SFTPB2K",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "SFTPB2KBlobTemp",
-						"type": "DatasetReference"
-					}
-				]
-			},
-			{
-				"name": "Get File MCRMRCH SFTP To Blob Storage_copy1_copy1_copy1",
-				"type": "Copy",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "FtpReadSettings",
-							"recursive": true,
-							"wildcardFileName": {
-								"value": "@concat(\n\t'B2K_MCRMRCH_',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
-								"type": "Expression"
-							},
-							"enablePartitionDiscovery": false,
-							"useBinaryTransfer": true,
-							"disableChunking": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
-					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "FTPB2KOnPrem",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "SFTPB2KBlobTemp",
+						"referenceName": "SFTPMPSBlobTemp",
 						"type": "DatasetReference"
 					}
 				]
 			}
 		],
 		"folder": {
-			"name": "SMC_B2K"
+			"name": "SMC_MPS"
 		},
-		"annotations": [],
-		"lastPublishTime": "2022-12-13T09:46:48Z"
-	},
-	"type": "Microsoft.DataFactory/factories/pipelines"
+		"annotations": []
+	}
 }
