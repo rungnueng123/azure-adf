@@ -932,6 +932,7 @@
 					},
 					{
 						"name": "Set PipelineStep 1",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -949,6 +950,7 @@
 					},
 					{
 						"name": "Set PipelineStep 2",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1056,7 +1058,12 @@
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
-							"parameters": {}
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
 						}
 					},
 					{
@@ -1088,6 +1095,7 @@
 					},
 					{
 						"name": "Set PipelineStep 1",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1105,6 +1113,7 @@
 					},
 					{
 						"name": "Set PipelineStep 2",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1122,7 +1131,7 @@
 					},
 					{
 						"name": "Set PipelineStep 3",
-						"description": "SMC_B2K",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1206,7 +1215,12 @@
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
-							"parameters": {}
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
 						}
 					},
 					{
@@ -1238,6 +1252,7 @@
 					},
 					{
 						"name": "Set PipelineStep 1",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1255,6 +1270,7 @@
 					},
 					{
 						"name": "Set PipelineStep 2",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1363,7 +1379,12 @@
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
-							"parameters": {}
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
 						}
 					},
 					{
@@ -1395,6 +1416,7 @@
 					},
 					{
 						"name": "Set PipelineStep 1",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1412,7 +1434,7 @@
 					},
 					{
 						"name": "Set PipelineStep 2",
-						"description": "SMC_MPS",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1430,6 +1452,7 @@
 					},
 					{
 						"name": "Set PipelineStep 3",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1498,6 +1521,12 @@
 								"dependencyConditions": [
 									"Succeeded"
 								]
+							},
+							{
+								"activity": "Set PipelineStep 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
 							}
 						],
 						"userProperties": [],
@@ -1507,7 +1536,12 @@
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
-							"parameters": {}
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
 						}
 					},
 					{
@@ -1539,6 +1573,7 @@
 					},
 					{
 						"name": "Set PipelineStep 1",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1556,7 +1591,7 @@
 					},
 					{
 						"name": "Set PipelineStep 2",
-						"description": "",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -2277,7 +2312,7 @@
 								"Content-Type": "application/json"
 							},
 							"body": {
-								"value": "{\n    \"to\": \"rungnueng.luangkamchorn@stream.co.th\",\n    \"subject\": \"subject test\",\n    \"toname\": \"rungnueng\",\n    \"html\": \"test body\",\n    \"container\": \"knowledge-sharing-temp\",\n    \"attachmentPath\": \"/1.png\",\n    \"endpoint\": \"https://merchantportalblob.z23.web.core.windows.net/webcontent/\",\n    \"isSendMST\": true\n}",
+								"value": "@activity('Get Email Body').output.firstRow.ID",
 								"type": "Expression"
 							}
 						}
@@ -2285,7 +2320,14 @@
 					{
 						"name": "Get Key Vault",
 						"type": "WebActivity",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Get Email Body",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -2306,6 +2348,35 @@
 								}
 							}
 						}
+					},
+					{
+						"name": "Get Email Body",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat(\n\t'SELECT TOP 1 ID FROM SCB_ACTIVITY_LOG WHERE ID = ',\n\tpipeline().parameters.pipelineStep\n)",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "EmailBodySql",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
 					}
 				],
 				"policy": {
@@ -2315,7 +2386,7 @@
 				"parameters": {
 					"pipelineStep": {
 						"type": "string",
-						"defaultValue": "Send Email"
+						"defaultValue": "Email Body"
 					}
 				},
 				"variables": {
@@ -2347,6 +2418,7 @@
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/EmailBodySql')]",
 				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
 			]
 		},
@@ -2396,11 +2468,17 @@
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
-							"parameters": {}
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
 						}
 					},
 					{
 						"name": "Set PipelineStep 1",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -2932,6 +3010,140 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/EmailBodySql')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TRANSACTION_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "FUNCTION_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "LOG",
+						"type": "varchar"
+					},
+					{
+						"name": "LOG_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "APPLICATION_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "EVENT",
+						"type": "varchar"
+					},
+					{
+						"name": "EVENT_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "URL",
+						"type": "varchar"
+					},
+					{
+						"name": "MERCHANT_CENTER_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_ADDRESS",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_HOSTNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_USERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_OBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_ADDRESS",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_HOSTNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_USERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_OBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGE_FROM",
+						"type": "text"
+					},
+					{
+						"name": "CHANGE_TO",
+						"type": "text"
+					},
+					{
+						"name": "SEARCH_CRITERIA",
+						"type": "text"
+					},
+					{
+						"name": "RESULT_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "MESSAGE",
+						"type": "text"
+					},
+					{
+						"name": "UPDATE_PII_LOG_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "UPDATE_PII_LOG_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "PII_LOG",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "SCB_ACTIVITY_LOG"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
 			]
 		},
 		{

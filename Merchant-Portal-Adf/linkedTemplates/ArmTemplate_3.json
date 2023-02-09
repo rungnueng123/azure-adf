@@ -83,7 +83,12 @@
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
-							"parameters": {}
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
 						}
 					},
 					{
@@ -115,6 +120,7 @@
 					},
 					{
 						"name": "Set PipelineStep 1",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -132,7 +138,7 @@
 					},
 					{
 						"name": "Set PipelineStep 2",
-						"description": "SMC_MPS",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -150,6 +156,7 @@
 					},
 					{
 						"name": "Set PipelineStep 3",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -213,6 +220,12 @@
 								"dependencyConditions": [
 									"Succeeded"
 								]
+							},
+							{
+								"activity": "Set PipelineStep 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
 							}
 						],
 						"userProperties": [],
@@ -222,7 +235,12 @@
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
-							"parameters": {}
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
 						}
 					},
 					{
@@ -254,6 +272,7 @@
 					},
 					{
 						"name": "Set PipelineStep 1",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -271,7 +290,7 @@
 					},
 					{
 						"name": "Set PipelineStep 2",
-						"description": "",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -302,6 +321,42 @@
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/triggerKafKaLog')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "Send Log Kafka",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-01-09T12:00:00",
+						"timeZone": "SE Asia Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								1
+							]
+						}
+					}
+				}
 			},
 			"dependsOn": []
 		},

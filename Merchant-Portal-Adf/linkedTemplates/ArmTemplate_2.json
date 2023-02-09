@@ -13,134 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDB",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Log/SCB_ACTIVITY_LOG/Database"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "ID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "TRANSACTION_DATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "FUNCTION_CODE",
-						"type": "varchar"
-					},
-					{
-						"name": "LOG",
-						"type": "varchar"
-					},
-					{
-						"name": "LOG_TYPE",
-						"type": "varchar"
-					},
-					{
-						"name": "APPLICATION_NAME",
-						"type": "varchar"
-					},
-					{
-						"name": "EVENT",
-						"type": "varchar"
-					},
-					{
-						"name": "EVENT_TYPE",
-						"type": "varchar"
-					},
-					{
-						"name": "URL",
-						"type": "varchar"
-					},
-					{
-						"name": "MERCHANT_CENTER_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_ADDRESS",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_HOSTNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_USERNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_OBJECT",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_ADDRESS",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_HOSTNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_USERNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_OBJECT",
-						"type": "varchar"
-					},
-					{
-						"name": "CHANGE_FROM",
-						"type": "text"
-					},
-					{
-						"name": "CHANGE_TO",
-						"type": "text"
-					},
-					{
-						"name": "SEARCH_CRITERIA",
-						"type": "text"
-					},
-					{
-						"name": "RESULT_STATUS",
-						"type": "varchar"
-					},
-					{
-						"name": "MESSAGE",
-						"type": "text"
-					},
-					{
-						"name": "UPDATE_PII_LOG_STATUS",
-						"type": "varchar"
-					},
-					{
-						"name": "UPDATE_PII_LOG_DATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "SCB_ACTIVITY_LOG"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG_OUTPUT')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -849,38 +721,144 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/triggerKafKaLog')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
+			"name": "[concat(parameters('factoryName'), '/Send Email')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
+				"activities": [
 					{
-						"pipelineReference": {
-							"referenceName": "Send Log Kafka",
-							"type": "PipelineReference"
+						"name": "Send Email Error",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Get Key Vault",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
 						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2023-01-09T12:00:00",
-						"timeZone": "SE Asia Standard Time",
-						"schedule": {
-							"minutes": [
-								0
-							],
-							"hours": [
-								1
-							]
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@concat(\n    variables('hostUrl'),\n    variables('serviceUrl'),\n\t'?api-version=',\n\tvariables('api-version'),\n\t'&sp=',\n\tvariables('sp'),\n\t'&sv=',\n\tvariables('sv'),\n\t'&sig=',\n\tactivity('Get Key Vault').output.value\n)",
+								"type": "Expression"
+							},
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"body": {
+								"value": "@activity('Get Email Body').output.firstRow.ID",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Get Key Vault",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Get Email Body",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://hfy-smc.vault.azure.net/secrets/smc-azure-lga-sig?api-version=7.0",
+							"method": "GET",
+							"headers": {},
+							"authentication": {
+								"resource": "https://vault.azure.net",
+								"credential": {
+									"referenceName": "AzureManageIdentity",
+									"type": "CredentialReference"
+								}
+							}
+						}
+					},
+					{
+						"name": "Get Email Body",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat(\n\t'SELECT TOP 1 ID FROM SCB_ACTIVITY_LOG WHERE ID = ',\n\tpipeline().parameters.pipelineStep\n)",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "EmailBodySql",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
 						}
 					}
-				}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"pipelineStep": {
+						"type": "string",
+						"defaultValue": "Email Body"
+					}
+				},
+				"variables": {
+					"hostUrl": {
+						"type": "String",
+						"defaultValue": "https://scbsmcsealga001streamit.azurewebsites.net:443"
+					},
+					"serviceUrl": {
+						"type": "String",
+						"defaultValue": "/api/office365/triggers/manual/invoke"
+					},
+					"api-version": {
+						"type": "String",
+						"defaultValue": "2022-05-01"
+					},
+					"sp": {
+						"type": "String",
+						"defaultValue": "/triggers/manual/run"
+					},
+					"sv": {
+						"type": "String",
+						"defaultValue": "1.0"
+					}
+				},
+				"folder": {
+					"name": "SMC_Send_Error_Email"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
 			"dependsOn": []
 		},
@@ -1516,7 +1494,6 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/SCB_ACTIVITY_LOG')]",
 				"[concat(variables('factoryId'), '/datasets/SCB_ACTIVITY_LOG_OUTPUT')]"
 			]
 		},
@@ -2426,6 +2403,97 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Send Log Kafka')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Azure Function1",
+						"type": "AzureFunctionActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"functionName": "piilog",
+							"method": "GET",
+							"headers": {}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureFunctionKafKa",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Send Email Error",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Azure Function1",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "SMC_PIILog"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_PIILog"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/MasterActivityPipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -2500,6 +2568,7 @@
 					},
 					{
 						"name": "Set PipelineStep 1",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -2517,6 +2586,7 @@
 					},
 					{
 						"name": "Set PipelineStep 2",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -2549,7 +2619,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/MERCHANT_ACTIVITY_LOG')]",
-				"[concat(variables('factoryId'), '/pipelines/SCB_ACTIVITY_LOG')]"
+				"[concat(variables('factoryId'), '/pipelines/SCB_ACTIVITY_LOG')]",
+				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
 			]
 		},
 		{
@@ -2623,7 +2694,12 @@
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
-							"parameters": {}
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
 						}
 					},
 					{
@@ -2655,6 +2731,7 @@
 					},
 					{
 						"name": "Set PipelineStep 1",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -2672,6 +2749,7 @@
 					},
 					{
 						"name": "Set PipelineStep 2",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -2689,7 +2767,7 @@
 					},
 					{
 						"name": "Set PipelineStep 3",
-						"description": "SMC_B2K",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -2723,7 +2801,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/SFTP B2K to Blob')]",
-				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]"
+				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]",
+				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
 			]
 		},
 		{
@@ -2771,7 +2850,12 @@
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
-							"parameters": {}
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
 						}
 					},
 					{
@@ -2803,6 +2887,7 @@
 					},
 					{
 						"name": "Set PipelineStep 1",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -2820,6 +2905,7 @@
 					},
 					{
 						"name": "Set PipelineStep 2",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -2852,7 +2938,8 @@
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]"
+				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]",
+				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
 			]
 		}
 	]
