@@ -1,0 +1,20 @@
+{
+	"name": "Sftp1",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "Sftp",
+		"typeProperties": {
+			"host": "94.74.112.153",
+			"port": "2022",
+			"skipHostKeyValidation": true,
+			"authenticationType": "Basic",
+			"userName": "ttb_pbiz_transfer",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJlNDJhOGJiMi04YWFhLTQ1MDEtOTNhNi1lMGY2M2U3ZTEyNzEiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "shir",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
