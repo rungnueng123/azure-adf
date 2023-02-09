@@ -11,9 +11,6 @@
 		"AzureSqlDB_connectionString": {
 			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=hfympcdb.database.windows.net;Initial Catalog=mpcdb"
 		},
-		"Sftp1_password": {
-			"value": ""
-		},
 		"SmcFtpB2k_password": {
 			"value": ""
 		},
@@ -28,12 +25,6 @@
 		},
 		"KeyVaultADF_properties_typeProperties_baseUrl": {
 			"value": "https://hfy-smc.vault.azure.net/"
-		},
-		"Sftp1_properties_typeProperties_host": {
-			"value": "94.74.112.153"
-		},
-		"Sftp1_properties_typeProperties_userName": {
-			"value": "ttb_pbiz_transfer"
 		},
 		"SmcFtpB2k_properties_typeProperties_host": {
 			"value": "benseni.se.scb.co.th"
