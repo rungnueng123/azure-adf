@@ -31,7 +31,7 @@
 						"Content-Type": "application/json"
 					},
 					"body": {
-						"value": "{\n    \"to\": \"rungnueng.luangkamchorn@stream.co.th\",\n    \"subject\": \"subject test\",\n    \"toname\": \"rungnueng\",\n    \"html\": \"test body\",\n    \"container\": \"knowledge-sharing-temp\",\n    \"attachmentPath\": \"/1.png\",\n    \"endpoint\": \"https://merchantportalblob.z23.web.core.windows.net/webcontent/\",\n    \"isSendMST\": true\n}",
+						"value": "@activity('Get Email Body').output.firstRow.ID",
 						"type": "Expression"
 					}
 				}
@@ -39,7 +39,14 @@
 			{
 				"name": "Get Key Vault",
 				"type": "WebActivity",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Get Email Body",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -59,12 +66,40 @@
 						}
 					}
 				}
+			},
+			{
+				"name": "Get Email Body",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "@concat(\n\t'SELECT TOP 1 ID FROM SCB_ACTIVITY_LOG WHERE ID = ',\n\tpipeline().parameters.pipelineStep\n)",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "EmailBodySql",
+						"type": "DatasetReference"
+					}
+				}
 			}
 		],
 		"parameters": {
 			"pipelineStep": {
 				"type": "string",
-				"defaultValue": "Send Email"
+				"defaultValue": "Email Body"
 			}
 		},
 		"variables": {

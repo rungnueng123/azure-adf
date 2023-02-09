@@ -39,7 +39,13 @@
 						"referenceName": "Send Email",
 						"type": "PipelineReference"
 					},
-					"waitOnCompletion": true
+					"waitOnCompletion": true,
+					"parameters": {
+						"pipelineStep": {
+							"value": "@variables('pipelineStep')",
+							"type": "Expression"
+						}
+					}
 				}
 			},
 			{
@@ -71,6 +77,7 @@
 			},
 			{
 				"name": "Set PipelineStep 1",
+				"description": "Error key message",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
@@ -88,6 +95,7 @@
 			},
 			{
 				"name": "Set PipelineStep 2",
+				"description": "Error key message",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
