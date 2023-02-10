@@ -16,14 +16,6 @@
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDB'",
 			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=hfympcdb.database.windows.net;Initial Catalog=mpcdb"
 		},
-		"SmcFtpB2k_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'SmcFtpB2k'"
-		},
-		"SmcFtpMps_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'SmcFtpMps'"
-		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 			"type": "string",
 			"defaultValue": "https://scbsmcseafunc001streamit.azurewebsites.net"
@@ -35,22 +27,6 @@
 		"KeyVaultADF_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://hfy-smc.vault.azure.net/"
-		},
-		"SmcFtpB2k_properties_typeProperties_host": {
-			"type": "string",
-			"defaultValue": "benseni.se.scb.co.th"
-		},
-		"SmcFtpB2k_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "smcadfusr"
-		},
-		"SmcFtpMps_properties_typeProperties_host": {
-			"type": "string",
-			"defaultValue": "GreenOak.se.scb.co.th"
-		},
-		"SmcFtpMps_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "se\\SMCUsrSit"
 		},
 		"az_blob_b2k_properties_privateLinkResourceId": {
 			"type": "string",
@@ -200,62 +176,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SmcFtpB2k')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "FtpServer",
-				"typeProperties": {
-					"host": "[parameters('SmcFtpB2k_properties_typeProperties_host')]",
-					"port": "991",
-					"enableSsl": true,
-					"enableServerCertificateValidation": false,
-					"authenticationType": "Basic",
-					"userName": "[parameters('SmcFtpB2k_properties_typeProperties_userName')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('SmcFtpB2k_password')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "shir",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SmcFtpMps')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "FtpServer",
-				"typeProperties": {
-					"host": "[parameters('SmcFtpMps_properties_typeProperties_host')]",
-					"port": "991",
-					"enableSsl": true,
-					"enableServerCertificateValidation": false,
-					"authenticationType": "Basic",
-					"userName": "[parameters('SmcFtpMps_properties_typeProperties_userName')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('SmcFtpMps_password')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "shir",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]"
 			]
 		},
 		{
@@ -593,6 +513,79 @@
 						"type": "String"
 					}
 				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EMSMRMST')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EMSMRMST"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat(\n    'B2K_EMSMRMST_',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd')\n)",
+							"type": "Expression"
+						},
+						"container": "file-upload"
+					},
+					"columnDelimiter": "|",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EMSMRMST_OUTPUT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EMSMRMST"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "B2K_EMSMRMST_TEMP.txt",
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
+						"container": "file-upload"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"

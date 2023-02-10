@@ -16,14 +16,6 @@
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDB'",
 			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=hfympcdb.database.windows.net;Initial Catalog=mpcdb"
 		},
-		"SmcFtpB2k_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'SmcFtpB2k'"
-		},
-		"SmcFtpMps_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'SmcFtpMps'"
-		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 			"type": "string",
 			"defaultValue": "https://scbsmcseafunc001streamit.azurewebsites.net"
@@ -4185,8 +4177,12 @@
 					"authenticationType": "Basic",
 					"userName": "[parameters('SmcFtpB2k_properties_typeProperties_userName')]",
 					"password": {
-						"type": "SecureString",
-						"value": "[parameters('SmcFtpB2k_password')]"
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "KeyVaultADF",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "smc-b2k-sftp-password"
 					}
 				},
 				"connectVia": {
@@ -4195,7 +4191,8 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]",
+				"[concat(variables('factoryId'), '/linkedServices/KeyVaultADF')]"
 			]
 		},
 		{
@@ -4213,8 +4210,12 @@
 					"authenticationType": "Basic",
 					"userName": "[parameters('SmcFtpMps_properties_typeProperties_userName')]",
 					"password": {
-						"type": "SecureString",
-						"value": "[parameters('SmcFtpMps_password')]"
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "KeyVaultADF",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "smc-msp-sftp-password"
 					}
 				},
 				"connectVia": {
@@ -4223,7 +4224,8 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]",
+				"[concat(variables('factoryId'), '/linkedServices/KeyVaultADF')]"
 			]
 		},
 		{
@@ -4859,7 +4861,7 @@
 						"          NAME_EN = trim(substring(data, 1395, 50)),",
 						"          COMPANY_NAME_TH = trim(substring(data, 170, 50)),",
 						"          COMPANY_NAME_EN = trim(substring(data, 57, 50)),",
-						"          ACTIVE_STATUS = \"Y\",",
+						"          ACTIVE_STATUS = \"A\",",
 						"          UPDATE_DATE = currentTimestamp(),",
 						"          BUSINESS_TYPE = trim(substring(data, 107, 2)),",
 						"          REF1_TH = trim(substring(data, 14837, 50)),",
