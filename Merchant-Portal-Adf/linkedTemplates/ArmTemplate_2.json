@@ -2600,7 +2600,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "SMC_PIILog"
+							"value": "PIILOG_DATA_FAILED"
 						}
 					}
 				],
@@ -2846,7 +2846,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "SMC_B2K"
+							"value": "MPSB2K_SFTP_FAILED"
 						}
 					},
 					{
@@ -2864,7 +2864,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "SMC_B2K"
+							"value": "MPSB2K_DATA_FAILED"
 						}
 					},
 					{
@@ -2882,7 +2882,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "SMC_B2K"
+							"value": "MPSB2K_INTEGRATE_FAILED"
 						}
 					},
 					{
