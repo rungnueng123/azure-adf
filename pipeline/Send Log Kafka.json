@@ -64,7 +64,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"variableName": "pipelineStep",
-					"value": "SMC_PIILog"
+					"value": "PIILOG_DATA_FAILED"
 				}
 			}
 		],
