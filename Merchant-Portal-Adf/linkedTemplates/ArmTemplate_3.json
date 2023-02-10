@@ -13,100 +13,87 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/MasterB2KPipeline_002')]",
+			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Insert B2K To DB",
-						"description": "Process collect B2K file from blob",
-						"type": "ExecutePipeline",
+						"name": "Scb Activity Log",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Set File Name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "SCB_ACTIVITY_LOG_FLOW",
+								"type": "DataFlowReference",
+								"parameters": {
+									"schemaName": "'dbo'",
+									"tableName": "'SCB_ACTIVITY_LOG'",
+									"startDate": {
+										"value": "'@{variables('startDateSCB')}'",
+										"type": "Expression"
+									},
+									"endDate": {
+										"value": "'@{variables('endDateSCB')}'",
+										"type": "Expression"
+									},
+									"columnName": "'TRANSACTION_DATE'",
+									"fileName": {
+										"value": "'@{variables('fileNameSCB')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"querySCBACTIVITYLOG": {},
+									"sink1": {
+										"year": "utcnow('yyyy')",
+										"month": "utcnow('MM')",
+										"date": "utcnow('dd')"
+									}
+								}
+							},
+							"staging": {},
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Set Date Start",
+						"type": "SetVariable",
 						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
-							"pipeline": {
-								"referenceName": "B2K Blob to DB",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Send Email Error",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineStep 2",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Set PipelineStep 1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Send Email",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"pipelineStep": {
-									"value": "@variables('pipelineStep')",
-									"type": "Expression"
-								}
+							"variableName": "startDateSCB",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'yyyy-MM-dd')",
+								"type": "Expression"
 							}
 						}
 					},
 					{
-						"name": "Set PipelineStep 1",
-						"description": "Error key message",
+						"name": "Set Date End",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Insert B2K To DB",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "MPSB2K_DATA_FAILED"
-						}
-					},
-					{
-						"name": "Set PipelineStep 2",
-						"description": "Error key message",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Update Merchant Profile",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "MPSB2K_INTEGRATE_FAILED"
-						}
-					},
-					{
-						"name": "Update Merchant Profile",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Insert B2K To DB",
+								"activity": "Set Date Start",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -114,12 +101,31 @@
 						],
 						"userProperties": [],
 						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Update Merchant Profile",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
+							"variableName": "endDateSCB",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(utcnow(),1,'Year'),'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set File Name",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date End",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "fileNameSCB",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'dd')",
+								"type": "Expression"
+							}
 						}
 					}
 				],
@@ -128,57 +134,50 @@
 					"cancelAfter": {}
 				},
 				"variables": {
-					"pipelineStep": {
+					"startDateSCB": {
+						"type": "String"
+					},
+					"endDateSCB": {
+						"type": "String"
+					},
+					"fileNameSCB": {
 						"type": "String"
 					}
 				},
 				"folder": {
-					"name": "SMC_B2K"
+					"name": "SMC_AchieveLog"
 				},
 				"annotations": [],
-				"lastPublishTime": "2022-12-13T09:46:48Z"
+				"lastPublishTime": "2022-12-16T03:36:51Z"
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/MasterMPSPipeline_001')]",
+			"name": "[concat(parameters('factoryName'), '/Send Log Kafka')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Get File From SFTP",
-						"type": "ExecutePipeline",
+						"name": "Azure Function1",
+						"type": "AzureFunctionActivity",
 						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
 						"userProperties": [],
 						"typeProperties": {
-							"pipeline": {
-								"referenceName": "SFTP MPS to Blob",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Insert MPS To DB",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Get File From SFTP",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "MPS Blob to DB",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
+							"functionName": "piilog",
+							"method": "GET",
+							"headers": {}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureFunctionKafKa",
+							"type": "LinkedServiceReference"
 						}
 					},
 					{
@@ -187,18 +186,6 @@
 						"dependsOn": [
 							{
 								"activity": "Set PipelineStep 1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Set PipelineStep 2",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Set PipelineStep 3",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -225,7 +212,7 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Get File From SFTP",
+								"activity": "Azure Function1",
 								"dependencyConditions": [
 									"Failed"
 								]
@@ -234,64 +221,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "MPSB2K_SFTP_FAILED"
-						}
-					},
-					{
-						"name": "Set PipelineStep 2",
-						"description": "Error key message",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Insert MPS To DB",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "MPSB2K_DATA_FAILED"
-						}
-					},
-					{
-						"name": "Set PipelineStep 3",
-						"description": "Error key message",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Update Merchant Profile",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "MPSB2K_INTEGRATE_FAILED"
-						}
-					},
-					{
-						"name": "Update Merchant Profile",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Insert MPS To DB",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Update Merchant Profile",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
+							"value": "PIILOG_DATA_FAILED"
 						}
 					}
 				],
@@ -305,28 +235,47 @@
 					}
 				},
 				"folder": {
-					"name": "SMC_MPS"
+					"name": "SMC_PIILog"
 				},
-				"annotations": [],
-				"lastPublishTime": "2022-12-13T09:46:48Z"
+				"annotations": []
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/MasterMPSPipeline_002')]",
+			"name": "[concat(parameters('factoryName'), '/MasterActivityPipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Insert MPS To DB",
-						"description": "Process collect MPS file from blob",
+						"name": "Execute Merchant",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute SCB",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "MERCHANT_ACTIVITY_LOG",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute SCB",
 						"type": "ExecutePipeline",
 						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "MPS Blob to DB",
+								"referenceName": "SCB_ACTIVITY_LOG",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -338,13 +287,13 @@
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "Set PipelineStep 2",
+								"activity": "Set PipelineStep 1",
 								"dependencyConditions": [
 									"Succeeded"
 								]
 							},
 							{
-								"activity": "Set PipelineStep 1",
+								"activity": "Set PipelineStep 2",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -371,7 +320,7 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Insert MPS To DB",
+								"activity": "Execute SCB",
 								"dependencyConditions": [
 									"Failed"
 								]
@@ -380,7 +329,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "MPSB2K_DATA_FAILED"
+							"value": "SMC_AchieveLog"
 						}
 					},
 					{
@@ -389,7 +338,7 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Update Merchant Profile",
+								"activity": "Execute Merchant",
 								"dependencyConditions": [
 									"Failed"
 								]
@@ -398,28 +347,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "MPSB2K_INTEGRATE_FAILED"
-						}
-					},
-					{
-						"name": "Update Merchant Profile",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Insert MPS To DB",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Update Merchant Profile",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
+							"value": "SMC_AchieveLog"
 						}
 					}
 				],
@@ -433,10 +361,47 @@
 					}
 				},
 				"folder": {
-					"name": "SMC_MPS"
+					"name": "SMC_AchieveLog"
 				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/SCB_ACTIVITY_LOG')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/triggerB2K')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
 				"annotations": [],
-				"lastPublishTime": "2022-12-13T09:46:48Z"
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "MasterB2KPipeline_001",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-01-17T12:00:00",
+						"timeZone": "SE Asia Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								1
+							]
+						}
+					}
+				}
 			},
 			"dependsOn": []
 		},
@@ -462,6 +427,44 @@
 						"frequency": "Day",
 						"interval": 1,
 						"startTime": "2023-01-09T12:00:00",
+						"timeZone": "SE Asia Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								1
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Send Log Kafka')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/triggerMPS')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "MasterMPSPipeline_001",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-01-09T00:00:00",
 						"timeZone": "SE Asia Standard Time",
 						"schedule": {
 							"minutes": [
@@ -510,80 +513,8 @@
 					}
 				}
 			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/triggerB2K')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "MasterB2KPipeline_001",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2023-01-17T12:00:00",
-						"timeZone": "SE Asia Standard Time",
-						"schedule": {
-							"minutes": [
-								0
-							],
-							"hours": [
-								1
-							]
-						}
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/triggerMPS')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "MasterMPSPipeline_001",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2023-01-09T00:00:00",
-						"timeZone": "SE Asia Standard Time",
-						"schedule": {
-							"minutes": [
-								0
-							],
-							"hours": [
-								1
-							]
-						}
-					}
-				}
-			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/MasterMPSPipeline_001')]"
+				"[concat(variables('factoryId'), '/pipelines/MasterActivityPipeline')]"
 			]
 		}
 	]

@@ -6,28 +6,386 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "Merchant-Portal-Adf"
-		},
-		"SmcFtpB2k_properties_typeProperties_host": {
-			"type": "string",
-			"defaultValue": "benseni.se.scb.co.th"
-		},
-		"SmcFtpB2k_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "smcadfusr"
-		},
-		"SmcFtpMps_properties_typeProperties_host": {
-			"type": "string",
-			"defaultValue": "GreenOak.se.scb.co.th"
-		},
-		"SmcFtpMps_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "se\\SMCUsrSit"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Log/MERCHANT_ACTIVITY_LOG/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TRANSACTION_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "FUNCTION_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "LOG",
+						"type": "varchar"
+					},
+					{
+						"name": "LOG_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "APPLICATION_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "EVENT",
+						"type": "varchar"
+					},
+					{
+						"name": "EVENT_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "URL",
+						"type": "varchar"
+					},
+					{
+						"name": "MERCHANT_CENTER_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_ADDRESS",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_HOSTNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_USERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_OBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_ADDRESS",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_HOSTNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_USERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_OBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGE_FROM",
+						"type": "text"
+					},
+					{
+						"name": "CHANGE_TO",
+						"type": "text"
+					},
+					{
+						"name": "SEARCH_CRITERIA",
+						"type": "text"
+					},
+					{
+						"name": "RESULT_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "MESSAGE",
+						"type": "text"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "MERCHANT_ACTIVITY_LOG"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MerchantEmailTempSQL')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "BILLER_MERCHANT_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "EMAIL_1",
+						"type": "varchar"
+					},
+					{
+						"name": "EMAIL_2",
+						"type": "varchar"
+					},
+					{
+						"name": "EMAIL_3",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "MERCHANT_EMAIL_TEMP"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MerchantProfileTempSQL')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "BILLER_MERCHANT_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "ACCOUNT_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "TAX_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "NAME_TH",
+						"type": "varchar"
+					},
+					{
+						"name": "NAME_EN",
+						"type": "varchar"
+					},
+					{
+						"name": "COMPANY_NAME_TH",
+						"type": "varchar"
+					},
+					{
+						"name": "COMPANY_NAME_EN",
+						"type": "varchar"
+					},
+					{
+						"name": "ACTIVE_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "UPDATE_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "BUSINESS_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "REF1_TH",
+						"type": "varchar"
+					},
+					{
+						"name": "REF1_EN",
+						"type": "varchar"
+					},
+					{
+						"name": "REF3",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE",
+						"type": "varchar"
+					},
+					{
+						"name": "REF2_TH",
+						"type": "varchar"
+					},
+					{
+						"name": "REF2_EN",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "MERCHANT_PROFILE_TEMP"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Log/SCB_ACTIVITY_LOG/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TRANSACTION_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "FUNCTION_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "LOG",
+						"type": "varchar"
+					},
+					{
+						"name": "LOG_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "APPLICATION_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "EVENT",
+						"type": "varchar"
+					},
+					{
+						"name": "EVENT_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "URL",
+						"type": "varchar"
+					},
+					{
+						"name": "MERCHANT_CENTER_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_ADDRESS",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_HOSTNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_USERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_OBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_ADDRESS",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_HOSTNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_USERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_OBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGE_FROM",
+						"type": "text"
+					},
+					{
+						"name": "CHANGE_TO",
+						"type": "text"
+					},
+					{
+						"name": "SEARCH_CRITERIA",
+						"type": "text"
+					},
+					{
+						"name": "RESULT_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "MESSAGE",
+						"type": "text"
+					},
+					{
+						"name": "UPDATE_PII_LOG_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "UPDATE_PII_LOG_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "SCB_ACTIVITY_LOG"
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/SMCSql')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
@@ -117,266 +475,6 @@
 				}
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SmcFtpB2k')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "FtpServer",
-				"typeProperties": {
-					"host": "[parameters('SmcFtpB2k_properties_typeProperties_host')]",
-					"port": "991",
-					"enableSsl": true,
-					"enableServerCertificateValidation": false,
-					"authenticationType": "Basic",
-					"userName": "[parameters('SmcFtpB2k_properties_typeProperties_userName')]",
-					"password": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "KeyVaultADF",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "smc-b2k-sftp-password"
-					}
-				},
-				"connectVia": {
-					"referenceName": "shir",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SmcFtpMps')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "FtpServer",
-				"typeProperties": {
-					"host": "[parameters('SmcFtpMps_properties_typeProperties_host')]",
-					"port": "991",
-					"enableSsl": true,
-					"enableServerCertificateValidation": false,
-					"authenticationType": "Basic",
-					"userName": "[parameters('SmcFtpMps_properties_typeProperties_userName')]",
-					"password": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "KeyVaultADF",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "smc-msp-sftp-password"
-					}
-				},
-				"connectVia": {
-					"referenceName": "shir",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Send Email')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Send Email Error",
-						"type": "WebActivity",
-						"dependsOn": [
-							{
-								"activity": "Get Key Vault",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"url": {
-								"value": "@concat(\n    variables('hostUrl'),\n    variables('serviceUrl'),\n\t'?api-version=',\n\tvariables('api-version'),\n\t'&sp=',\n\tvariables('sp'),\n\t'&sv=',\n\tvariables('sv'),\n\t'&sig=',\n\tactivity('Get Key Vault').output.value\n)",
-								"type": "Expression"
-							},
-							"method": "POST",
-							"headers": {
-								"Content-Type": "application/json"
-							},
-							"body": {
-								"value": "@concat(\n\t'{\"to\": \"',\n\t'lalita.yaichom@stream.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t'\",\"toname\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_TO,\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'\",\"container\": \"knowledge-sharing-temp\",\"attachmentPath\": \"/1.png\",\"endpoint\": \"https://merchantportalblob.z23.web.core.windows.net/webcontent/\",\"isSendMST\": true',\n\t'}'\n)",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Get Key Vault",
-						"type": "WebActivity",
-						"dependsOn": [
-							{
-								"activity": "Get Email Body",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"url": "https://hfy-smc.vault.azure.net/secrets/smc-azure-lga-sig?api-version=7.0",
-							"method": "GET",
-							"headers": {},
-							"authentication": {
-								"resource": "https://vault.azure.net",
-								"credential": {
-									"referenceName": "AzureManageIdentity",
-									"type": "CredentialReference"
-								}
-							}
-						}
-					},
-					{
-						"name": "Get Email Body",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": {
-									"value": "@concat(\n\t'SELECT TOP 1 EMAIL_EVENT, EMAIL_SUBJECT, EMAIL_BODY, ACTIVE_STATUS, EMAIL_TO FROM EMAIL_TEMPLATE WHERE ACTIVE_STATUS = ''A'' AND EMAIL_EVENT = ''',\n\tpipeline().parameters.pipelineStep,\n\t''''\n)",
-									"type": "Expression"
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "EmailBodySql",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"parameters": {
-					"pipelineStep": {
-						"type": "string",
-						"defaultValue": "Email Body"
-					}
-				},
-				"variables": {
-					"hostUrl": {
-						"type": "String",
-						"defaultValue": "https://scbsmcsealga001streamit.azurewebsites.net:443"
-					},
-					"serviceUrl": {
-						"type": "String",
-						"defaultValue": "/api/office365/triggers/manual/invoke"
-					},
-					"api-version": {
-						"type": "String",
-						"defaultValue": "2022-05-01"
-					},
-					"sp": {
-						"type": "String",
-						"defaultValue": "/triggers/manual/run"
-					},
-					"sv": {
-						"type": "String",
-						"defaultValue": "1.0"
-					}
-				},
-				"folder": {
-					"name": "SMC_Send_Error_Email"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-12-13T09:46:48Z"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/FTPB2KOnPrem')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SmcFtpB2k",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/SFTP/B2K"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "FtpServerLocation"
-					},
-					"columnDelimiter": ",",
-					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SmcFtpB2k')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/FTPMPSOnPrem')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SmcFtpMps",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/SFTP/MPS"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "FtpServerLocation"
-					},
-					"columnDelimiter": ",",
-					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SmcFtpMps')]"
-			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/B2K_FixLenghtProcessDataFlow')]",
@@ -574,117 +672,6 @@
 						"          EMAIL_3",
 						"     ),",
 						"     partitionBy('hash', 1)) ~> emsmrmstSink"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG_FLOW')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "Log"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "MERCHANT_ACTIVITY_LOG",
-								"type": "DatasetReference"
-							},
-							"name": "queryMERCHANTACTIVITYLOG"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "MERCHANT_ACTIVITY_LOG_OUTPUT",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "select1"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     schemaName as string ('dbo'),",
-						"     tableName as string ('MERCHANT_ACTIVITY_LOG'),",
-						"     startDate as string ('2021-12-15 00:00:00.000'),",
-						"     endDate as string ('2021-12-16 00:00:00.000'),",
-						"     columnName as string ('TRANSACTION_DATE'),",
-						"     fileName as string ('temp')",
-						"}",
-						"source(output(",
-						"          ID as integer,",
-						"          TRANSACTION_DATE as timestamp,",
-						"          FUNCTION_CODE as string,",
-						"          LOG as string,",
-						"          LOG_TYPE as string,",
-						"          APPLICATION_NAME as string,",
-						"          EVENT as string,",
-						"          EVENT_TYPE as string,",
-						"          URL as string,",
-						"          MERCHANT_CENTER_ID as string,",
-						"          SOURCE_ADDRESS as string,",
-						"          SOURCE_HOSTNAME as string,",
-						"          SOURCE_USERNAME as string,",
-						"          SOURCE_OBJECT as string,",
-						"          DESTINATION_ADDRESS as string,",
-						"          DESTINATION_HOSTNAME as string,",
-						"          DESTINATION_USERNAME as string,",
-						"          DESTINATION_OBJECT as string,",
-						"          CHANGE_FROM as string,",
-						"          CHANGE_TO as string,",
-						"          SEARCH_CRITERIA as string,",
-						"          RESULT_STATUS as string,",
-						"          MESSAGE as string,",
-						"          UPDATE_PII_LOG_STATUS as string,",
-						"          UPDATE_PII_LOG_DATE as timestamp",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     query: (\"SELECT * FROM {$schemaName}.{$tableName} WHERE {$columnName} BETWEEN '{$startDate}' AND '{$endDate}'\"),",
-						"     format: 'query') ~> queryMERCHANTACTIVITYLOG",
-						"queryMERCHANTACTIVITYLOG select(mapColumn(",
-						"          TRANSACTION_DATE,",
-						"          FUNCTION_CODE,",
-						"          LOG,",
-						"          LOG_TYPE,",
-						"          APPLICATION_NAME,",
-						"          EVENT,",
-						"          EVENT_TYPE,",
-						"          URL,",
-						"          MERCHANT_CENTER_ID,",
-						"          SOURCE_ADDRESS,",
-						"          SOURCE_HOSTNAME,",
-						"          SOURCE_USERNAME,",
-						"          SOURCE_OBJECT,",
-						"          DESTINATION_ADDRESS,",
-						"          DESTINATION_HOSTNAME,",
-						"          DESTINATION_USERNAME,",
-						"          DESTINATION_OBJECT,",
-						"          CHANGE_FROM,",
-						"          CHANGE_TO,",
-						"          SEARCH_CRITERIA,",
-						"          RESULT_STATUS,",
-						"          MESSAGE",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select1",
-						"select1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:['\"{$fileName}\" + \".log\"'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> sink1"
 					]
 				}
 			},
@@ -898,120 +885,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG_FLOW')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "Log"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "SCB_ACTIVITY_LOG",
-								"type": "DatasetReference"
-							},
-							"name": "querySCBACTIVITYLOG"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "SCB_ACTIVITY_LOG_OUTPUT",
-								"type": "DatasetReference"
-							},
-							"name": "sink1",
-							"description": "Export data to SCB_ACTIVITY_LOG_OUTPUT"
-						}
-					],
-					"transformations": [
-						{
-							"name": "select1"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     schemaName as string ('dbo'),",
-						"     tableName as string ('SCB_ACTIVITY_LOG'),",
-						"     startDate as string ('2021-12-15 00:00:00.000'),",
-						"     endDate as string ('2021-12-16 00:00:00.000'),",
-						"     columnName as string ('TRANSACTION_DATE'),",
-						"     fileName as string ('temp')",
-						"}",
-						"source(output(",
-						"          ID as integer,",
-						"          TRANSACTION_DATE as timestamp,",
-						"          FUNCTION_CODE as string,",
-						"          LOG as string,",
-						"          LOG_TYPE as string,",
-						"          APPLICATION_NAME as string,",
-						"          EVENT as string,",
-						"          EVENT_TYPE as string,",
-						"          URL as string,",
-						"          MERCHANT_CENTER_ID as string,",
-						"          SOURCE_ADDRESS as string,",
-						"          SOURCE_HOSTNAME as string,",
-						"          SOURCE_USERNAME as string,",
-						"          SOURCE_OBJECT as string,",
-						"          DESTINATION_ADDRESS as string,",
-						"          DESTINATION_HOSTNAME as string,",
-						"          DESTINATION_USERNAME as string,",
-						"          DESTINATION_OBJECT as string,",
-						"          CHANGE_FROM as string,",
-						"          CHANGE_TO as string,",
-						"          SEARCH_CRITERIA as string,",
-						"          RESULT_STATUS as string,",
-						"          MESSAGE as string,",
-						"          UPDATE_PII_LOG_STATUS as string,",
-						"          UPDATE_PII_LOG_DATE as timestamp",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     query: (\"SELECT * FROM {$schemaName}.{$tableName} WHERE {$columnName} BETWEEN '{$startDate}' AND '{$endDate}'\"),",
-						"     format: 'query') ~> querySCBACTIVITYLOG",
-						"querySCBACTIVITYLOG select(mapColumn(",
-						"          TRANSACTION_DATE,",
-						"          FUNCTION_CODE,",
-						"          LOG,",
-						"          LOG_TYPE,",
-						"          APPLICATION_NAME,",
-						"          EVENT,",
-						"          EVENT_TYPE,",
-						"          URL,",
-						"          MERCHANT_CENTER_ID,",
-						"          SOURCE_ADDRESS,",
-						"          SOURCE_HOSTNAME,",
-						"          SOURCE_USERNAME,",
-						"          SOURCE_OBJECT,",
-						"          DESTINATION_ADDRESS,",
-						"          DESTINATION_HOSTNAME,",
-						"          DESTINATION_USERNAME,",
-						"          DESTINATION_OBJECT,",
-						"          CHANGE_FROM,",
-						"          CHANGE_TO,",
-						"          SEARCH_CRITERIA,",
-						"          RESULT_STATUS,",
-						"          MESSAGE,",
-						"          UPDATE_PII_LOG_STATUS,",
-						"          UPDATE_PII_LOG_DATE",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select1",
-						"select1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:[(\"{$fileName}\" + \".log\")],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/B2K Blob to DB')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1044,9 +917,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
 							},
 							"traceLevel": "Fine"
 						}
@@ -1457,145 +1330,9 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/B2K_FixLenghtProcessDataFlow')]",
-				"[concat(variables('factoryId'), '/datasets/TerminalProfileTempSql')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Set Date Start",
-						"type": "SetVariable",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "startDateMerchant",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),6,'Month'),'yyyy-MM-dd')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set Date End",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set Date Start",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "endDateMerchant",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(utcnow(),6,'Month'),'yyyy-MM-dd')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set File Name",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set Date End",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "fileNameMerchant",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),6,'Month'),'dd')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Merchant Activity Log",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "Set File Name",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "MERCHANT_ACTIVITY_LOG_FLOW",
-								"type": "DataFlowReference",
-								"parameters": {
-									"schemaName": "'dbo'",
-									"tableName": "'MERCHANT_ACTIVITY_LOG'",
-									"startDate": {
-										"value": "'@{variables('startDateMerchant')}'",
-										"type": "Expression"
-									},
-									"endDate": {
-										"value": "'@{variables('endDateMerchant')}'",
-										"type": "Expression"
-									},
-									"columnName": "'TRANSACTION_DATE'",
-									"fileName": {
-										"value": "'@{variables('fileNameMerchant')}'",
-										"type": "Expression"
-									}
-								},
-								"datasetParameters": {
-									"queryMERCHANTACTIVITYLOG": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"startDateMerchant": {
-						"type": "String"
-					},
-					"endDateMerchant": {
-						"type": "String"
-					},
-					"fileNameMerchant": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "SMC_AchieveLog"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-12-16T03:36:51Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/MERCHANT_ACTIVITY_LOG_FLOW')]"
+				"[concat(variables('factoryId'), '/datasets/MerchantProfileTempSQL')]",
+				"[concat(variables('factoryId'), '/datasets/TerminalProfileTempSql')]",
+				"[concat(variables('factoryId'), '/datasets/MerchantEmailTempSQL')]"
 			]
 		},
 		{
@@ -1630,9 +1367,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
 							},
 							"traceLevel": "Fine"
 						}
@@ -1771,149 +1508,9 @@
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/MPS_FixLenghtProcessDataFlow')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Scb Activity Log",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "Set File Name",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "SCB_ACTIVITY_LOG_FLOW",
-								"type": "DataFlowReference",
-								"parameters": {
-									"schemaName": "'dbo'",
-									"tableName": "'SCB_ACTIVITY_LOG'",
-									"startDate": {
-										"value": "'@{variables('startDateSCB')}'",
-										"type": "Expression"
-									},
-									"endDate": {
-										"value": "'@{variables('endDateSCB')}'",
-										"type": "Expression"
-									},
-									"columnName": "'TRANSACTION_DATE'",
-									"fileName": {
-										"value": "'@{variables('fileNameSCB')}'",
-										"type": "Expression"
-									}
-								},
-								"datasetParameters": {
-									"querySCBACTIVITYLOG": {},
-									"sink1": {
-										"year": "utcnow('yyyy')",
-										"month": "utcnow('MM')",
-										"date": "utcnow('dd')"
-									}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "Set Date Start",
-						"type": "SetVariable",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "startDateSCB",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'yyyy-MM-dd')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set Date End",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set Date Start",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "endDateSCB",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(utcnow(),1,'Year'),'yyyy-MM-dd')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set File Name",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set Date End",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "fileNameSCB",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'dd')",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"startDateSCB": {
-						"type": "String"
-					},
-					"endDateSCB": {
-						"type": "String"
-					},
-					"fileNameSCB": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "SMC_AchieveLog"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-12-16T03:36:51Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/SCB_ACTIVITY_LOG_FLOW')]"
+				"[concat(variables('factoryId'), '/dataflows/MPS_FixLenghtProcessDataFlow')]",
+				"[concat(variables('factoryId'), '/datasets/MerchantProfileTempSQL')]",
+				"[concat(variables('factoryId'), '/datasets/MerchantEmailTempSQL')]"
 			]
 		},
 		{
@@ -2197,9 +1794,7 @@
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/FTPB2KOnPrem')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/SFTP MPS to Blob')]",
@@ -2416,19 +2011,83 @@
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/FTPMPSOnPrem')]"
-			]
+			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Send Log Kafka')]",
+			"name": "[concat(parameters('factoryName'), '/Send Email')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Azure Function1",
-						"type": "AzureFunctionActivity",
+						"name": "Send Email Error",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Get Key Vault",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@concat(\n    'https://scbsmcsealga001dev.azurewebsites.net:443/api/office365/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=9_O_kZlaVNwOGbQ4-H_tGe4-SXM8UDFZ9WCMRGljI3k'\n)",
+								"type": "Expression"
+							},
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"body": {
+								"value": "@concat(\n\t'{\"to\": \"',\n\t'lalita.yaichom@stream.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t'\",\"toname\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_TO,\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'\",\"container\": \"knowledge-sharing-temp\",\"attachmentPath\": \"/1.png\",\"endpoint\": \"https://merchantportalblob.z23.web.core.windows.net/webcontent/\",\"isSendMST\": true',\n\t'}'\n)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Get Key Vault",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Get Email Body",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://hfy-smc.vault.azure.net/secrets/smc-azure-lga-sig?api-version=7.0",
+							"method": "GET",
+							"headers": {},
+							"authentication": {
+								"resource": "https://vault.azure.net",
+								"credential": {
+									"referenceName": "AzureManageIdentity",
+									"type": "CredentialReference"
+								}
+							}
+						}
+					},
+					{
+						"name": "Get Email Body",
+						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -2439,57 +2098,20 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"functionName": "piilog",
-							"method": "GET",
-							"headers": {}
-						},
-						"linkedServiceName": {
-							"referenceName": "AzureFunctionKafKa",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "Send Email Error",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineStep 1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Send Email",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"pipelineStep": {
-									"value": "@variables('pipelineStep')",
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat(\n\t'SELECT TOP 1 EMAIL_EVENT, EMAIL_SUBJECT, EMAIL_BODY, ACTIVE_STATUS, EMAIL_TO FROM EMAIL_TEMPLATE WHERE ACTIVE_STATUS = ''A'' AND EMAIL_EVENT = ''',\n\tpipeline().parameters.pipelineStep,\n\t''''\n)",
 									"type": "Expression"
-								}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "EmailBodySql",
+								"type": "DatasetReference",
+								"parameters": {}
 							}
-						}
-					},
-					{
-						"name": "Set PipelineStep 1",
-						"description": "Error key message",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Azure Function1",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "PIILOG_DATA_FAILED"
 						}
 					}
 				],
@@ -2497,73 +2119,296 @@
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
-				"variables": {
+				"parameters": {
 					"pipelineStep": {
-						"type": "String"
+						"type": "string",
+						"defaultValue": "Email Body"
+					}
+				},
+				"variables": {
+					"hostUrl": {
+						"type": "String",
+						"defaultValue": "https://scbsmcsealga001streamit.azurewebsites.net:443"
+					},
+					"serviceUrl": {
+						"type": "String",
+						"defaultValue": "/api/office365/triggers/manual/invoke"
+					},
+					"api-version": {
+						"type": "String",
+						"defaultValue": "2022-05-01"
+					},
+					"sp": {
+						"type": "String",
+						"defaultValue": "/triggers/manual/run"
+					},
+					"sv": {
+						"type": "String",
+						"defaultValue": "1.0"
 					}
 				},
 				"folder": {
-					"name": "SMC_PIILog"
+					"name": "SMC_Send_Error_Email"
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG_FLOW')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Log"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "MERCHANT_ACTIVITY_LOG",
+								"type": "DatasetReference"
+							},
+							"name": "queryMERCHANTACTIVITYLOG"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "MERCHANT_ACTIVITY_LOG_OUTPUT",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     schemaName as string ('dbo'),",
+						"     tableName as string ('MERCHANT_ACTIVITY_LOG'),",
+						"     startDate as string ('2021-12-15 00:00:00.000'),",
+						"     endDate as string ('2021-12-16 00:00:00.000'),",
+						"     columnName as string ('TRANSACTION_DATE'),",
+						"     fileName as string ('temp')",
+						"}",
+						"source(output(",
+						"          ID as integer,",
+						"          TRANSACTION_DATE as timestamp,",
+						"          FUNCTION_CODE as string,",
+						"          LOG as string,",
+						"          LOG_TYPE as string,",
+						"          APPLICATION_NAME as string,",
+						"          EVENT as string,",
+						"          EVENT_TYPE as string,",
+						"          URL as string,",
+						"          MERCHANT_CENTER_ID as string,",
+						"          SOURCE_ADDRESS as string,",
+						"          SOURCE_HOSTNAME as string,",
+						"          SOURCE_USERNAME as string,",
+						"          SOURCE_OBJECT as string,",
+						"          DESTINATION_ADDRESS as string,",
+						"          DESTINATION_HOSTNAME as string,",
+						"          DESTINATION_USERNAME as string,",
+						"          DESTINATION_OBJECT as string,",
+						"          CHANGE_FROM as string,",
+						"          CHANGE_TO as string,",
+						"          SEARCH_CRITERIA as string,",
+						"          RESULT_STATUS as string,",
+						"          MESSAGE as string,",
+						"          UPDATE_PII_LOG_STATUS as string,",
+						"          UPDATE_PII_LOG_DATE as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: (\"SELECT * FROM {$schemaName}.{$tableName} WHERE {$columnName} BETWEEN '{$startDate}' AND '{$endDate}'\"),",
+						"     format: 'query') ~> queryMERCHANTACTIVITYLOG",
+						"queryMERCHANTACTIVITYLOG select(mapColumn(",
+						"          TRANSACTION_DATE,",
+						"          FUNCTION_CODE,",
+						"          LOG,",
+						"          LOG_TYPE,",
+						"          APPLICATION_NAME,",
+						"          EVENT,",
+						"          EVENT_TYPE,",
+						"          URL,",
+						"          MERCHANT_CENTER_ID,",
+						"          SOURCE_ADDRESS,",
+						"          SOURCE_HOSTNAME,",
+						"          SOURCE_USERNAME,",
+						"          SOURCE_OBJECT,",
+						"          DESTINATION_ADDRESS,",
+						"          DESTINATION_HOSTNAME,",
+						"          DESTINATION_USERNAME,",
+						"          DESTINATION_OBJECT,",
+						"          CHANGE_FROM,",
+						"          CHANGE_TO,",
+						"          SEARCH_CRITERIA,",
+						"          RESULT_STATUS,",
+						"          MESSAGE",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['\"{$fileName}\" + \".log\"'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
+				"[concat(variables('factoryId'), '/datasets/MERCHANT_ACTIVITY_LOG')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/MasterActivityPipeline')]",
+			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG_FLOW')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Log"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "SCB_ACTIVITY_LOG",
+								"type": "DatasetReference"
+							},
+							"name": "querySCBACTIVITYLOG"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "SCB_ACTIVITY_LOG_OUTPUT",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"description": "Export data to SCB_ACTIVITY_LOG_OUTPUT"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     schemaName as string ('dbo'),",
+						"     tableName as string ('SCB_ACTIVITY_LOG'),",
+						"     startDate as string ('2021-12-15 00:00:00.000'),",
+						"     endDate as string ('2021-12-16 00:00:00.000'),",
+						"     columnName as string ('TRANSACTION_DATE'),",
+						"     fileName as string ('temp')",
+						"}",
+						"source(output(",
+						"          ID as integer,",
+						"          TRANSACTION_DATE as timestamp,",
+						"          FUNCTION_CODE as string,",
+						"          LOG as string,",
+						"          LOG_TYPE as string,",
+						"          APPLICATION_NAME as string,",
+						"          EVENT as string,",
+						"          EVENT_TYPE as string,",
+						"          URL as string,",
+						"          MERCHANT_CENTER_ID as string,",
+						"          SOURCE_ADDRESS as string,",
+						"          SOURCE_HOSTNAME as string,",
+						"          SOURCE_USERNAME as string,",
+						"          SOURCE_OBJECT as string,",
+						"          DESTINATION_ADDRESS as string,",
+						"          DESTINATION_HOSTNAME as string,",
+						"          DESTINATION_USERNAME as string,",
+						"          DESTINATION_OBJECT as string,",
+						"          CHANGE_FROM as string,",
+						"          CHANGE_TO as string,",
+						"          SEARCH_CRITERIA as string,",
+						"          RESULT_STATUS as string,",
+						"          MESSAGE as string,",
+						"          UPDATE_PII_LOG_STATUS as string,",
+						"          UPDATE_PII_LOG_DATE as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: (\"SELECT * FROM {$schemaName}.{$tableName} WHERE {$columnName} BETWEEN '{$startDate}' AND '{$endDate}'\"),",
+						"     format: 'query') ~> querySCBACTIVITYLOG",
+						"querySCBACTIVITYLOG select(mapColumn(",
+						"          TRANSACTION_DATE,",
+						"          FUNCTION_CODE,",
+						"          LOG,",
+						"          LOG_TYPE,",
+						"          APPLICATION_NAME,",
+						"          EVENT,",
+						"          EVENT_TYPE,",
+						"          URL,",
+						"          MERCHANT_CENTER_ID,",
+						"          SOURCE_ADDRESS,",
+						"          SOURCE_HOSTNAME,",
+						"          SOURCE_USERNAME,",
+						"          SOURCE_OBJECT,",
+						"          DESTINATION_ADDRESS,",
+						"          DESTINATION_HOSTNAME,",
+						"          DESTINATION_USERNAME,",
+						"          DESTINATION_OBJECT,",
+						"          CHANGE_FROM,",
+						"          CHANGE_TO,",
+						"          SEARCH_CRITERIA,",
+						"          RESULT_STATUS,",
+						"          MESSAGE,",
+						"          UPDATE_PII_LOG_STATUS,",
+						"          UPDATE_PII_LOG_DATE",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(\"{$fileName}\" + \".log\")],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SCB_ACTIVITY_LOG')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Execute Merchant",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Execute SCB",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "MERCHANT_ACTIVITY_LOG",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Execute SCB",
-						"type": "ExecutePipeline",
+						"name": "Set Date Start",
+						"type": "SetVariable",
 						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
-							"pipeline": {
-								"referenceName": "SCB_ACTIVITY_LOG",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
+							"variableName": "startDateMerchant",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),6,'Month'),'yyyy-MM-dd')",
+								"type": "Expression"
+							}
 						}
 					},
 					{
-						"name": "Send Email Error",
-						"type": "ExecutePipeline",
+						"name": "Set Date End",
+						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Set PipelineStep 1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Set PipelineStep 2",
+								"activity": "Set Date Start",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -2571,53 +2416,84 @@
 						],
 						"userProperties": [],
 						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Send Email",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"pipelineStep": {
-									"value": "@variables('pipelineStep')",
-									"type": "Expression"
+							"variableName": "endDateMerchant",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(utcnow(),6,'Month'),'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set File Name",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date End",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "fileNameMerchant",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),6,'Month'),'dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Merchant Activity Log",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Set File Name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "MERCHANT_ACTIVITY_LOG_FLOW",
+								"type": "DataFlowReference",
+								"parameters": {
+									"schemaName": "'dbo'",
+									"tableName": "'MERCHANT_ACTIVITY_LOG'",
+									"startDate": {
+										"value": "'@{variables('startDateMerchant')}'",
+										"type": "Expression"
+									},
+									"endDate": {
+										"value": "'@{variables('endDateMerchant')}'",
+										"type": "Expression"
+									},
+									"columnName": "'TRANSACTION_DATE'",
+									"fileName": {
+										"value": "'@{variables('fileNameMerchant')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"queryMERCHANTACTIVITYLOG": {},
+									"sink1": {}
 								}
-							}
-						}
-					},
-					{
-						"name": "Set PipelineStep 1",
-						"description": "Error key message",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Execute SCB",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "SMC_AchieveLog"
-						}
-					},
-					{
-						"name": "Set PipelineStep 2",
-						"description": "Error key message",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Execute Merchant",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "SMC_AchieveLog"
+							},
+							"staging": {},
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
+							},
+							"traceLevel": "Fine"
 						}
 					}
 				],
@@ -2626,19 +2502,24 @@
 					"cancelAfter": {}
 				},
 				"variables": {
-					"pipelineStep": {
+					"startDateMerchant": {
+						"type": "String"
+					},
+					"endDateMerchant": {
+						"type": "String"
+					},
+					"fileNameMerchant": {
 						"type": "String"
 					}
 				},
 				"folder": {
 					"name": "SMC_AchieveLog"
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2022-12-16T03:36:51Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/MERCHANT_ACTIVITY_LOG')]",
-				"[concat(variables('factoryId'), '/pipelines/SCB_ACTIVITY_LOG')]",
-				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
+				"[concat(variables('factoryId'), '/dataflows/MERCHANT_ACTIVITY_LOG_FLOW')]"
 			]
 		},
 		{
@@ -2814,6 +2695,444 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/SFTP B2K to Blob')]",
 				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]",
+				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MasterB2KPipeline_002')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Insert B2K To DB",
+						"description": "Process collect B2K file from blob",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "B2K Blob to DB",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Send Email Error",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 2",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set PipelineStep 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Insert B2K To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "MPSB2K_DATA_FAILED"
+						}
+					},
+					{
+						"name": "Set PipelineStep 2",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "MPSB2K_INTEGRATE_FAILED"
+						}
+					},
+					{
+						"name": "Update Merchant Profile",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Insert B2K To DB",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Update Merchant Profile",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_B2K"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]",
+				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MasterMPSPipeline_001')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get File From SFTP",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SFTP MPS to Blob",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Insert MPS To DB",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Get File From SFTP",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "MPS Blob to DB",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Send Email Error",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set PipelineStep 2",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set PipelineStep 3",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get File From SFTP",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "MPSB2K_SFTP_FAILED"
+						}
+					},
+					{
+						"name": "Set PipelineStep 2",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Insert MPS To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "MPSB2K_DATA_FAILED"
+						}
+					},
+					{
+						"name": "Set PipelineStep 3",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "MPSB2K_INTEGRATE_FAILED"
+						}
+					},
+					{
+						"name": "Update Merchant Profile",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Insert MPS To DB",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Update Merchant Profile",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_MPS"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/SFTP MPS to Blob')]",
+				"[concat(variables('factoryId'), '/pipelines/MPS Blob to DB')]",
+				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MasterMPSPipeline_002')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Insert MPS To DB",
+						"description": "Process collect MPS file from blob",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "MPS Blob to DB",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Send Email Error",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 2",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set PipelineStep 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Insert MPS To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "MPSB2K_DATA_FAILED"
+						}
+					},
+					{
+						"name": "Set PipelineStep 2",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "MPSB2K_INTEGRATE_FAILED"
+						}
+					},
+					{
+						"name": "Update Merchant Profile",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Insert MPS To DB",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Update Merchant Profile",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_MPS"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/MPS Blob to DB')]",
 				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
 			]
 		}

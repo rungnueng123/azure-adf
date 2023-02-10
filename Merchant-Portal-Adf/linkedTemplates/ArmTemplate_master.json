@@ -102,9 +102,6 @@
 					"AzureFunctionKafKa_functionKey": {
 						"value": "[parameters('AzureFunctionKafKa_functionKey')]"
 					},
-					"AzureSqlDB_connectionString": {
-						"value": "[parameters('AzureSqlDB_connectionString')]"
-					},
 					"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 						"value": "[parameters('AzureFunctionKafKa_properties_typeProperties_functionAppUrl')]"
 					},
@@ -149,6 +146,21 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"AzureSqlDB_connectionString": {
+						"value": "[parameters('AzureSqlDB_connectionString')]"
+					},
+					"SmcFtpB2k_properties_typeProperties_host": {
+						"value": "[parameters('SmcFtpB2k_properties_typeProperties_host')]"
+					},
+					"SmcFtpB2k_properties_typeProperties_userName": {
+						"value": "[parameters('SmcFtpB2k_properties_typeProperties_userName')]"
+					},
+					"SmcFtpMps_properties_typeProperties_host": {
+						"value": "[parameters('SmcFtpMps_properties_typeProperties_host')]"
+					},
+					"SmcFtpMps_properties_typeProperties_userName": {
+						"value": "[parameters('SmcFtpMps_properties_typeProperties_userName')]"
 					}
 				}
 			},
@@ -169,18 +181,6 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
-					},
-					"SmcFtpB2k_properties_typeProperties_host": {
-						"value": "[parameters('SmcFtpB2k_properties_typeProperties_host')]"
-					},
-					"SmcFtpB2k_properties_typeProperties_userName": {
-						"value": "[parameters('SmcFtpB2k_properties_typeProperties_userName')]"
-					},
-					"SmcFtpMps_properties_typeProperties_host": {
-						"value": "[parameters('SmcFtpMps_properties_typeProperties_host')]"
-					},
-					"SmcFtpMps_properties_typeProperties_userName": {
-						"value": "[parameters('SmcFtpMps_properties_typeProperties_userName')]"
 					}
 				}
 			},

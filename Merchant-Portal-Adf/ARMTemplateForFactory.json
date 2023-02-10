@@ -110,9 +110,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
 							},
 							"traceLevel": "Fine"
 						}
@@ -523,6 +523,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/B2K_FixLenghtProcessDataFlow')]",
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]",
 				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH_TEMP')]",
 				"[concat(variables('factoryId'), '/datasets/MerchantProfileTempSQL')]",
 				"[concat(variables('factoryId'), '/datasets/B2K_EDCTERM_TEMP')]",
@@ -636,9 +637,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
 							},
 							"traceLevel": "Fine"
 						}
@@ -666,7 +667,8 @@
 				"lastPublishTime": "2022-12-16T03:36:51Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/MERCHANT_ACTIVITY_LOG_FLOW')]"
+				"[concat(variables('factoryId'), '/dataflows/MERCHANT_ACTIVITY_LOG_FLOW')]",
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
 			]
 		},
 		{
@@ -701,9 +703,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
 							},
 							"traceLevel": "Fine"
 						}
@@ -843,6 +845,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/MPS_FixLenghtProcessDataFlow')]",
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]",
 				"[concat(variables('factoryId'), '/datasets/MPS_PP_MERCHANTFILE_TEMP')]",
 				"[concat(variables('factoryId'), '/datasets/MerchantProfileTempSQL')]",
 				"[concat(variables('factoryId'), '/datasets/MPS_PP_DEBITADVICE_TEMP')]",
@@ -1653,9 +1656,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
 							},
 							"traceLevel": "Fine"
 						}
@@ -1736,7 +1739,8 @@
 				"lastPublishTime": "2022-12-16T03:36:51Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/SCB_ACTIVITY_LOG_FLOW')]"
+				"[concat(variables('factoryId'), '/dataflows/SCB_ACTIVITY_LOG_FLOW')]",
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
 			]
 		},
 		{
@@ -2272,7 +2276,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"url": {
-								"value": "@concat(\n    variables('hostUrl'),\n    variables('serviceUrl'),\n\t'?api-version=',\n\tvariables('api-version'),\n\t'&sp=',\n\tvariables('sp'),\n\t'&sv=',\n\tvariables('sv'),\n\t'&sig=',\n\tactivity('Get Key Vault').output.value\n)",
+								"value": "@concat(\n    'https://scbsmcsealga001dev.azurewebsites.net:443/api/office365/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=9_O_kZlaVNwOGbQ4-H_tGe4-SXM8UDFZ9WCMRGljI3k'\n)",
 								"type": "Expression"
 							},
 							"method": "POST",
@@ -4117,9 +4121,14 @@
 						"referenceName": "AzureManageIdentity",
 						"type": "CredentialReference"
 					}
+				},
+				"connectVia": {
+					"referenceName": "AzureIR-ManagedVNet",
+					"type": "IntegrationRuntimeReference"
 				}
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]",
 				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
 			]
 		},
