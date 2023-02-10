@@ -1,0 +1,7 @@
+{
+	"name": "AzureSqlDatabase903",
+	"properties": {
+		"privateLinkResourceId": "/subscriptions/28a9cf5d-c706-4531-8650-55d69d7facfb/resourceGroups/RG-SEA-SMC-DEV-001/providers/Microsoft.Sql/servers/scbsmcseaasq001dev",
+		"groupId": "sqlServer"
+	}
+}
