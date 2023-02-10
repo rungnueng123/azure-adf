@@ -9,6 +9,10 @@
 				"referenceName": "AzureManageIdentity",
 				"type": "CredentialReference"
 			}
+		},
+		"connectVia": {
+			"referenceName": "shir",
+			"type": "IntegrationRuntimeReference"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/linkedservices"
