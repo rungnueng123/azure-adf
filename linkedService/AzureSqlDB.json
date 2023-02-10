@@ -9,6 +9,10 @@
 				"referenceName": "AzureManageIdentity",
 				"type": "CredentialReference"
 			}
+		},
+		"connectVia": {
+			"referenceName": "AzureIR-ManagedVNet",
+			"type": "IntegrationRuntimeReference"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/linkedservices"
