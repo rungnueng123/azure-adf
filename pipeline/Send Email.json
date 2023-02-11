@@ -31,7 +31,7 @@
 						"Content-Type": "application/json"
 					},
 					"body": {
-						"value": "@concat(\n\t'{\"to\": \"',\n\t'lalita.yaichom@stream.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t'\",\"toname\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_TO,\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'\",\"container\": \"knowledge-sharing-temp\",\"attachmentPath\": \"/1.png\",\"endpoint\": \"https://merchantportalblob.z23.web.core.windows.net/webcontent/\",\"isSendMST\": true',\n\t'}'\n)",
+						"value": "@concat(\n\t'{\"to\": \"',\n\t'lalita.yaichom@stream.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'\",\"isSendMST\": true',\n\t'}'\n)",
 						"type": "Expression"
 					}
 				}
