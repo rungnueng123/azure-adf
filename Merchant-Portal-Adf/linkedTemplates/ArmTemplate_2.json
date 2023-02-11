@@ -313,6 +313,9 @@
 						}
 					],
 					"scriptLines": [
+						"parameters{",
+						"     UPDATE_DATE as string (toString(currentTimestamp()))",
+						"}",
 						"source(output(",
 						"          data as string",
 						"     ),",
@@ -337,7 +340,7 @@
 						"          NAME_TH = trim(substring(data, 1029, 40)),",
 						"          NAME_EN = trim(substring(data, 23, 30)),",
 						"          ACTIVE_STATUS = case(or(substring(data, 210, 1) == '2', substring(data, 210, 1) == '5'), 'A', 'I'),",
-						"          UPDATE_DATE = currentTimestamp(),",
+						"          UPDATE_DATE = $UPDATE_DATE,",
 						"          SOURCE = \"B2K\") ~> mcrmrchDerivedFixedLength",
 						"mcrmrchDerivedFixedLength select(mapColumn(",
 						"          data,",
@@ -356,7 +359,7 @@
 						"          Terminal_ID = trim(substring(data, 1, 8)),",
 						"          Terminal_Name_EN = trim(substring(data, 30, 30)),",
 						"          Terminal_Name_TH = trim(substring(data, 30, 30)),",
-						"          UPDATE_DATE = currentTimestamp(),",
+						"          UPDATE_DATE = $UPDATE_DATE,",
 						"          ACTIVE_STATUS = 'A') ~> edctermDerivedFixedLength",
 						"edctermDerivedFixedLength select(mapColumn(",
 						"          data,",
@@ -504,6 +507,9 @@
 						}
 					],
 					"scriptLines": [
+						"parameters{",
+						"     UPDATE_DATE as string (toString(currentTimestamp()))",
+						"}",
 						"source(output(",
 						"          data as string",
 						"     ),",
@@ -552,7 +558,7 @@
 						"          COMPANY_NAME_TH = trim(substring(data, 170, 50)),",
 						"          COMPANY_NAME_EN = trim(substring(data, 57, 50)),",
 						"          ACTIVE_STATUS = \"A\",",
-						"          UPDATE_DATE = currentTimestamp(),",
+						"          UPDATE_DATE = $UPDATE_DATE,",
 						"          BUSINESS_TYPE = trim(substring(data, 107, 2)),",
 						"          REF1_TH = trim(substring(data, 14837, 50)),",
 						"          REF1_EN = trim(substring(data, 14787, 50)),",
@@ -647,7 +653,14 @@
 					{
 						"name": "FixLenghtProcessFlow",
 						"type": "ExecuteDataFlow",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Set UPDATE_DATE",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -660,7 +673,12 @@
 							"dataflow": {
 								"referenceName": "B2K_FixLenghtProcessDataFlow",
 								"type": "DataFlowReference",
-								"parameters": {},
+								"parameters": {
+									"UPDATE_DATE": {
+										"value": "'@{variables('UPDATE_DATE')}'",
+										"type": "Expression"
+									}
+								},
 								"datasetParameters": {
 									"mcrmrchFixedLength": {},
 									"edctermFixedLength": {},
@@ -1070,11 +1088,29 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "Set UPDATE_DATE",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "UPDATE_DATE",
+							"value": {
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'yyyy-MM-dd HH:mm:ss')",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"variables": {
+					"UPDATE_DATE": {
+						"type": "String"
+					}
 				},
 				"folder": {
 					"name": "SMC_B2K"
@@ -1096,7 +1132,14 @@
 					{
 						"name": "FixLenghtProcessFlow",
 						"type": "ExecuteDataFlow",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Set UPDATE_DATE",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -1109,7 +1152,9 @@
 							"dataflow": {
 								"referenceName": "MPS_FixLenghtProcessDataFlow",
 								"type": "DataFlowReference",
-								"parameters": {},
+								"parameters": {
+									"UPDATE_DATE": "toString(currentTimestamp())"
+								},
 								"datasetParameters": {
 									"ppmerchantFixedLength": {},
 									"ODSPP": {},
@@ -1247,11 +1292,29 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "Set UPDATE_DATE",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "UPDATE_DATE",
+							"value": {
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'yyyy-MM-dd HH:mm:ss')",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"variables": {
+					"UPDATE_DATE": {
+						"type": "String"
+					}
 				},
 				"folder": {
 					"name": "SMC_MPS"
