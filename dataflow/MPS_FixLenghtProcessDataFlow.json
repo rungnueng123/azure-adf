@@ -69,6 +69,9 @@
 				}
 			],
 			"scriptLines": [
+				"parameters{",
+				"     UPDATE_DATE as string (toString(currentTimestamp()))",
+				"}",
 				"source(output(",
 				"          data as string",
 				"     ),",
@@ -117,7 +120,7 @@
 				"          COMPANY_NAME_TH = trim(substring(data, 170, 50)),",
 				"          COMPANY_NAME_EN = trim(substring(data, 57, 50)),",
 				"          ACTIVE_STATUS = \"A\",",
-				"          UPDATE_DATE = currentTimestamp(),",
+				"          UPDATE_DATE = $UPDATE_DATE,",
 				"          BUSINESS_TYPE = trim(substring(data, 107, 2)),",
 				"          REF1_TH = trim(substring(data, 14837, 50)),",
 				"          REF1_EN = trim(substring(data, 14787, 50)),",

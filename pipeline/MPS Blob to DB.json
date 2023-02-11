@@ -5,7 +5,14 @@
 			{
 				"name": "FixLenghtProcessFlow",
 				"type": "ExecuteDataFlow",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Set UPDATE_DATE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -17,7 +24,10 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "MPS_FixLenghtProcessDataFlow",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"parameters": {
+							"UPDATE_DATE": "toString(currentTimestamp())"
+						}
 					},
 					"integrationRuntime": {
 						"referenceName": "AzureIR-ManagedVNet",
@@ -143,8 +153,26 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "Set UPDATE_DATE",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "UPDATE_DATE",
+					"value": {
+						"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'yyyy-MM-dd HH:mm:ss')",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"variables": {
+			"UPDATE_DATE": {
+				"type": "String"
+			}
+		},
 		"folder": {
 			"name": "SMC_MPS"
 		},

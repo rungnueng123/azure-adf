@@ -79,6 +79,9 @@
 				}
 			],
 			"scriptLines": [
+				"parameters{",
+				"     UPDATE_DATE as string (toString(currentTimestamp()))",
+				"}",
 				"source(output(",
 				"          data as string",
 				"     ),",
@@ -103,7 +106,7 @@
 				"          NAME_TH = trim(substring(data, 1029, 40)),",
 				"          NAME_EN = trim(substring(data, 23, 30)),",
 				"          ACTIVE_STATUS = case(or(substring(data, 210, 1) == '2', substring(data, 210, 1) == '5'), 'A', 'I'),",
-				"          UPDATE_DATE = currentTimestamp(),",
+				"          UPDATE_DATE = $UPDATE_DATE,",
 				"          SOURCE = \"B2K\") ~> mcrmrchDerivedFixedLength",
 				"mcrmrchDerivedFixedLength select(mapColumn(",
 				"          data,",
@@ -122,7 +125,7 @@
 				"          Terminal_ID = trim(substring(data, 1, 8)),",
 				"          Terminal_Name_EN = trim(substring(data, 30, 30)),",
 				"          Terminal_Name_TH = trim(substring(data, 30, 30)),",
-				"          UPDATE_DATE = currentTimestamp(),",
+				"          UPDATE_DATE = $UPDATE_DATE,",
 				"          ACTIVE_STATUS = 'A') ~> edctermDerivedFixedLength",
 				"edctermDerivedFixedLength select(mapColumn(",
 				"          data,",
