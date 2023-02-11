@@ -65,7 +65,7 @@
 				"typeProperties": {
 					"variableName": "startDateSCB",
 					"value": {
-						"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'yyyy-MM-dd')",
+						"value": "@formatDateTime(subtractFromTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),1,'Year'),'yyyy-MM-dd')",
 						"type": "Expression"
 					}
 				}
@@ -85,7 +85,7 @@
 				"typeProperties": {
 					"variableName": "endDateSCB",
 					"value": {
-						"value": "@formatDateTime(subtractFromTime(utcnow(),1,'Year'),'yyyy-MM-dd')",
+						"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Year'),'yyyy-MM-dd')",
 						"type": "Expression"
 					}
 				}

@@ -28,11 +28,11 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
-					"value": "@concat(utcnow('dd'),'.log')",
+					"value": "@concat(formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'), 'dd'),'.log')",
 					"type": "Expression"
 				},
 				"folderPath": {
-					"value": "@concat(\n    'scbstaff_activity_log/',\n    formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'yyyy'),\n    '/',\n    formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'MM')\n)",
+					"value": "@concat(\n    'scbstaff_activity_log/',\n    formatDateTime(subtractFromTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),1,'Year'),'yyyy'),\n    '/',\n    formatDateTime(subtractFromTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),1,'Year'),'MM')\n)",
 					"type": "Expression"
 				},
 				"container": "log"

@@ -14,7 +14,7 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"folderPath": {
-					"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd')\n)",
+					"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd')\n)",
 					"type": "Expression"
 				},
 				"container": "file-upload"
