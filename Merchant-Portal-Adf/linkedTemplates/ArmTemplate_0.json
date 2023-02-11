@@ -227,11 +227,11 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": {
-							"value": "@concat(\n    'B2K_EDCTERM_',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
+							"value": "@concat(\n    'B2K_EDCTERM_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
 							"type": "Expression"
 						},
 						"folderPath": {
-							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd')\n)",
+							"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd')\n)",
 							"type": "Expression"
 						},
 						"container": "file-upload"
@@ -270,7 +270,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EDCTERM_TEMP.txt",
 						"folderPath": {
-							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tgetFutureTime(7, 'Hour', 'dd'),\n\t'/output'\n)",
 							"type": "Expression"
 						},
 						"container": "file-upload"
@@ -305,7 +305,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EDCTERM_TEMP.txt",
 						"folderPath": {
-							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tgetFutureTime(7, 'Hour', 'dd'),\n\t'/output'\n)",
 							"type": "Expression"
 						},
 						"container": "file-upload"
@@ -360,11 +360,11 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": {
-							"value": "@concat(\n    'B2K_EMSMRMST_',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
+							"value": "@concat(\n    'B2K_EMSMRMST_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
 							"type": "Expression"
 						},
 						"folderPath": {
-							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd')\n)",
+							"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd')\n)",
 							"type": "Expression"
 						},
 						"container": "file-upload"
@@ -399,7 +399,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EMSMRMST_TEMP.txt",
 						"folderPath": {
-							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd'),\n\t'/output'\n)",
 							"type": "Expression"
 						},
 						"container": "file-upload"
@@ -434,7 +434,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_EMSMRMST_TEMP.txt",
 						"folderPath": {
-							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd'),\n\t'/output'\n)",
 							"type": "Expression"
 						},
 						"container": "file-upload"
@@ -468,11 +468,11 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": {
-							"value": "@concat(\n    'B2K_MCRMRCH_',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
+							"value": "@concat(\n    'B2K_MCRMRCH_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
 							"type": "Expression"
 						},
 						"folderPath": {
-							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd')\n)",
+							"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd')\n)",
 							"type": "Expression"
 						},
 						"container": "file-upload"
@@ -511,7 +511,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_MCRMRCH_TEMP.txt",
 						"folderPath": {
-							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd'),\n\t'/output'\n)",
 							"type": "Expression"
 						},
 						"container": "file-upload"
@@ -546,7 +546,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "B2K_MCRMRCH_TEMP.txt",
 						"folderPath": {
-							"value": "@concat(\n    'b2k/',\n    formatDateTime(utcnow(), 'yyyy'),\n    '/',\n    formatDateTime(utcnow(), 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(utcnow(),1,'Day'),'dd'),\n\t'/output'\n)",
+							"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd'),\n\t'/output'\n)",
 							"type": "Expression"
 						},
 						"container": "file-upload"
@@ -613,11 +613,11 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": {
-							"value": "@concat(utcnow('dd'),'.log')",
+							"value": "@concat(formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'), 'dd'),'.log')",
 							"type": "Expression"
 						},
 						"folderPath": {
-							"value": "@concat(\n    'merchant_activity_log/',\n    formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'yyyy'),\n    '/',\n    formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'MM')\n)",
+							"value": "@concat(\n    'merchant_activity_log/',\n    formatDateTime(subtractFromTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),1,'Year'),'yyyy'),\n    '/',\n    formatDateTime(subtractFromTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),1,'Year'),'MM')\n)",
 							"type": "Expression"
 						},
 						"container": "log"

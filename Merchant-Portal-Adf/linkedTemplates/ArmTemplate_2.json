@@ -1288,7 +1288,7 @@
 									"type": "FtpReadSettings",
 									"recursive": true,
 									"wildcardFileName": {
-										"value": "@concat(\n\t'B2K_EDCTERM_',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
+										"value": "@concat(\n\t'B2K_EDCTERM_',\n    formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
 										"type": "Expression"
 									},
 									"enablePartitionDiscovery": false,
@@ -1354,7 +1354,7 @@
 									"type": "FtpReadSettings",
 									"recursive": true,
 									"wildcardFileName": {
-										"value": "@concat(\n\t'B2K_EMSMRMST_',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
+										"value": "@concat(\n\t'B2K_EMSMRMST_',\n    formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
 										"type": "Expression"
 									},
 									"enablePartitionDiscovery": false,
@@ -1420,7 +1420,7 @@
 									"type": "FtpReadSettings",
 									"recursive": true,
 									"wildcardFileName": {
-										"value": "@concat(\n\t'B2K_MCRMRCH_',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
+										"value": "@concat(\n\t'B2K_MCRMRCH_',\n    formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
 										"type": "Expression"
 									},
 									"enablePartitionDiscovery": false,
@@ -1505,7 +1505,7 @@
 									"type": "FtpReadSettings",
 									"recursive": true,
 									"wildcardFileName": {
-										"value": "@concat(\n\t'MPS_ODS_PP_APINOTI_D',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n\t'.DAT'\n)",
+										"value": "@concat(\n\t'MPS_ODS_PP_APINOTI_D',\n    formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'yyyyMMdd'),\n\t'.DAT'\n)",
 										"type": "Expression"
 									},
 									"enablePartitionDiscovery": false,
@@ -1571,7 +1571,7 @@
 									"type": "FtpReadSettings",
 									"recursive": true,
 									"wildcardFileName": {
-										"value": "@concat(\n\t'MPS_PP_DebitAdvice_Info_D',\n    formatDateTime(subtractFromTime(utcnow(),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
+										"value": "@concat(\n\t'MPS_PP_DebitAdvice_Info_D',\n    formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
 										"type": "Expression"
 									},
 									"enablePartitionDiscovery": false,
@@ -2080,7 +2080,7 @@
 						"typeProperties": {
 							"variableName": "startDateMerchant",
 							"value": {
-								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),6,'Month'),'yyyy-MM-dd')",
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),6,'Month'),'yyyy-MM-dd')",
 								"type": "Expression"
 							}
 						}
@@ -2100,7 +2100,7 @@
 						"typeProperties": {
 							"variableName": "endDateMerchant",
 							"value": {
-								"value": "@formatDateTime(subtractFromTime(utcnow(),6,'Month'),'yyyy-MM-dd')",
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),6,'Month'),'yyyy-MM-dd')",
 								"type": "Expression"
 							}
 						}
@@ -2889,7 +2889,7 @@
 						"typeProperties": {
 							"variableName": "startDateSCB",
 							"value": {
-								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'yyyy-MM-dd')",
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),1,'Year'),'yyyy-MM-dd')",
 								"type": "Expression"
 							}
 						}
@@ -2909,7 +2909,7 @@
 						"typeProperties": {
 							"variableName": "endDateSCB",
 							"value": {
-								"value": "@formatDateTime(subtractFromTime(utcnow(),1,'Year'),'yyyy-MM-dd')",
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Year'),'yyyy-MM-dd')",
 								"type": "Expression"
 							}
 						}
