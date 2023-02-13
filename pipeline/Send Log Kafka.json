@@ -15,7 +15,10 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"functionName": "piilog",
+					"functionName": {
+						"value": "piilog",
+						"type": "Expression"
+					},
 					"method": "GET"
 				},
 				"linkedServiceName": {
