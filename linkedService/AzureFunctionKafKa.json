@@ -6,8 +6,9 @@
 		"type": "AzureFunction",
 		"typeProperties": {
 			"functionAppUrl": "https://scbsmcseafunc001streamit-test.azurewebsites.net",
-			"authentication": "Anonymous",
-			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQEU5Rjc1Q0EzLThEMzYtNEQ2Mi05NjUzLTdFNTBDMERENkYxOV80MmY3ZjE1ZS1hNWM0LTQzOGMtYjVlOS0zYjE5YWY5MTg1OTQiDQp9"
+			"authentication": "MSI",
+			"resourceId": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit-test",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQEU5Rjc1Q0EzLThEMzYtNEQ2Mi05NjUzLTdFNTBDMERENkYxOV85ODg4NDA4OS1lZDcwLTQ3MTEtYjEyOS1lMjM2ODY1YzIwNTciDQp9"
 		},
 		"connectVia": {
 			"referenceName": "AzureIR-ManagedVNet",
