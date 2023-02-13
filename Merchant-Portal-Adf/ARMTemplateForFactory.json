@@ -18,7 +18,7 @@
 		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 			"type": "string",
-			"defaultValue": "https://scbsmcseafunc001streamit.azurewebsites.net"
+			"defaultValue": "https://scbsmcseafunc001streamit-test.azurewebsites.net"
 		},
 		"B2Kblob_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
@@ -43,6 +43,30 @@
 		"SmcFtpMps_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "se\\SMCUsrSit"
+		},
+		"adf_function_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit"
+		},
+		"adf_function_properties_groupId": {
+			"type": "string",
+			"defaultValue": "sites"
+		},
+		"adf_keyvault_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.KeyVault/vaults/HFY-SMC"
+		},
+		"adf_keyvault_properties_groupId": {
+			"type": "string",
+			"defaultValue": "vault"
+		},
+		"adf_smc_function_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit-test"
+		},
+		"adf_smc_function_properties_groupId": {
+			"type": "string",
+			"defaultValue": "sites"
 		},
 		"az_blob_b2k_properties_privateLinkResourceId": {
 			"type": "string",
@@ -2270,6 +2294,10 @@
 								"value": "@concat(\n    variables('hostUrl'),\n    variables('serviceUrl'),\n\t'?api-version=',\n\tvariables('api-version'),\n\t'&sp=',\n\tvariables('sp'),\n\t'&sv=',\n\tvariables('sv'),\n\t'&sig=',\n\tactivity('Get Key Vault').output.value\n)",
 								"type": "Expression"
 							},
+							"connectVia": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
+							},
 							"method": "POST",
 							"headers": {
 								"Content-Type": "application/json"
@@ -2301,6 +2329,10 @@
 						"userProperties": [],
 						"typeProperties": {
 							"url": "https://hfy-smc.vault.azure.net/secrets/smc-azure-lga-sig?api-version=7.0",
+							"connectVia": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
+							},
 							"method": "GET",
 							"headers": {},
 							"authentication": {
@@ -2381,6 +2413,7 @@
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]",
 				"[concat(variables('factoryId'), '/datasets/EmailBodySql')]",
 				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
 			]
@@ -3982,10 +4015,16 @@
 						"type": "SecureString",
 						"value": "[parameters('AzureFunctionKafKa_functionKey')]"
 					},
-					"authentication": "Anonymous"
+					"authentication": "MSI"
+				},
+				"connectVia": {
+					"referenceName": "AzureIR-ManagedVNet",
+					"type": "IntegrationRuntimeReference"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AzureSqlDB')]",
@@ -4995,6 +5034,42 @@
 			"apiVersion": "2018-06-01",
 			"properties": {},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/default/adf_function')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"privateLinkResourceId": "[parameters('adf_function_properties_privateLinkResourceId')]",
+				"groupId": "[parameters('adf_function_properties_groupId')]"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/default/adf_keyvault')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"privateLinkResourceId": "[parameters('adf_keyvault_properties_privateLinkResourceId')]",
+				"groupId": "[parameters('adf_keyvault_properties_groupId')]"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/default/adf_smc_function')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"privateLinkResourceId": "[parameters('adf_smc_function_properties_privateLinkResourceId')]",
+				"groupId": "[parameters('adf_smc_function_properties_groupId')]"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/default/az_blob_b2k')]",

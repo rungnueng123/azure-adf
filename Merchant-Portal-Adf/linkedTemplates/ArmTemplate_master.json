@@ -18,7 +18,7 @@
 		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 			"type": "string",
-			"defaultValue": "https://scbsmcseafunc001streamit.azurewebsites.net"
+			"defaultValue": "https://scbsmcseafunc001streamit-test.azurewebsites.net"
 		},
 		"B2Kblob_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
@@ -43,6 +43,30 @@
 		"SmcFtpMps_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "se\\SMCUsrSit"
+		},
+		"adf_function_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit"
+		},
+		"adf_function_properties_groupId": {
+			"type": "string",
+			"defaultValue": "sites"
+		},
+		"adf_keyvault_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.KeyVault/vaults/HFY-SMC"
+		},
+		"adf_keyvault_properties_groupId": {
+			"type": "string",
+			"defaultValue": "vault"
+		},
+		"adf_smc_function_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit-test"
+		},
+		"adf_smc_function_properties_groupId": {
+			"type": "string",
+			"defaultValue": "sites"
 		},
 		"az_blob_b2k_properties_privateLinkResourceId": {
 			"type": "string",
@@ -99,17 +123,29 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
-					"AzureFunctionKafKa_functionKey": {
-						"value": "[parameters('AzureFunctionKafKa_functionKey')]"
-					},
-					"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
-						"value": "[parameters('AzureFunctionKafKa_properties_typeProperties_functionAppUrl')]"
-					},
 					"B2Kblob_properties_typeProperties_serviceEndpoint": {
 						"value": "[parameters('B2Kblob_properties_typeProperties_serviceEndpoint')]"
 					},
 					"KeyVaultADF_properties_typeProperties_baseUrl": {
 						"value": "[parameters('KeyVaultADF_properties_typeProperties_baseUrl')]"
+					},
+					"adf_function_properties_privateLinkResourceId": {
+						"value": "[parameters('adf_function_properties_privateLinkResourceId')]"
+					},
+					"adf_function_properties_groupId": {
+						"value": "[parameters('adf_function_properties_groupId')]"
+					},
+					"adf_keyvault_properties_privateLinkResourceId": {
+						"value": "[parameters('adf_keyvault_properties_privateLinkResourceId')]"
+					},
+					"adf_keyvault_properties_groupId": {
+						"value": "[parameters('adf_keyvault_properties_groupId')]"
+					},
+					"adf_smc_function_properties_privateLinkResourceId": {
+						"value": "[parameters('adf_smc_function_properties_privateLinkResourceId')]"
+					},
+					"adf_smc_function_properties_groupId": {
+						"value": "[parameters('adf_smc_function_properties_groupId')]"
 					},
 					"az_blob_b2k_properties_privateLinkResourceId": {
 						"value": "[parameters('az_blob_b2k_properties_privateLinkResourceId')]"
@@ -147,8 +183,14 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"AzureFunctionKafKa_functionKey": {
+						"value": "[parameters('AzureFunctionKafKa_functionKey')]"
+					},
 					"AzureSqlDB_connectionString": {
 						"value": "[parameters('AzureSqlDB_connectionString')]"
+					},
+					"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
+						"value": "[parameters('AzureFunctionKafKa_properties_typeProperties_functionAppUrl')]"
 					},
 					"SmcFtpB2k_properties_typeProperties_host": {
 						"value": "[parameters('SmcFtpB2k_properties_typeProperties_host')]"

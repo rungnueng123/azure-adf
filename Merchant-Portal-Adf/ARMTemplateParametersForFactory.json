@@ -12,7 +12,7 @@
 			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=hfympcdb.database.windows.net;Initial Catalog=mpcdb"
 		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
-			"value": "https://scbsmcseafunc001streamit.azurewebsites.net"
+			"value": "https://scbsmcseafunc001streamit-test.azurewebsites.net"
 		},
 		"B2Kblob_properties_typeProperties_serviceEndpoint": {
 			"value": "https://merchantportalblob.blob.core.windows.net/"
@@ -31,6 +31,24 @@
 		},
 		"SmcFtpMps_properties_typeProperties_userName": {
 			"value": "se\\SMCUsrSit"
+		},
+		"adf_function_properties_privateLinkResourceId": {
+			"value": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit"
+		},
+		"adf_function_properties_groupId": {
+			"value": "sites"
+		},
+		"adf_keyvault_properties_privateLinkResourceId": {
+			"value": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.KeyVault/vaults/HFY-SMC"
+		},
+		"adf_keyvault_properties_groupId": {
+			"value": "vault"
+		},
+		"adf_smc_function_properties_privateLinkResourceId": {
+			"value": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit-test"
+		},
+		"adf_smc_function_properties_groupId": {
+			"value": "sites"
 		},
 		"az_blob_b2k_properties_privateLinkResourceId": {
 			"value": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Storage/storageAccounts/merchantportalblob"
