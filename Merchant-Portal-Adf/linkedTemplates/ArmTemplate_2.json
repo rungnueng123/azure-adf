@@ -13,124 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDB",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Log/MERCHANT_ACTIVITY_LOG/Database"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "ID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "TRANSACTION_DATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "FUNCTION_CODE",
-						"type": "varchar"
-					},
-					{
-						"name": "LOG",
-						"type": "varchar"
-					},
-					{
-						"name": "LOG_TYPE",
-						"type": "varchar"
-					},
-					{
-						"name": "APPLICATION_NAME",
-						"type": "varchar"
-					},
-					{
-						"name": "EVENT",
-						"type": "varchar"
-					},
-					{
-						"name": "EVENT_TYPE",
-						"type": "varchar"
-					},
-					{
-						"name": "URL",
-						"type": "varchar"
-					},
-					{
-						"name": "MERCHANT_CENTER_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_ADDRESS",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_HOSTNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_USERNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_OBJECT",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_ADDRESS",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_HOSTNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_USERNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_OBJECT",
-						"type": "varchar"
-					},
-					{
-						"name": "CHANGE_FROM",
-						"type": "text"
-					},
-					{
-						"name": "CHANGE_TO",
-						"type": "text"
-					},
-					{
-						"name": "SEARCH_CRITERIA",
-						"type": "text"
-					},
-					{
-						"name": "RESULT_STATUS",
-						"type": "varchar"
-					},
-					{
-						"name": "MESSAGE",
-						"type": "text"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "MERCHANT_ACTIVITY_LOG"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/MerchantEmailTempSQL')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -2269,9 +2151,7 @@
 					]
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/MERCHANT_ACTIVITY_LOG')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG_FLOW')]",
@@ -3139,6 +3019,148 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/MPS Blob to DB')]",
 				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Scb Activity Log",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Set File Name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "SCB_ACTIVITY_LOG_FLOW",
+								"type": "DataFlowReference",
+								"parameters": {
+									"schemaName": "'dbo'",
+									"tableName": "'SCB_ACTIVITY_LOG'",
+									"startDate": {
+										"value": "'@{variables('startDateSCB')}'",
+										"type": "Expression"
+									},
+									"endDate": {
+										"value": "'@{variables('endDateSCB')}'",
+										"type": "Expression"
+									},
+									"columnName": "'TRANSACTION_DATE'",
+									"fileName": {
+										"value": "'@{variables('fileNameSCB')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"querySCBACTIVITYLOG": {},
+									"sink1": {
+										"year": "utcnow('yyyy')",
+										"month": "utcnow('MM')",
+										"date": "utcnow('dd')"
+									}
+								}
+							},
+							"staging": {},
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Set Date Start",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "startDateSCB",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),1,'Year'),'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Date End",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date Start",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "endDateSCB",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Year'),'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set File Name",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date End",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "fileNameSCB",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'dd')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"startDateSCB": {
+						"type": "String"
+					},
+					"endDateSCB": {
+						"type": "String"
+					},
+					"fileNameSCB": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_AchieveLog"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-16T03:36:51Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/SCB_ACTIVITY_LOG_FLOW')]"
 			]
 		}
 	]

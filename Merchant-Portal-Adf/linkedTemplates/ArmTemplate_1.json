@@ -42,72 +42,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/B2K_MCRMRCH_TEMP')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "B2Kblob",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/B2K/MCRMRCH"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "B2K_MCRMRCH_TEMP.txt",
-						"folderPath": {
-							"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd'),\n\t'/output'\n)",
-							"type": "Expression"
-						},
-						"container": "file-upload"
-					},
-					"columnDelimiter": "|",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "BILLER_MERCHANT_ID",
-						"type": "String"
-					},
-					{
-						"name": "ACCOUNT_ID",
-						"type": "String"
-					},
-					{
-						"name": "TAX_ID",
-						"type": "String"
-					},
-					{
-						"name": "NAME_TH",
-						"type": "String"
-					},
-					{
-						"name": "NAME_EN",
-						"type": "String"
-					},
-					{
-						"name": "ACTIVE_STATUS",
-						"type": "String"
-					},
-					{
-						"name": "UPDATE_DATE",
-						"type": "String"
-					},
-					{
-						"name": "SOURCE",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG_OUTPUT')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -585,7 +519,8 @@
 						"type": "SecureString",
 						"value": "[parameters('AzureFunctionKafKa_functionKey')]"
 					},
-					"authentication": "MSI"
+					"authentication": "MSI",
+					"resourceId": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit-test"
 				},
 				"connectVia": {
 					"referenceName": "AzureIR-ManagedVNet",
@@ -816,6 +751,126 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/SmcFtpMps')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Log/MERCHANT_ACTIVITY_LOG/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TRANSACTION_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "FUNCTION_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "LOG",
+						"type": "varchar"
+					},
+					{
+						"name": "LOG_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "APPLICATION_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "EVENT",
+						"type": "varchar"
+					},
+					{
+						"name": "EVENT_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "URL",
+						"type": "varchar"
+					},
+					{
+						"name": "MERCHANT_CENTER_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_ADDRESS",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_HOSTNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_USERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_OBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_ADDRESS",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_HOSTNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_USERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_OBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGE_FROM",
+						"type": "text"
+					},
+					{
+						"name": "CHANGE_TO",
+						"type": "text"
+					},
+					{
+						"name": "SEARCH_CRITERIA",
+						"type": "text"
+					},
+					{
+						"name": "RESULT_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "MESSAGE",
+						"type": "text"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "MERCHANT_ACTIVITY_LOG"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
 			]
 		}
 	]

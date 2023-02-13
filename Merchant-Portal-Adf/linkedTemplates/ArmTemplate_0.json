@@ -15,14 +15,6 @@
 			"type": "string",
 			"defaultValue": "https://hfy-smc.vault.azure.net/"
 		},
-		"adf_function_properties_privateLinkResourceId": {
-			"type": "string",
-			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit"
-		},
-		"adf_function_properties_groupId": {
-			"type": "string",
-			"defaultValue": "sites"
-		},
 		"adf_keyvault_properties_privateLinkResourceId": {
 			"type": "string",
 			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.KeyVault/vaults/HFY-SMC"
@@ -176,18 +168,6 @@
 					"type": "ManagedVirtualNetworkReference",
 					"referenceName": "default"
 				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/default/adf_function')]",
-			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"privateLinkResourceId": "[parameters('adf_function_properties_privateLinkResourceId')]",
-				"groupId": "[parameters('adf_function_properties_groupId')]"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
@@ -556,6 +536,74 @@
 					"quoteChar": "\""
 				},
 				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_MCRMRCH_TEMP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/MCRMRCH"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "B2K_MCRMRCH_TEMP.txt",
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
+						"container": "file-upload"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "BILLER_MERCHANT_ID",
+						"type": "String"
+					},
+					{
+						"name": "ACCOUNT_ID",
+						"type": "String"
+					},
+					{
+						"name": "TAX_ID",
+						"type": "String"
+					},
+					{
+						"name": "NAME_TH",
+						"type": "String"
+					},
+					{
+						"name": "NAME_EN",
+						"type": "String"
+					},
+					{
+						"name": "ACTIVE_STATUS",
+						"type": "String"
+					},
+					{
+						"name": "UPDATE_DATE",
+						"type": "String"
+					},
+					{
+						"name": "SOURCE",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
