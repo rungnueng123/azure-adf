@@ -5,7 +5,11 @@
 		"type": "AzureBlobStorage",
 		"typeProperties": {
 			"serviceEndpoint": "https://merchantportalblob.blob.core.windows.net/",
-			"accountKind": "StorageV2"
+			"accountKind": "StorageV2",
+			"credential": {
+				"referenceName": "AzureManageIdentity",
+				"type": "CredentialReference"
+			}
 		},
 		"connectVia": {
 			"referenceName": "AzureIR-ManagedVNet",
