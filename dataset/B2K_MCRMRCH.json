@@ -14,11 +14,11 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
-					"value": "B2K_MCRMRCH_20230213.txt",
+					"value": "@concat(\n    'B2K_MCRMRCH_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
 					"type": "Expression"
 				},
 				"folderPath": {
-					"value": "b2k/2023/02/13",
+					"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd')\n)",
 					"type": "Expression"
 				},
 				"container": "file-upload"
