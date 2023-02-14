@@ -16,6 +16,14 @@
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDB'",
 			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=hfympcdb.database.windows.net;Initial Catalog=mpcdb"
 		},
+		"SmcFtpB2k_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'SmcFtpB2k'"
+		},
+		"SmcFtpMps_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'SmcFtpMps'"
+		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 			"type": "string",
 			"defaultValue": "https://scbsmcseafunc001streamit-test.azurewebsites.net"
@@ -2267,7 +2275,7 @@
 						"type": "WebActivity",
 						"dependsOn": [
 							{
-								"activity": "Get Key Vault",
+								"activity": "Get Email Body",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -2283,11 +2291,11 @@
 						"userProperties": [],
 						"typeProperties": {
 							"url": {
-								"value": "@concat(\n    variables('hostUrl'),\n    variables('serviceUrl'),\n\t'?api-version=',\n\tvariables('api-version'),\n\t'&sp=',\n\tvariables('sp'),\n\t'&sv=',\n\tvariables('sv'),\n\t'&sig=',\n\tactivity('Get Key Vault').output.value\n)",
+								"value": "@concat(\n    variables('hostUrl'),\n    variables('serviceUrl'),\n\t'?api-version=',\n\tvariables('api-version'),\n\t'&sp=',\n\tvariables('sp'),\n\t'&sv=',\n\tvariables('sv'),\n\t'&sig=',\n\tvariables('sig')\n)",
 								"type": "Expression"
 							},
 							"connectVia": {
-								"referenceName": "AzureIR-ManagedVNet",
+								"referenceName": "shir",
 								"type": "IntegrationRuntimeReference"
 							},
 							"method": "POST",
@@ -2303,14 +2311,7 @@
 					{
 						"name": "Get Key Vault",
 						"type": "WebActivity",
-						"dependsOn": [
-							{
-								"activity": "Get Email Body",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
+						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -2327,6 +2328,12 @@
 							},
 							"method": "GET",
 							"headers": {},
+							"linkedServices": [
+								{
+									"referenceName": "KeyVaultADF",
+									"type": "LinkedServiceReference"
+								}
+							],
 							"authentication": {
 								"resource": "https://vault.azure.net",
 								"credential": {
@@ -2396,6 +2403,10 @@
 					"sv": {
 						"type": "String",
 						"defaultValue": "1.0"
+					},
+					"sig": {
+						"type": "String",
+						"defaultValue": "9_O_kZlaVNwOGbQ4-H_tGe4-SXM8UDFZ9WCMRGljI3k"
 					}
 				},
 				"folder": {
@@ -2405,6 +2416,8 @@
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]",
+				"[concat(variables('factoryId'), '/linkedServices/KeyVaultADF')]",
 				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]",
 				"[concat(variables('factoryId'), '/datasets/EmailBodySql')]",
 				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
@@ -4099,12 +4112,8 @@
 					"authenticationType": "Basic",
 					"userName": "[parameters('SmcFtpB2k_properties_typeProperties_userName')]",
 					"password": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "KeyVaultADF",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "smc-b2k-sftp-password"
+						"type": "SecureString",
+						"value": "[parameters('SmcFtpB2k_password')]"
 					}
 				},
 				"connectVia": {
@@ -4113,8 +4122,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]",
-				"[concat(variables('factoryId'), '/linkedServices/KeyVaultADF')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]"
 			]
 		},
 		{
@@ -4132,12 +4140,8 @@
 					"authenticationType": "Basic",
 					"userName": "[parameters('SmcFtpMps_properties_typeProperties_userName')]",
 					"password": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "KeyVaultADF",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "smc-msp-sftp-password"
+						"type": "SecureString",
+						"value": "[parameters('SmcFtpMps_password')]"
 					}
 				},
 				"connectVia": {
@@ -4146,8 +4150,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]",
-				"[concat(variables('factoryId'), '/linkedServices/KeyVaultADF')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]"
 			]
 		},
 		{
