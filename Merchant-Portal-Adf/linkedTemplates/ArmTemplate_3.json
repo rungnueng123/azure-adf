@@ -13,118 +13,19 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/Send Log Kafka')]",
+			"name": "[concat(parameters('factoryName'), '/MasterMPSPipeline_001')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Azure Function1",
-						"type": "AzureFunctionActivity",
+						"name": "Get File From SFTP",
+						"type": "ExecutePipeline",
 						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"functionName": {
-								"value": "piilog",
-								"type": "Expression"
-							},
-							"method": "GET",
-							"headers": {}
-						},
-						"linkedServiceName": {
-							"referenceName": "AzureFunctionKafKa",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "Send Email Error",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineStep 1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "Send Email",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"pipelineStep": {
-									"value": "@variables('pipelineStep')",
-									"type": "Expression"
-								}
-							}
-						}
-					},
-					{
-						"name": "Set PipelineStep 1",
-						"description": "Error key message",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Azure Function1",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "PIILOG_DATA_FAILED"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"pipelineStep": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "SMC_PIILog"
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MasterActivityPipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Execute Merchant",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Execute SCB",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "MERCHANT_ACTIVITY_LOG",
+								"referenceName": "SFTP MPS to Blob",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -132,13 +33,20 @@
 						}
 					},
 					{
-						"name": "Execute SCB",
+						"name": "Insert MPS To DB",
 						"type": "ExecutePipeline",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Get File From SFTP",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "SCB_ACTIVITY_LOG",
+								"referenceName": "MPS Blob to DB",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -160,6 +68,12 @@
 								"dependencyConditions": [
 									"Succeeded"
 								]
+							},
+							{
+								"activity": "Set PipelineStep 3",
+								"dependencyConditions": [
+									"Succeeded"
+								]
 							}
 						],
 						"userProperties": [],
@@ -183,7 +97,7 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Execute SCB",
+								"activity": "Get File From SFTP",
 								"dependencyConditions": [
 									"Failed"
 								]
@@ -192,7 +106,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "SMC_AchieveLog"
+							"value": "MPSB2K_SFTP_FAILED"
 						}
 					},
 					{
@@ -201,7 +115,7 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Execute Merchant",
+								"activity": "Insert MPS To DB",
 								"dependencyConditions": [
 									"Failed"
 								]
@@ -210,7 +124,46 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "SMC_AchieveLog"
+							"value": "MPSB2K_DATA_FAILED"
+						}
+					},
+					{
+						"name": "Set PipelineStep 3",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "MPSB2K_INTEGRATE_FAILED"
+						}
+					},
+					{
+						"name": "Update Merchant Profile",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Insert MPS To DB",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Update Merchant Profile",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
 						}
 					}
 				],
@@ -224,45 +177,138 @@
 					}
 				},
 				"folder": {
-					"name": "SMC_AchieveLog"
+					"name": "SMC_MPS"
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/triggerB2K')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
+			"name": "[concat(parameters('factoryName'), '/MasterMPSPipeline_002')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
+				"activities": [
 					{
-						"pipelineReference": {
-							"referenceName": "MasterB2KPipeline_001",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2023-01-17T12:00:00",
-						"timeZone": "SE Asia Standard Time",
-						"schedule": {
-							"minutes": [
-								0
-							],
-							"hours": [
-								1
-							]
+						"name": "Insert MPS To DB",
+						"description": "Process collect MPS file from blob",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "MPS Blob to DB",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Send Email Error",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 2",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set PipelineStep 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Insert MPS To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "MPSB2K_DATA_FAILED"
+						}
+					},
+					{
+						"name": "Set PipelineStep 2",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "MPSB2K_INTEGRATE_FAILED"
+						}
+					},
+					{
+						"name": "Update Merchant Profile",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Insert MPS To DB",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Update Merchant Profile",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
 						}
 					}
-				}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_MPS"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
 			"dependsOn": []
 		},
@@ -288,44 +334,6 @@
 						"frequency": "Day",
 						"interval": 1,
 						"startTime": "2023-01-09T12:00:00",
-						"timeZone": "SE Asia Standard Time",
-						"schedule": {
-							"minutes": [
-								0
-							],
-							"hours": [
-								1
-							]
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Send Log Kafka')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/triggerMPS')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "MasterMPSPipeline_001",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2023-01-09T00:00:00",
 						"timeZone": "SE Asia Standard Time",
 						"schedule": {
 							"minutes": [
@@ -374,8 +382,80 @@
 					}
 				}
 			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/triggerB2K')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "MasterB2KPipeline_001",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-01-17T12:00:00",
+						"timeZone": "SE Asia Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								1
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/triggerMPS')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "MasterMPSPipeline_001",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-01-09T00:00:00",
+						"timeZone": "SE Asia Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								1
+							]
+						}
+					}
+				}
+			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/MasterActivityPipeline')]"
+				"[concat(variables('factoryId'), '/pipelines/MasterMPSPipeline_001')]"
 			]
 		}
 	]

@@ -129,8 +129,11 @@
 					"SmcFtpMps_password": {
 						"value": "[parameters('SmcFtpMps_password')]"
 					},
-					"B2Kblob_properties_typeProperties_serviceEndpoint": {
-						"value": "[parameters('B2Kblob_properties_typeProperties_serviceEndpoint')]"
+					"AzureFunctionKafKa_functionKey": {
+						"value": "[parameters('AzureFunctionKafKa_functionKey')]"
+					},
+					"AzureSqlDB_connectionString": {
+						"value": "[parameters('AzureSqlDB_connectionString')]"
 					},
 					"KeyVaultADF_properties_typeProperties_baseUrl": {
 						"value": "[parameters('KeyVaultADF_properties_typeProperties_baseUrl')]"
@@ -176,6 +179,12 @@
 					},
 					"az_sql_b2k_properties_fqdns": {
 						"value": "[parameters('az_sql_b2k_properties_fqdns')]"
+					},
+					"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
+						"value": "[parameters('AzureFunctionKafKa_properties_typeProperties_functionAppUrl')]"
+					},
+					"B2Kblob_properties_typeProperties_serviceEndpoint": {
+						"value": "[parameters('B2Kblob_properties_typeProperties_serviceEndpoint')]"
 					}
 				}
 			},
@@ -194,15 +203,6 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
-					},
-					"AzureFunctionKafKa_functionKey": {
-						"value": "[parameters('AzureFunctionKafKa_functionKey')]"
-					},
-					"AzureSqlDB_connectionString": {
-						"value": "[parameters('AzureSqlDB_connectionString')]"
-					},
-					"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
-						"value": "[parameters('AzureFunctionKafKa_properties_typeProperties_functionAppUrl')]"
 					}
 				}
 			},
