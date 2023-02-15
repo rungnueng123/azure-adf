@@ -1,0 +1,18 @@
+{
+	"name": "AzureBlob",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://merchantportalblob.dfs.core.windows.net/",
+			"credential": {
+				"referenceName": "AzureManageIdentity",
+				"type": "CredentialReference"
+			}
+		},
+		"connectVia": {
+			"referenceName": "AzureIR-ManagedVNet",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
