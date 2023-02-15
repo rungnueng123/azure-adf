@@ -76,12 +76,6 @@
 			"type": "string",
 			"defaultValue": "blob"
 		},
-		"az_blob_b2k_properties_fqdns": {
-			"type": "array",
-			"defaultValue": [
-				"merchantportalblob.blob.core.windows.net"
-			]
-		},
 		"az_sql_b2k_properties_privateLinkResourceId": {
 			"type": "string",
 			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Sql/servers/hfympcdb"
@@ -167,9 +161,6 @@
 					},
 					"az_blob_b2k_properties_groupId": {
 						"value": "[parameters('az_blob_b2k_properties_groupId')]"
-					},
-					"az_blob_b2k_properties_fqdns": {
-						"value": "[parameters('az_blob_b2k_properties_fqdns')]"
 					},
 					"az_sql_b2k_properties_privateLinkResourceId": {
 						"value": "[parameters('az_sql_b2k_properties_privateLinkResourceId')]"

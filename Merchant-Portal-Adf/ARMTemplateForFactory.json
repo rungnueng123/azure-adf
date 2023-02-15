@@ -76,12 +76,6 @@
 			"type": "string",
 			"defaultValue": "blob"
 		},
-		"az_blob_b2k_properties_fqdns": {
-			"type": "array",
-			"defaultValue": [
-				"merchantportalblob.blob.core.windows.net"
-			]
-		},
 		"az_sql_b2k_properties_privateLinkResourceId": {
 			"type": "string",
 			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Sql/servers/hfympcdb"
@@ -1157,7 +1151,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "MPSB2K_SFTP_FAILED"
+							"value": "B2K_SFTP_FAILED"
 						}
 					},
 					{
@@ -1175,7 +1169,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "MPSB2K_DATA_FAILED"
+							"value": "B2K_DATA_FAILED"
 						}
 					},
 					{
@@ -1193,7 +1187,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "MPSB2K_INTEGRATE_FAILED"
+							"value": "B2K_INTEGRATE_FAILED"
 						}
 					},
 					{
@@ -1308,7 +1302,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "MPSB2K_DATA_FAILED"
+							"value": "B2K_DATA_FAILED"
 						}
 					},
 					{
@@ -1326,7 +1320,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "MPSB2K_INTEGRATE_FAILED"
+							"value": "B2K_INTEGRATE_FAILED"
 						}
 					},
 					{
@@ -1466,7 +1460,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "MPSB2K_SFTP_FAILED"
+							"value": "MPS_SFTP_FAILED"
 						}
 					},
 					{
@@ -1484,7 +1478,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "MPSB2K_DATA_FAILED"
+							"value": "MPS_DATA_FAILED"
 						}
 					},
 					{
@@ -1502,7 +1496,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "MPSB2K_INTEGRATE_FAILED"
+							"value": "MPS_INTEGRATE_FAILED"
 						}
 					},
 					{
@@ -1617,7 +1611,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "MPSB2K_DATA_FAILED"
+							"value": "MPS_DATA_FAILED"
 						}
 					},
 					{
@@ -1635,7 +1629,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "MPSB2K_INTEGRATE_FAILED"
+							"value": "MPS_INTEGRATE_FAILED"
 						}
 					},
 					{
@@ -5068,8 +5062,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"privateLinkResourceId": "[parameters('az_blob_b2k_properties_privateLinkResourceId')]",
-				"groupId": "[parameters('az_blob_b2k_properties_groupId')]",
-				"fqdns": "[parameters('az_blob_b2k_properties_fqdns')]"
+				"groupId": "[parameters('az_blob_b2k_properties_groupId')]"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"

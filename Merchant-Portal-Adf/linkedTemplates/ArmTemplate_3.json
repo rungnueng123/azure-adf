@@ -106,7 +106,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "MPSB2K_SFTP_FAILED"
+							"value": "MPS_SFTP_FAILED"
 						}
 					},
 					{
@@ -124,7 +124,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "MPSB2K_DATA_FAILED"
+							"value": "MPS_DATA_FAILED"
 						}
 					},
 					{
@@ -142,7 +142,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "MPSB2K_INTEGRATE_FAILED"
+							"value": "MPS_INTEGRATE_FAILED"
 						}
 					},
 					{
@@ -252,7 +252,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "MPSB2K_DATA_FAILED"
+							"value": "MPS_DATA_FAILED"
 						}
 					},
 					{
@@ -270,7 +270,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "MPSB2K_INTEGRATE_FAILED"
+							"value": "MPS_INTEGRATE_FAILED"
 						}
 					},
 					{
