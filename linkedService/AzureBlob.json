@@ -6,7 +6,7 @@
 		"typeProperties": {
 			"url": "https://merchantportalblob.dfs.core.windows.net/",
 			"credential": {
-				"referenceName": "AzureManageIdentity",
+				"referenceName": "credentialblob",
 				"type": "CredentialReference"
 			}
 		},
