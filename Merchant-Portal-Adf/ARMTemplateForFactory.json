@@ -24,6 +24,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'SmcFtpMps'"
 		},
+		"AzureBlob_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://merchantportalblob.dfs.core.windows.net/"
+		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 			"type": "string",
 			"defaultValue": "https://scbsmcseafunc001streamit-test.azurewebsites.net"
@@ -67,6 +71,14 @@
 		"adf_keyvault_properties_groupId": {
 			"type": "string",
 			"defaultValue": "vault"
+		},
+		"az_adl_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Storage/storageAccounts/merchantportalblob"
+		},
+		"az_adl_properties_groupId": {
+			"type": "string",
+			"defaultValue": "dfs"
 		},
 		"az_blob_b2k_properties_privateLinkResourceId": {
 			"type": "string",
@@ -2999,7 +3011,8 @@
 				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
-						"type": "FtpServerLocation"
+						"type": "FtpServerLocation",
+						"folderPath": "NASDATA/B2K/SMC/SIT"
 					},
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
@@ -4002,6 +4015,30 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlob')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AzureBlob_properties_typeProperties_url')]",
+					"credential": {
+						"referenceName": "AzureManageIdentity",
+						"type": "CredentialReference"
+					}
+				},
+				"connectVia": {
+					"referenceName": "AzureIR-ManagedVNet",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]",
+				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
 			]
 		},
 		{
@@ -5051,6 +5088,18 @@
 			"properties": {
 				"privateLinkResourceId": "[parameters('adf_keyvault_properties_privateLinkResourceId')]",
 				"groupId": "[parameters('adf_keyvault_properties_groupId')]"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/default/az_adl')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"privateLinkResourceId": "[parameters('az_adl_properties_privateLinkResourceId')]",
+				"groupId": "[parameters('az_adl_properties_groupId')]"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
