@@ -12,7 +12,8 @@
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
-				"type": "FtpServerLocation"
+				"type": "FtpServerLocation",
+				"folderPath": "NASDATA/B2K/SMC/SIT"
 			},
 			"columnDelimiter": ",",
 			"encodingName": "WINDOWS-874",
