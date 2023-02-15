@@ -1,0 +1,72 @@
+{
+	"name": "MasterTaskExpirePipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Update Task Expire",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Update All Task Expire",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Set PipelineStep 1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Update Task Expire",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineStep",
+					"value": "EXPIRE_JOBS_FAILED"
+				}
+			},
+			{
+				"name": "Send Email Error",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Set PipelineStep 1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Send Email",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"pipelineStep": {
+							"value": "@variables('pipelineStep')",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"variables": {
+			"pipelineStep": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "SMC_Task_Expire"
+		},
+		"annotations": []
+	}
+}
