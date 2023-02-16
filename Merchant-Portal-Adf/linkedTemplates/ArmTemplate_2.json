@@ -13,6 +13,134 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Log/SCB_ACTIVITY_LOG/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TRANSACTION_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "FUNCTION_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "LOG",
+						"type": "varchar"
+					},
+					{
+						"name": "LOG_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "APPLICATION_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "EVENT",
+						"type": "varchar"
+					},
+					{
+						"name": "EVENT_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "URL",
+						"type": "varchar"
+					},
+					{
+						"name": "MERCHANT_CENTER_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_ADDRESS",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_HOSTNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_USERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_OBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_ADDRESS",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_HOSTNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_USERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_OBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGE_FROM",
+						"type": "text"
+					},
+					{
+						"name": "CHANGE_TO",
+						"type": "text"
+					},
+					{
+						"name": "SEARCH_CRITERIA",
+						"type": "text"
+					},
+					{
+						"name": "RESULT_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "MESSAGE",
+						"type": "text"
+					},
+					{
+						"name": "UPDATE_PII_LOG_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "UPDATE_PII_LOG_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "SCB_ACTIVITY_LOG"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG_OUTPUT')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -213,44 +341,6 @@
 					"schema": "dbo",
 					"table": "TERMINAL_PROFILE_TEMP"
 				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Update All Task Expire')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "updateAllTaskExpire",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[updateAllTaskExpired]"
-						},
-						"linkedServiceName": {
-							"referenceName": "AzureSqlDB",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "SMC_Store_Procedure"
-				},
-				"annotations": []
 			},
 			"dependsOn": []
 		},
@@ -751,7 +841,7 @@
 						"typeProperties": {
 							"url": "https://hfy-smc.vault.azure.net/secrets/smc-azure-lga-sig?api-version=7.0",
 							"connectVia": {
-								"referenceName": "AzureIR-ManagedVNet",
+								"referenceName": "shir",
 								"type": "IntegrationRuntimeReference"
 							},
 							"method": "GET",
@@ -1483,6 +1573,7 @@
 				}
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SCB_ACTIVITY_LOG')]",
 				"[concat(variables('factoryId'), '/datasets/SCB_ACTIVITY_LOG_OUTPUT')]"
 			]
 		},
@@ -2307,6 +2398,88 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/MasterTaskExpirePipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Update Task Expire",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Update All Task Expire",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Task Expire",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "EXPIRE_JOBS_FAILED"
+						}
+					},
+					{
+						"name": "Send Email Error",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_Task_Expire"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -2539,89 +2712,6 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MasterTaskExpirePipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Update Task Expire",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Update All Task Expire",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Set PipelineStep 1",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Update Task Expire",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "EXPIRE_JOBS_FAILED"
-						}
-					},
-					{
-						"name": "Send Email Error",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineStep 1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Send Email",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"pipelineStep": {
-									"value": "@variables('pipelineStep')",
-									"type": "Expression"
-								}
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"pipelineStep": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "SMC_Task_Expire"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Update All Task Expire')]",
 				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
 			]
 		},
