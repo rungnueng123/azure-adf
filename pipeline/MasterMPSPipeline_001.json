@@ -36,23 +36,11 @@
 				}
 			},
 			{
-				"name": "Send Email Error",
+				"name": "Send Email Error 1",
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
 						"activity": "Set PipelineStep 1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Set PipelineStep 2",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Set PipelineStep 3",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -145,6 +133,58 @@
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Send Email Error 2",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Set PipelineStep 2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Send Email",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"pipelineStep": {
+							"value": "@variables('pipelineStep')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Send Email Error 3",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Set PipelineStep 3",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Send Email",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"pipelineStep": {
+							"value": "@variables('pipelineStep')",
+							"type": "Expression"
+						}
+					}
 				}
 			}
 		],
