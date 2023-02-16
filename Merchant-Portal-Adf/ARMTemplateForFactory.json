@@ -1009,7 +1009,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "SMC_AchieveLog"
+							"value": "ACHIEVELOG_DATA_FAILED"
 						}
 					},
 					{
@@ -1027,7 +1027,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "SMC_AchieveLog"
+							"value": "ACHIEVELOG_DATA_FAILED"
 						}
 					},
 					{
