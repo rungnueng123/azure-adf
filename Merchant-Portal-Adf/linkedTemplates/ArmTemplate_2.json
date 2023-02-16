@@ -13,134 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDB",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Log/SCB_ACTIVITY_LOG/Database"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "ID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "TRANSACTION_DATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "FUNCTION_CODE",
-						"type": "varchar"
-					},
-					{
-						"name": "LOG",
-						"type": "varchar"
-					},
-					{
-						"name": "LOG_TYPE",
-						"type": "varchar"
-					},
-					{
-						"name": "APPLICATION_NAME",
-						"type": "varchar"
-					},
-					{
-						"name": "EVENT",
-						"type": "varchar"
-					},
-					{
-						"name": "EVENT_TYPE",
-						"type": "varchar"
-					},
-					{
-						"name": "URL",
-						"type": "varchar"
-					},
-					{
-						"name": "MERCHANT_CENTER_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_ADDRESS",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_HOSTNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_USERNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_OBJECT",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_ADDRESS",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_HOSTNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_USERNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_OBJECT",
-						"type": "varchar"
-					},
-					{
-						"name": "CHANGE_FROM",
-						"type": "text"
-					},
-					{
-						"name": "CHANGE_TO",
-						"type": "text"
-					},
-					{
-						"name": "SEARCH_CRITERIA",
-						"type": "text"
-					},
-					{
-						"name": "RESULT_STATUS",
-						"type": "varchar"
-					},
-					{
-						"name": "MESSAGE",
-						"type": "text"
-					},
-					{
-						"name": "UPDATE_PII_LOG_STATUS",
-						"type": "varchar"
-					},
-					{
-						"name": "UPDATE_PII_LOG_DATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "SCB_ACTIVITY_LOG"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG_OUTPUT')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1573,7 +1445,6 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/SCB_ACTIVITY_LOG')]",
 				"[concat(variables('factoryId'), '/datasets/SCB_ACTIVITY_LOG_OUTPUT')]"
 			]
 		},
@@ -2862,6 +2733,222 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/MERCHANT_ACTIVITY_LOG')]",
 				"[concat(variables('factoryId'), '/pipelines/SCB_ACTIVITY_LOG')]",
+				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MasterB2KPipeline_001')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get File From SFTP",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SFTP B2K to Blob",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Insert B2K To DB",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Get File From SFTP",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "B2K Blob to DB",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Send Email Error 1",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get File From SFTP",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "B2K_SFTP_FAILED"
+						}
+					},
+					{
+						"name": "Set PipelineStep 2",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Insert B2K To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "B2K_DATA_FAILED"
+						}
+					},
+					{
+						"name": "Set PipelineStep 3",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "B2K_INTEGRATE_FAILED"
+						}
+					},
+					{
+						"name": "Update Merchant Profile",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Insert B2K To DB",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Update Merchant Profile",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Send Email Error 2",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 2",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Send Email Error 3",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 3",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_B2K"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/SFTP B2K to Blob')]",
+				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]",
 				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
 			]
 		}

@@ -60,14 +60,6 @@
 			"type": "string",
 			"defaultValue": "sites"
 		},
-		"adf_keyvault_properties_privateLinkResourceId": {
-			"type": "string",
-			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.KeyVault/vaults/HFY-SMC"
-		},
-		"adf_keyvault_properties_groupId": {
-			"type": "string",
-			"defaultValue": "vault"
-		},
 		"az_blob_b2k_properties_privateLinkResourceId": {
 			"type": "string",
 			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Storage/storageAccounts/merchantportalblob"
@@ -149,12 +141,6 @@
 					},
 					"adf_func_piilog_properties_groupId": {
 						"value": "[parameters('adf_func_piilog_properties_groupId')]"
-					},
-					"adf_keyvault_properties_privateLinkResourceId": {
-						"value": "[parameters('adf_keyvault_properties_privateLinkResourceId')]"
-					},
-					"adf_keyvault_properties_groupId": {
-						"value": "[parameters('adf_keyvault_properties_groupId')]"
 					},
 					"az_blob_b2k_properties_privateLinkResourceId": {
 						"value": "[parameters('az_blob_b2k_properties_privateLinkResourceId')]"
