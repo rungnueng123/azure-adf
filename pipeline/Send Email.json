@@ -55,7 +55,7 @@
 				"typeProperties": {
 					"url": "https://hfy-smc.vault.azure.net/secrets/smc-azure-lga-sig?api-version=7.0",
 					"connectVia": {
-						"referenceName": "AzureIR-ManagedVNet",
+						"referenceName": "shir",
 						"type": "IntegrationRuntimeReference"
 					},
 					"method": "GET",
