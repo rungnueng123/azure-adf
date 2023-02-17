@@ -5,20 +5,6 @@
 			"referenceName": "B2Kblob",
 			"type": "LinkedServiceReference"
 		},
-		"parameters": {
-			"year": {
-				"type": "string",
-				"defaultValue": "formatDateTime(subtractFromTime(utcnow(),1,'Year'),'yyyy')"
-			},
-			"month": {
-				"type": "string",
-				"defaultValue": "utcnow('MM')"
-			},
-			"date": {
-				"type": "string",
-				"defaultValue": "utcnow('dd')"
-			}
-		},
 		"folder": {
 			"name": "Log/SCB_ACTIVITY_LOG/OUTPUT"
 		},

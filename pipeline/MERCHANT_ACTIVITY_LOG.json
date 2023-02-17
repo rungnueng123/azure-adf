@@ -23,7 +23,7 @@
 				}
 			},
 			{
-				"name": "Copy data1",
+				"name": "Backup Merchant Log",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -122,9 +122,6 @@
 		"variables": {
 			"fileNameMerchant": {
 				"type": "String"
-			},
-			"dataLogMerchant": {
-				"type": "Array"
 			},
 			"startDateMerchant": {
 				"type": "String"
