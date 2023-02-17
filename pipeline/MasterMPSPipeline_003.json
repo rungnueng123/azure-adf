@@ -1,0 +1,75 @@
+{
+	"name": "MasterMPSPipeline_003",
+	"properties": {
+		"activities": [
+			{
+				"name": "Set PipelineStep 2",
+				"description": "Error key message",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Update Merchant Profile",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineStep",
+					"value": "MPS_INTEGRATE_FAILED"
+				}
+			},
+			{
+				"name": "Update Merchant Profile",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Update Merchant Profile",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Send Email Error 3",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Set PipelineStep 2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Send Email",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"pipelineStep": {
+							"value": "@variables('pipelineStep')",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"variables": {
+			"pipelineStep": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "SMC_MPS"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-13T09:46:48Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
