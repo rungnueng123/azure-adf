@@ -35,7 +35,7 @@
 						"Content-Type": "application/json"
 					},
 					"body": {
-						"value": "@concat(\n\t'{\"to\": \"',\n\t'lalita.yaichom@stream.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'\",\"isSendMST\": true',\n\t'}'\n)",
+						"value": "@concat(\n\t'{\"to\": \"',\n\t'lalita.yaichom@stream.co.th,rungnueng.luangkamchorn@stream.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'\",\"isSendMST\": true',\n\t'}'\n)",
 						"type": "Expression"
 					}
 				}
