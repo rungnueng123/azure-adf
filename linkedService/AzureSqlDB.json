@@ -11,7 +11,7 @@
 			}
 		},
 		"connectVia": {
-			"referenceName": "AzureIR-ManagedVNet",
+			"referenceName": "shir",
 			"type": "IntegrationRuntimeReference"
 		}
 	},
