@@ -13,6 +13,72 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/MPS_PP_MERCHANTFILE_OUTPUT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/MPS/TSBP1VNP"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "MPS_PP_MERCHANTFILE_TEMP.txt",
+						"folderPath": {
+							"value": "@concat(\n    'mps/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
+						"container": "file-upload"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MPS_PP_MERCHANTFILE_TEMP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/MPS/TSBP1VNP"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "MPS_PP_MERCHANTFILE_TEMP.txt",
+						"folderPath": {
+							"value": "@concat(\n    'mps/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
+						"container": "file-upload"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG_OUTPUT')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -127,92 +193,82 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/SMCSql')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
+			"name": "[concat(parameters('factoryName'), '/MasterTaskExpirePipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDB",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/B2K/SMC_IMPORT_MERCHANT_PROFILE"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
+				"activities": [
 					{
-						"name": "MID_L11",
-						"type": "varchar"
+						"name": "Update Task Expire",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Update All Task Expire",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
 					},
 					{
-						"name": "MID_L11_DESC",
-						"type": "varchar"
+						"name": "Set PipelineStep 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Task Expire",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "EXPIRE_JOBS_FAILED"
+						}
 					},
 					{
-						"name": "REMARK",
-						"type": "varchar"
-					},
-					{
-						"name": "UPDATE_DATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
+						"name": "Send Email Error",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
+						}
 					}
 				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "SMC_IMPORT_MERCHANT_PROFILE"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/TerminalProfileTempSql')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDB",
-					"type": "LinkedServiceReference"
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					}
 				},
 				"folder": {
-					"name": "B2KMPS/Database"
+					"name": "SMC_Task_Expire"
 				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "TERMINAL_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "TERMINAL_NAME_TH",
-						"type": "varchar"
-					},
-					{
-						"name": "TERMINAL_NAME_EN",
-						"type": "varchar"
-					},
-					{
-						"name": "MERCHANT_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "ACTIVE_STATUS",
-						"type": "varchar"
-					},
-					{
-						"name": "UPDATE_DATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "TERMINAL_PROFILE_TEMP"
-				}
+				"annotations": []
 			},
 			"dependsOn": []
 		},
@@ -655,111 +711,78 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Send Email')]",
+			"name": "[concat(parameters('factoryName'), '/Send Log Kafka')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
+						"name": "Azure Function1",
+						"type": "AzureFunctionActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"functionName": {
+								"value": "piilog",
+								"type": "Expression"
+							},
+							"method": "GET",
+							"headers": {}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureFunctionKafKa",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
 						"name": "Send Email Error",
-						"type": "WebActivity",
+						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "Get Email Body",
+								"activity": "Set PipelineStep 1",
 								"dependencyConditions": [
 									"Succeeded"
 								]
 							}
 						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
 						"userProperties": [],
 						"typeProperties": {
-							"url": {
-								"value": "@concat(\n    variables('hostUrl'),\n    variables('serviceUrl'),\n\t'?api-version=',\n\tvariables('api-version'),\n\t'&sp=',\n\tvariables('sp'),\n\t'&sv=',\n\tvariables('sv'),\n\t'&sig=',\n\tvariables('sig')\n)",
-								"type": "Expression"
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
 							},
-							"connectVia": {
-								"referenceName": "shir",
-								"type": "IntegrationRuntimeReference"
-							},
-							"method": "POST",
-							"headers": {
-								"Content-Type": "application/json"
-							},
-							"body": {
-								"value": "@concat(\n\t'{\"to\": \"',\n\t'lalita.yaichom@stream.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'\",\"isSendMST\": true',\n\t'}'\n)",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Get Key Vault",
-						"type": "WebActivity",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"url": "https://hfy-smc.vault.azure.net/secrets/smc-azure-lga-sig?api-version=7.0",
-							"connectVia": {
-								"referenceName": "shir",
-								"type": "IntegrationRuntimeReference"
-							},
-							"method": "GET",
-							"headers": {},
-							"linkedServices": [
-								{
-									"referenceName": "KeyVaultADF",
-									"type": "LinkedServiceReference"
-								}
-							],
-							"authentication": {
-								"resource": "https://vault.azure.net",
-								"credential": {
-									"referenceName": "AzureManageIdentity",
-									"type": "CredentialReference"
-								}
-							}
-						}
-					},
-					{
-						"name": "Get Email Body",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": {
-									"value": "@concat(\n\t'SELECT TOP 1 EMAIL_EVENT, EMAIL_SUBJECT, EMAIL_BODY, ACTIVE_STATUS, EMAIL_TO FROM EMAIL_TEMPLATE WHERE ACTIVE_STATUS = ''A'' AND EMAIL_EVENT = ''',\n\tpipeline().parameters.pipelineStep,\n\t''''\n)",
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
 									"type": "Expression"
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "EmailBodySql",
-								"type": "DatasetReference",
-								"parameters": {}
+								}
 							}
+						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Azure Function1",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "PIILOG_DATA_FAILED"
 						}
 					}
 				],
@@ -767,43 +790,15 @@
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
-				"parameters": {
-					"pipelineStep": {
-						"type": "string",
-						"defaultValue": "Email Body"
-					}
-				},
 				"variables": {
-					"hostUrl": {
-						"type": "String",
-						"defaultValue": "https://scbsmcsealga001streamit.azurewebsites.net:443"
-					},
-					"serviceUrl": {
-						"type": "String",
-						"defaultValue": "/api/office365/triggers/manual/invoke"
-					},
-					"api-version": {
-						"type": "String",
-						"defaultValue": "2022-05-01"
-					},
-					"sp": {
-						"type": "String",
-						"defaultValue": "/triggers/manual/run"
-					},
-					"sv": {
-						"type": "String",
-						"defaultValue": "1.0"
-					},
-					"sig": {
-						"type": "String",
-						"defaultValue": "9_O_kZlaVNwOGbQ4-H_tGe4-SXM8UDFZ9WCMRGljI3k"
+					"pipelineStep": {
+						"type": "String"
 					}
 				},
 				"folder": {
-					"name": "SMC_Send_Error_Email"
+					"name": "SMC_PIILog"
 				},
-				"annotations": [],
-				"lastPublishTime": "2022-12-13T09:46:48Z"
+				"annotations": []
 			},
 			"dependsOn": []
 		},
@@ -1024,7 +1019,7 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "MERCHANT_ACTIVITY_LOG",
+								"referenceName": "B2K_EDCTERM",
 								"type": "DatasetReference"
 							},
 							"name": "queryMERCHANTACTIVITYLOG"
@@ -1082,9 +1077,7 @@
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     query: (\"SELECT * FROM {$schemaName}.{$tableName} WHERE {$columnName} BETWEEN '{$startDate}' AND '{$endDate}'\"),",
-						"     format: 'query') ~> queryMERCHANTACTIVITYLOG",
+						"     ignoreNoFilesFound: false) ~> queryMERCHANTACTIVITYLOG",
 						"queryMERCHANTACTIVITYLOG select(mapColumn(",
 						"          TRANSACTION_DATE,",
 						"          FUNCTION_CODE,",
@@ -1330,7 +1323,9 @@
 					]
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/MPS_PP_MERCHANTFILE_OUTPUT')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG_FLOW')]",
@@ -1345,7 +1340,7 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "SCB_ACTIVITY_LOG",
+								"referenceName": "B2K_EDCTERM",
 								"type": "DatasetReference"
 							},
 							"name": "querySCBACTIVITYLOG"
@@ -1404,9 +1399,7 @@
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     query: (\"SELECT * FROM {$schemaName}.{$tableName} WHERE {$columnName} BETWEEN '{$startDate}' AND '{$endDate}'\"),",
-						"     format: 'query') ~> querySCBACTIVITYLOG",
+						"     ignoreNoFilesFound: false) ~> querySCBACTIVITYLOG",
 						"querySCBACTIVITYLOG select(mapColumn(",
 						"          TRANSACTION_DATE,",
 						"          FUNCTION_CODE,",
@@ -1923,8 +1916,7 @@
 				"lastPublishTime": "2022-12-15T07:06:00Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/B2K_FixLenghtProcessDataFlow')]",
-				"[concat(variables('factoryId'), '/datasets/TerminalProfileTempSql')]"
+				"[concat(variables('factoryId'), '/dataflows/B2K_FixLenghtProcessDataFlow')]"
 			]
 		},
 		{
@@ -2265,89 +2257,8 @@
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/MPS_FixLenghtProcessDataFlow')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MasterTaskExpirePipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Update Task Expire",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Update All Task Expire",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Set PipelineStep 1",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Update Task Expire",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "EXPIRE_JOBS_FAILED"
-						}
-					},
-					{
-						"name": "Send Email Error",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineStep 1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Send Email",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"pipelineStep": {
-									"value": "@variables('pipelineStep')",
-									"type": "Expression"
-								}
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"pipelineStep": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "SMC_Task_Expire"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
+				"[concat(variables('factoryId'), '/dataflows/MPS_FixLenghtProcessDataFlow')]",
+				"[concat(variables('factoryId'), '/datasets/MPS_PP_MERCHANTFILE_TEMP')]"
 			]
 		},
 		{
@@ -2493,97 +2404,79 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Send Log Kafka')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/triggerKafKaLog')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
 					{
-						"name": "Azure Function1",
-						"type": "AzureFunctionActivity",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
+						"pipelineReference": {
+							"referenceName": "Send Log Kafka",
+							"type": "PipelineReference"
 						},
-						"userProperties": [],
-						"typeProperties": {
-							"functionName": {
-								"value": "piilog",
-								"type": "Expression"
-							},
-							"method": "GET",
-							"headers": {}
-						},
-						"linkedServiceName": {
-							"referenceName": "AzureFunctionKafKa",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "Send Email Error",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineStep 1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Send Email",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"pipelineStep": {
-									"value": "@variables('pipelineStep')",
-									"type": "Expression"
-								}
-							}
-						}
-					},
-					{
-						"name": "Set PipelineStep 1",
-						"description": "Error key message",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Azure Function1",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "PIILOG_DATA_FAILED"
-						}
+						"parameters": {}
 					}
 				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"pipelineStep": {
-						"type": "String"
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-01-09T12:00:00",
+						"timeZone": "SE Asia Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								1
+							]
+						}
 					}
-				},
-				"folder": {
-					"name": "SMC_PIILog"
-				},
-				"annotations": []
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
+				"[concat(variables('factoryId'), '/pipelines/Send Log Kafka')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/triggerTaskExpire')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "MasterTaskExpirePipeline",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-02-15T12:39:00",
+						"timeZone": "SE Asia Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								1
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/MasterTaskExpirePipeline')]"
 			]
 		},
 		{
@@ -2732,224 +2625,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/MERCHANT_ACTIVITY_LOG')]",
-				"[concat(variables('factoryId'), '/pipelines/SCB_ACTIVITY_LOG')]",
-				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MasterB2KPipeline_001')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Get File From SFTP",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "SFTP B2K to Blob",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Insert B2K To DB",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Get File From SFTP",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "B2K Blob to DB",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Send Email Error 1",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineStep 1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Send Email",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"pipelineStep": {
-									"value": "@variables('pipelineStep')",
-									"type": "Expression"
-								}
-							}
-						}
-					},
-					{
-						"name": "Set PipelineStep 1",
-						"description": "Error key message",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Get File From SFTP",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "B2K_SFTP_FAILED"
-						}
-					},
-					{
-						"name": "Set PipelineStep 2",
-						"description": "Error key message",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Insert B2K To DB",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "B2K_DATA_FAILED"
-						}
-					},
-					{
-						"name": "Set PipelineStep 3",
-						"description": "Error key message",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Update Merchant Profile",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "B2K_INTEGRATE_FAILED"
-						}
-					},
-					{
-						"name": "Update Merchant Profile",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Insert B2K To DB",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Update Merchant Profile",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Send Email Error 2",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineStep 2",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Send Email",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"pipelineStep": {
-									"value": "@variables('pipelineStep')",
-									"type": "Expression"
-								}
-							}
-						}
-					},
-					{
-						"name": "Send Email Error 3",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineStep 3",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Send Email",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"pipelineStep": {
-									"value": "@variables('pipelineStep')",
-									"type": "Expression"
-								}
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"pipelineStep": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "SMC_B2K"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-12-13T09:46:48Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/SFTP B2K to Blob')]",
-				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]",
-				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
+				"[concat(variables('factoryId'), '/pipelines/SCB_ACTIVITY_LOG')]"
 			]
 		}
 	]

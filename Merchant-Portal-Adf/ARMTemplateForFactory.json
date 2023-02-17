@@ -67,20 +67,6 @@
 		"az_blob_b2k_properties_groupId": {
 			"type": "string",
 			"defaultValue": "blob"
-		},
-		"az_sql_b2k_properties_privateLinkResourceId": {
-			"type": "string",
-			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Sql/servers/hfympcdb"
-		},
-		"az_sql_b2k_properties_groupId": {
-			"type": "string",
-			"defaultValue": "sqlServer"
-		},
-		"az_sql_b2k_properties_fqdns": {
-			"type": "array",
-			"defaultValue": [
-				"hfympcdb.database.windows.net"
-			]
 		}
 	},
 	"variables": {
@@ -4298,12 +4284,12 @@
 					}
 				},
 				"connectVia": {
-					"referenceName": "AzureIR-ManagedVNet",
+					"referenceName": "shir",
 					"type": "IntegrationRuntimeReference"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]",
+				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]",
 				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
 			]
 		},
@@ -4860,7 +4846,7 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "MERCHANT_ACTIVITY_LOG",
+								"referenceName": "B2K_EDCTERM",
 								"type": "DatasetReference"
 							},
 							"name": "queryMERCHANTACTIVITYLOG"
@@ -4918,9 +4904,7 @@
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     query: (\"SELECT * FROM {$schemaName}.{$tableName} WHERE {$columnName} BETWEEN '{$startDate}' AND '{$endDate}'\"),",
-						"     format: 'query') ~> queryMERCHANTACTIVITYLOG",
+						"     ignoreNoFilesFound: false) ~> queryMERCHANTACTIVITYLOG",
 						"queryMERCHANTACTIVITYLOG select(mapColumn(",
 						"          TRANSACTION_DATE,",
 						"          FUNCTION_CODE,",
@@ -4957,7 +4941,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/MERCHANT_ACTIVITY_LOG')]",
+				"[concat(variables('factoryId'), '/datasets/B2K_EDCTERM')]",
 				"[concat(variables('factoryId'), '/datasets/MERCHANT_ACTIVITY_LOG_OUTPUT')]"
 			]
 		},
@@ -5190,7 +5174,7 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "SCB_ACTIVITY_LOG",
+								"referenceName": "B2K_EDCTERM",
 								"type": "DatasetReference"
 							},
 							"name": "querySCBACTIVITYLOG"
@@ -5249,9 +5233,7 @@
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     query: (\"SELECT * FROM {$schemaName}.{$tableName} WHERE {$columnName} BETWEEN '{$startDate}' AND '{$endDate}'\"),",
-						"     format: 'query') ~> querySCBACTIVITYLOG",
+						"     ignoreNoFilesFound: false) ~> querySCBACTIVITYLOG",
 						"querySCBACTIVITYLOG select(mapColumn(",
 						"          TRANSACTION_DATE,",
 						"          FUNCTION_CODE,",
@@ -5290,7 +5272,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/SCB_ACTIVITY_LOG')]",
+				"[concat(variables('factoryId'), '/datasets/B2K_EDCTERM')]",
 				"[concat(variables('factoryId'), '/datasets/SCB_ACTIVITY_LOG_OUTPUT')]"
 			]
 		},
@@ -5344,19 +5326,6 @@
 			"properties": {
 				"privateLinkResourceId": "[parameters('az_blob_b2k_properties_privateLinkResourceId')]",
 				"groupId": "[parameters('az_blob_b2k_properties_groupId')]"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/default/az_sql_b2k')]",
-			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"privateLinkResourceId": "[parameters('az_sql_b2k_properties_privateLinkResourceId')]",
-				"groupId": "[parameters('az_sql_b2k_properties_groupId')]",
-				"fqdns": "[parameters('az_sql_b2k_properties_fqdns')]"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"

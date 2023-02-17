@@ -7,6 +7,11 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "Merchant-Portal-Adf"
 		},
+		"AzureSqlDB_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDB'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=hfympcdb.database.windows.net;Initial Catalog=mpcdb"
+		},
 		"SmcFtpB2k_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'SmcFtpB2k'"
@@ -14,15 +19,6 @@
 		"SmcFtpMps_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'SmcFtpMps'"
-		},
-		"AzureFunctionKafKa_functionKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'functionKey' of 'AzureFunctionKafKa'"
-		},
-		"AzureSqlDB_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureSqlDB'",
-			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=hfympcdb.database.windows.net;Initial Catalog=mpcdb"
 		},
 		"KeyVaultADF_properties_typeProperties_baseUrl": {
 			"type": "string",
@@ -59,28 +55,6 @@
 		"az_blob_b2k_properties_groupId": {
 			"type": "string",
 			"defaultValue": "blob"
-		},
-		"az_sql_b2k_properties_privateLinkResourceId": {
-			"type": "string",
-			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Sql/servers/hfympcdb"
-		},
-		"az_sql_b2k_properties_groupId": {
-			"type": "string",
-			"defaultValue": "sqlServer"
-		},
-		"az_sql_b2k_properties_fqdns": {
-			"type": "array",
-			"defaultValue": [
-				"hfympcdb.database.windows.net"
-			]
-		},
-		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
-			"type": "string",
-			"defaultValue": "https://scbsmcseafunc001streamit-test.azurewebsites.net"
-		},
-		"B2Kblob_properties_typeProperties_serviceEndpoint": {
-			"type": "string",
-			"defaultValue": "https://merchantportalblob.blob.core.windows.net/"
 		}
 	},
 	"variables": {
@@ -127,6 +101,30 @@
 			"apiVersion": "2018-06-01",
 			"properties": {},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlDB')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureSqlDB_connectionString')]",
+					"credential": {
+						"referenceName": "AzureManageIdentity",
+						"type": "CredentialReference"
+					}
+				},
+				"connectVia": {
+					"referenceName": "shir",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]",
+				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/KeyVaultADF')]",
@@ -257,151 +255,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/default/az_sql_b2k')]",
-			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"privateLinkResourceId": "[parameters('az_sql_b2k_properties_privateLinkResourceId')]",
-				"groupId": "[parameters('az_sql_b2k_properties_groupId')]",
-				"fqdns": "[parameters('az_sql_b2k_properties_fqdns')]"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/FTPB2KOnPrem')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SmcFtpB2k",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/SFTP/B2K"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "FtpServerLocation",
-						"folderPath": "NASDATA/B2K/SMC/SIT"
-					},
-					"columnDelimiter": ",",
-					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SmcFtpB2k')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/FTPMPSOnPrem')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SmcFtpMps",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/SFTP/MPS"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "FtpServerLocation"
-					},
-					"columnDelimiter": ",",
-					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SmcFtpMps')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureFunctionKafKa')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureFunction",
-				"typeProperties": {
-					"functionAppUrl": "[parameters('AzureFunctionKafKa_properties_typeProperties_functionAppUrl')]",
-					"functionKey": {
-						"type": "SecureString",
-						"value": "[parameters('AzureFunctionKafKa_functionKey')]"
-					},
-					"authentication": "Anonymous"
-				},
-				"connectVia": {
-					"referenceName": "AzureIR-ManagedVNet",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureSqlDB')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('AzureSqlDB_connectionString')]",
-					"credential": {
-						"referenceName": "AzureManageIdentity",
-						"type": "CredentialReference"
-					}
-				},
-				"connectVia": {
-					"referenceName": "AzureIR-ManagedVNet",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]",
-				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/B2Kblob')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"serviceEndpoint": "[parameters('B2Kblob_properties_typeProperties_serviceEndpoint')]",
-					"accountKind": "StorageV2",
-					"credential": {
-						"referenceName": "AzureManageIdentity",
-						"type": "CredentialReference"
-					}
-				},
-				"connectVia": {
-					"referenceName": "AzureIR-ManagedVNet",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]",
-				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Update All Task Expire')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -482,80 +335,489 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM')]",
+			"name": "[concat(parameters('factoryName'), '/EmailBodySql')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "B2Kblob",
+					"referenceName": "AzureSqlDB",
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "B2KMPS/B2K/EDCTERM"
+					"name": "B2KMPS/Database"
 				},
 				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@concat(\n    'B2K_EDCTERM_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
-							"type": "Expression"
-						},
-						"folderPath": {
-							"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd')\n)",
-							"type": "Expression"
-						},
-						"container": "file-upload"
-					},
-					"columnDelimiter": "|",
-					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
+				"type": "AzureSqlTable",
 				"schema": [
 					{
-						"type": "String"
+						"name": "EMAIL_EVENT",
+						"type": "varchar"
+					},
+					{
+						"name": "EMAIL_SUBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "EMAIL_BODY",
+						"type": "varchar"
+					},
+					{
+						"name": "ACTIVE_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "EMAIL_TO",
+						"type": "varchar"
 					}
-				]
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "EMAIL_TEMPLATE"
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM_OUTPUT')]",
+			"name": "[concat(parameters('factoryName'), '/FTPB2KOnPrem')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "B2Kblob",
+					"referenceName": "SmcFtpB2k",
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "B2KMPS/B2K/EDCTERM"
+					"name": "B2KMPS/SFTP/B2K"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "B2K_EDCTERM_TEMP.txt",
-						"folderPath": {
-							"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tgetFutureTime(7, 'Hour', 'dd'),\n\t'/output'\n)",
-							"type": "Expression"
-						},
-						"container": "file-upload"
+						"type": "FtpServerLocation",
+						"folderPath": "NASDATA/B2K/SMC/SIT"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": ",",
+					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
-					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
 				"schema": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+				"[concat(variables('factoryId'), '/linkedServices/SmcFtpB2k')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FTPMPSOnPrem')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SmcFtpMps",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/SFTP/MPS"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "FtpServerLocation"
+					},
+					"columnDelimiter": ",",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SmcFtpMps')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Log/MERCHANT_ACTIVITY_LOG/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TRANSACTION_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "FUNCTION_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "LOG",
+						"type": "varchar"
+					},
+					{
+						"name": "LOG_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "APPLICATION_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "EVENT",
+						"type": "varchar"
+					},
+					{
+						"name": "EVENT_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "URL",
+						"type": "varchar"
+					},
+					{
+						"name": "MERCHANT_CENTER_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_ADDRESS",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_HOSTNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_USERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_OBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_ADDRESS",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_HOSTNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_USERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_OBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGE_FROM",
+						"type": "text"
+					},
+					{
+						"name": "CHANGE_TO",
+						"type": "text"
+					},
+					{
+						"name": "SEARCH_CRITERIA",
+						"type": "text"
+					},
+					{
+						"name": "RESULT_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "MESSAGE",
+						"type": "text"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "MERCHANT_ACTIVITY_LOG"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MerchantEmailTempSQL')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "BILLER_MERCHANT_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "EMAIL_1",
+						"type": "varchar"
+					},
+					{
+						"name": "EMAIL_2",
+						"type": "varchar"
+					},
+					{
+						"name": "EMAIL_3",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "MERCHANT_EMAIL_TEMP"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MerchantProfileTempSQL')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "BILLER_MERCHANT_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "ACCOUNT_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "TAX_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "NAME_TH",
+						"type": "varchar"
+					},
+					{
+						"name": "NAME_EN",
+						"type": "varchar"
+					},
+					{
+						"name": "COMPANY_NAME_TH",
+						"type": "varchar"
+					},
+					{
+						"name": "COMPANY_NAME_EN",
+						"type": "varchar"
+					},
+					{
+						"name": "ACTIVE_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "UPDATE_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "BUSINESS_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "REF1_TH",
+						"type": "varchar"
+					},
+					{
+						"name": "REF1_EN",
+						"type": "varchar"
+					},
+					{
+						"name": "REF3",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE",
+						"type": "varchar"
+					},
+					{
+						"name": "REF2_TH",
+						"type": "varchar"
+					},
+					{
+						"name": "REF2_EN",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "MERCHANT_PROFILE_TEMP"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Log/SCB_ACTIVITY_LOG/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TRANSACTION_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "FUNCTION_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "LOG",
+						"type": "varchar"
+					},
+					{
+						"name": "LOG_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "APPLICATION_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "EVENT",
+						"type": "varchar"
+					},
+					{
+						"name": "EVENT_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "URL",
+						"type": "varchar"
+					},
+					{
+						"name": "MERCHANT_CENTER_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_ADDRESS",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_HOSTNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_USERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_OBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_ADDRESS",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_HOSTNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_USERNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DESTINATION_OBJECT",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGE_FROM",
+						"type": "text"
+					},
+					{
+						"name": "CHANGE_TO",
+						"type": "text"
+					},
+					{
+						"name": "SEARCH_CRITERIA",
+						"type": "text"
+					},
+					{
+						"name": "RESULT_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "MESSAGE",
+						"type": "text"
+					},
+					{
+						"name": "UPDATE_PII_LOG_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "UPDATE_PII_LOG_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "SCB_ACTIVITY_LOG"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
 			]
 		}
 	]
