@@ -193,6 +193,157 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set File Name",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date End",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "fileNameMerchant",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),6,'Month'),'dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Set File Name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat(\n\t'SELECT * FROM MERCHANT_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateMerchant'),\n\t''' AND ''',\n\tvariables('endDateMerchant'),\n\t''''\n)",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "MERCHANT_ACTIVITY_LOG",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "MERCHANT_ACTIVITY_LOG_OUTPUT",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Set Date Start",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "startDateMerchant",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),6,'Month'),'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Date End",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date Start",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "endDateMerchant",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),6,'Month'),'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"fileNameMerchant": {
+						"type": "String"
+					},
+					"dataLogMerchant": {
+						"type": "Array"
+					},
+					"startDateMerchant": {
+						"type": "String"
+					},
+					"endDateMerchant": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_AchieveLog"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-16T03:36:51Z"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/MasterB2KPipeline_003')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -2081,144 +2232,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/B2K_FixLenghtProcessDataFlow')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Set Date Start",
-						"type": "SetVariable",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "startDateMerchant",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),6,'Month'),'yyyy-MM-dd')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set Date End",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set Date Start",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "endDateMerchant",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),6,'Month'),'yyyy-MM-dd')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set File Name",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set Date End",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "fileNameMerchant",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),6,'Month'),'dd')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Merchant Activity Log",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "Set File Name",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "MERCHANT_ACTIVITY_LOG_FLOW",
-								"type": "DataFlowReference",
-								"parameters": {
-									"schemaName": "'dbo'",
-									"tableName": "'MERCHANT_ACTIVITY_LOG'",
-									"startDate": {
-										"value": "'@{variables('startDateMerchant')}'",
-										"type": "Expression"
-									},
-									"endDate": {
-										"value": "'@{variables('endDateMerchant')}'",
-										"type": "Expression"
-									},
-									"columnName": "'TRANSACTION_DATE'",
-									"fileName": {
-										"value": "'@{variables('fileNameMerchant')}'",
-										"type": "Expression"
-									}
-								},
-								"datasetParameters": {
-									"queryMERCHANTACTIVITYLOG": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"integrationRuntime": {
-								"referenceName": "AzureIR-ManagedVNet",
-								"type": "IntegrationRuntimeReference"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"startDateMerchant": {
-						"type": "String"
-					},
-					"endDateMerchant": {
-						"type": "String"
-					},
-					"fileNameMerchant": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "SMC_AchieveLog"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-12-16T03:36:51Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/MERCHANT_ACTIVITY_LOG_FLOW')]"
 			]
 		},
 		{
