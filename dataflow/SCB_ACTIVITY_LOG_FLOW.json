@@ -9,7 +9,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "SCB_ACTIVITY_LOG",
+						"referenceName": "B2K_EDCTERM",
 						"type": "DatasetReference"
 					},
 					"name": "querySCBACTIVITYLOG"
@@ -68,9 +68,7 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     query: (\"SELECT * FROM {$schemaName}.{$tableName} WHERE {$columnName} BETWEEN '{$startDate}' AND '{$endDate}'\"),",
-				"     format: 'query') ~> querySCBACTIVITYLOG",
+				"     ignoreNoFilesFound: false) ~> querySCBACTIVITYLOG",
 				"querySCBACTIVITYLOG select(mapColumn(",
 				"          TRANSACTION_DATE,",
 				"          FUNCTION_CODE,",

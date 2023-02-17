@@ -9,7 +9,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "MERCHANT_ACTIVITY_LOG",
+						"referenceName": "B2K_EDCTERM",
 						"type": "DatasetReference"
 					},
 					"name": "queryMERCHANTACTIVITYLOG"
@@ -67,9 +67,7 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     query: (\"SELECT * FROM {$schemaName}.{$tableName} WHERE {$columnName} BETWEEN '{$startDate}' AND '{$endDate}'\"),",
-				"     format: 'query') ~> queryMERCHANTACTIVITYLOG",
+				"     ignoreNoFilesFound: false) ~> queryMERCHANTACTIVITYLOG",
 				"queryMERCHANTACTIVITYLOG select(mapColumn(",
 				"          TRANSACTION_DATE,",
 				"          FUNCTION_CODE,",
