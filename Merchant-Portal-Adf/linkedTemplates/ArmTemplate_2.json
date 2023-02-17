@@ -87,20 +87,6 @@
 					"referenceName": "B2Kblob",
 					"type": "LinkedServiceReference"
 				},
-				"parameters": {
-					"year": {
-						"type": "string",
-						"defaultValue": "formatDateTime(subtractFromTime(utcnow(),1,'Year'),'yyyy')"
-					},
-					"month": {
-						"type": "string",
-						"defaultValue": "utcnow('MM')"
-					},
-					"date": {
-						"type": "string",
-						"defaultValue": "utcnow('dd')"
-					}
-				},
 				"folder": {
 					"name": "Log/SCB_ACTIVITY_LOG/OUTPUT"
 				},
@@ -219,7 +205,7 @@
 						}
 					},
 					{
-						"name": "Copy data1",
+						"name": "Backup Merchant Log",
 						"type": "Copy",
 						"dependsOn": [
 							{
@@ -324,9 +310,6 @@
 				"variables": {
 					"fileNameMerchant": {
 						"type": "String"
-					},
-					"dataLogMerchant": {
-						"type": "Array"
 					},
 					"startDateMerchant": {
 						"type": "String"
@@ -586,6 +569,156 @@
 				"annotations": []
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set Date Start",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "startDateSCB",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),1,'Year'),'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Date End",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date Start",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "endDateSCB",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Year'),'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set File Name",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date End",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "fileNameSCB",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Backup SCB Log",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Set File Name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat(\n\t'SELECT * FROM SCB_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateSCB'),\n\t''' AND ''',\n\tvariables('endDateSCB'),\n\t''''\n)",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SCB_ACTIVITY_LOG",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SCB_ACTIVITY_LOG_OUTPUT",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"startDateSCB": {
+						"type": "String"
+					},
+					"endDateSCB": {
+						"type": "String"
+					},
+					"fileNameSCB": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_AchieveLog"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-16T03:36:51Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SCB_ACTIVITY_LOG_OUTPUT')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/SFTP B2K to Blob')]",
@@ -2439,87 +2572,52 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG')]",
+			"name": "[concat(parameters('factoryName'), '/MasterActivityPipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Scb Activity Log",
-						"type": "ExecuteDataFlow",
+						"name": "Execute Merchant",
+						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "Set File Name",
+								"activity": "Execute SCB",
 								"dependencyConditions": [
 									"Succeeded"
 								]
 							}
 						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
 						"userProperties": [],
 						"typeProperties": {
-							"dataflow": {
-								"referenceName": "SCB_ACTIVITY_LOG_FLOW",
-								"type": "DataFlowReference",
-								"parameters": {
-									"schemaName": "'dbo'",
-									"tableName": "'SCB_ACTIVITY_LOG'",
-									"startDate": {
-										"value": "'@{variables('startDateSCB')}'",
-										"type": "Expression"
-									},
-									"endDate": {
-										"value": "'@{variables('endDateSCB')}'",
-										"type": "Expression"
-									},
-									"columnName": "'TRANSACTION_DATE'",
-									"fileName": {
-										"value": "'@{variables('fileNameSCB')}'",
-										"type": "Expression"
-									}
-								},
-								"datasetParameters": {
-									"querySCBACTIVITYLOG": {},
-									"sink1": {
-										"year": "utcnow('yyyy')",
-										"month": "utcnow('MM')",
-										"date": "utcnow('dd')"
-									}
-								}
+							"pipeline": {
+								"referenceName": "MERCHANT_ACTIVITY_LOG",
+								"type": "PipelineReference"
 							},
-							"staging": {},
-							"integrationRuntime": {
-								"referenceName": "AzureIR-ManagedVNet",
-								"type": "IntegrationRuntimeReference"
-							},
-							"traceLevel": "Fine"
+							"waitOnCompletion": true,
+							"parameters": {}
 						}
 					},
 					{
-						"name": "Set Date Start",
-						"type": "SetVariable",
+						"name": "Execute SCB",
+						"type": "ExecutePipeline",
 						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
-							"variableName": "startDateSCB",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),1,'Year'),'yyyy-MM-dd')",
-								"type": "Expression"
-							}
+							"pipeline": {
+								"referenceName": "SCB_ACTIVITY_LOG",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
 						}
 					},
 					{
-						"name": "Set Date End",
-						"type": "SetVariable",
+						"name": "Send Email Error 2",
+						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "Set Date Start",
+								"activity": "Set PipelineStep 2",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -2527,19 +2625,61 @@
 						],
 						"userProperties": [],
 						"typeProperties": {
-							"variableName": "endDateSCB",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Year'),'yyyy-MM-dd')",
-								"type": "Expression"
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
 							}
 						}
 					},
 					{
-						"name": "Set File Name",
+						"name": "Set PipelineStep 1",
+						"description": "Error key message",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Set Date End",
+								"activity": "Execute SCB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "ACHIEVELOG_DATA_FAILED"
+						}
+					},
+					{
+						"name": "Set PipelineStep 2",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Execute Merchant",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "ACHIEVELOG_DATA_FAILED"
+						}
+					},
+					{
+						"name": "Send Email Error 1",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 1",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -2547,10 +2687,16 @@
 						],
 						"userProperties": [],
 						"typeProperties": {
-							"variableName": "fileNameSCB",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'dd')",
-								"type": "Expression"
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
 							}
 						}
 					}
@@ -2560,62 +2706,18 @@
 					"cancelAfter": {}
 				},
 				"variables": {
-					"startDateSCB": {
-						"type": "String"
-					},
-					"endDateSCB": {
-						"type": "String"
-					},
-					"fileNameSCB": {
+					"pipelineStep": {
 						"type": "String"
 					}
 				},
 				"folder": {
 					"name": "SMC_AchieveLog"
 				},
-				"annotations": [],
-				"lastPublishTime": "2022-12-16T03:36:51Z"
+				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/SCB_ACTIVITY_LOG_FLOW')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/triggerKafKaLog')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "Send Log Kafka",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2023-01-09T12:00:00",
-						"timeZone": "SE Asia Standard Time",
-						"schedule": {
-							"minutes": [
-								0
-							],
-							"hours": [
-								1
-							]
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Send Log Kafka')]"
+				"[concat(variables('factoryId'), '/pipelines/MERCHANT_ACTIVITY_LOG')]",
+				"[concat(variables('factoryId'), '/pipelines/SCB_ACTIVITY_LOG')]"
 			]
 		}
 	]

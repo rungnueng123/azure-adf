@@ -13,6 +13,42 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/triggerKafKaLog')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "Send Log Kafka",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-01-09T12:00:00",
+						"timeZone": "SE Asia Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								1
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/triggerTaskExpire')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -45,152 +81,6 @@
 						}
 					}
 				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MasterActivityPipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Execute Merchant",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Execute SCB",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "MERCHANT_ACTIVITY_LOG",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Execute SCB",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "SCB_ACTIVITY_LOG",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Send Email Error 2",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineStep 2",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Send Email",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"pipelineStep": {
-									"value": "@variables('pipelineStep')",
-									"type": "Expression"
-								}
-							}
-						}
-					},
-					{
-						"name": "Set PipelineStep 1",
-						"description": "Error key message",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Execute SCB",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "ACHIEVELOG_DATA_FAILED"
-						}
-					},
-					{
-						"name": "Set PipelineStep 2",
-						"description": "Error key message",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Execute Merchant",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "ACHIEVELOG_DATA_FAILED"
-						}
-					},
-					{
-						"name": "Send Email Error 1",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineStep 1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Send Email",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"pipelineStep": {
-									"value": "@variables('pipelineStep')",
-									"type": "Expression"
-								}
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"pipelineStep": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "SMC_AchieveLog"
-				},
-				"annotations": []
 			},
 			"dependsOn": []
 		},
@@ -948,9 +838,7 @@
 					}
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/MasterActivityPipeline')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/triggerB2K')]",

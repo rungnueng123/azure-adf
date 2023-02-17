@@ -585,7 +585,7 @@
 						}
 					},
 					{
-						"name": "Copy data1",
+						"name": "Backup Merchant Log",
 						"type": "Copy",
 						"dependsOn": [
 							{
@@ -690,9 +690,6 @@
 				"variables": {
 					"fileNameMerchant": {
 						"type": "String"
-					},
-					"dataLogMerchant": {
-						"type": "Array"
 					},
 					"startDateMerchant": {
 						"type": "String"
@@ -2068,63 +2065,6 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Scb Activity Log",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "Set File Name",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "SCB_ACTIVITY_LOG_FLOW",
-								"type": "DataFlowReference",
-								"parameters": {
-									"schemaName": "'dbo'",
-									"tableName": "'SCB_ACTIVITY_LOG'",
-									"startDate": {
-										"value": "'@{variables('startDateSCB')}'",
-										"type": "Expression"
-									},
-									"endDate": {
-										"value": "'@{variables('endDateSCB')}'",
-										"type": "Expression"
-									},
-									"columnName": "'TRANSACTION_DATE'",
-									"fileName": {
-										"value": "'@{variables('fileNameSCB')}'",
-										"type": "Expression"
-									}
-								},
-								"datasetParameters": {
-									"querySCBACTIVITYLOG": {},
-									"sink1": {
-										"year": "utcnow('yyyy')",
-										"month": "utcnow('MM')",
-										"date": "utcnow('dd')"
-									}
-								}
-							},
-							"staging": {},
-							"integrationRuntime": {
-								"referenceName": "AzureIR-ManagedVNet",
-								"type": "IntegrationRuntimeReference"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
 						"name": "Set Date Start",
 						"type": "SetVariable",
 						"dependsOn": [],
@@ -2176,6 +2116,71 @@
 								"type": "Expression"
 							}
 						}
+					},
+					{
+						"name": "Backup SCB Log",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Set File Name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat(\n\t'SELECT * FROM SCB_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateSCB'),\n\t''' AND ''',\n\tvariables('endDateSCB'),\n\t''''\n)",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SCB_ACTIVITY_LOG",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SCB_ACTIVITY_LOG_OUTPUT",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					}
 				],
 				"policy": {
@@ -2200,8 +2205,8 @@
 				"lastPublishTime": "2022-12-16T03:36:51Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/SCB_ACTIVITY_LOG_FLOW')]",
-				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
+				"[concat(variables('factoryId'), '/datasets/SCB_ACTIVITY_LOG')]",
+				"[concat(variables('factoryId'), '/datasets/SCB_ACTIVITY_LOG_OUTPUT')]"
 			]
 		},
 		{
@@ -4224,20 +4229,6 @@
 				"linkedServiceName": {
 					"referenceName": "B2Kblob",
 					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"year": {
-						"type": "string",
-						"defaultValue": "formatDateTime(subtractFromTime(utcnow(),1,'Year'),'yyyy')"
-					},
-					"month": {
-						"type": "string",
-						"defaultValue": "utcnow('MM')"
-					},
-					"date": {
-						"type": "string",
-						"defaultValue": "utcnow('dd')"
-					}
 				},
 				"folder": {
 					"name": "Log/SCB_ACTIVITY_LOG/OUTPUT"
