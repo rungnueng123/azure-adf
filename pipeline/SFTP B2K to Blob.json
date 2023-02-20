@@ -21,7 +21,7 @@
 							"type": "FtpReadSettings",
 							"recursive": true,
 							"wildcardFileName": {
-								"value": "@concat(\n\t'B2K_EDCTERM_',\n    formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
+								"value": "@concat(\n\t'B2K_EDCTERM_',\n\t'20230216.txt'\n)",
 								"type": "Expression"
 							},
 							"enablePartitionDiscovery": false,
@@ -85,7 +85,7 @@
 							"type": "FtpReadSettings",
 							"recursive": true,
 							"wildcardFileName": {
-								"value": "@concat(\n\t'B2K_EMSMRMST_',\n    formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
+								"value": "@concat(\n\t'B2K_EMSMRMST_',\n\t'20230216.txt'\n)",
 								"type": "Expression"
 							},
 							"enablePartitionDiscovery": false,
@@ -149,7 +149,7 @@
 							"type": "FtpReadSettings",
 							"recursive": true,
 							"wildcardFileName": {
-								"value": "@concat(\n\t'B2K_MCRMRCH_',\n    formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
+								"value": "@concat(\n\t'B2K_MCRMRCH_',\n\t'20230216.txt'\n)",
 								"type": "Expression"
 							},
 							"enablePartitionDiscovery": false,
