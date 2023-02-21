@@ -13,43 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/MPS_PP_MERCHANTFILE')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "B2Kblob",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/MPS/TSBP1VNP"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "PP_MerchantFile.txt",
-						"folderPath": {
-							"value": "@concat(\n    'mps/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd')\n)",
-							"type": "Expression"
-						},
-						"container": "file-upload"
-					},
-					"columnDelimiter": "|",
-					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/MPS_PP_MERCHANTFILE_OUTPUT')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1809,7 +1772,6 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/MPS_PP_MERCHANTFILE')]",
 				"[concat(variables('factoryId'), '/datasets/MPS_PP_MERCHANTFILE_OUTPUT')]"
 			]
 		},
@@ -2607,6 +2569,155 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/MPS_FixLenghtProcessDataFlow')]",
 				"[concat(variables('factoryId'), '/datasets/MPS_PP_MERCHANTFILE_TEMP')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MasterActivityPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Execute Merchant",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute SCB",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "MERCHANT_ACTIVITY_LOG",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute SCB",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SCB_ACTIVITY_LOG",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Send Email Error 2",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 2",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Execute SCB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "ACHRIVELOG_DATA_FAILED"
+						}
+					},
+					{
+						"name": "Set PipelineStep 2",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Execute Merchant",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "ACHRIVELOG_DATA_FAILED"
+						}
+					},
+					{
+						"name": "Send Email Error 1",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_AchriveLog"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/MERCHANT_ACTIVITY_LOG')]",
+				"[concat(variables('factoryId'), '/pipelines/SCB_ACTIVITY_LOG')]"
 			]
 		}
 	]

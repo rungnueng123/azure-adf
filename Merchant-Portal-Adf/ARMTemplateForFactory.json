@@ -2983,60 +2983,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Get Key Vault",
-						"type": "WebActivity",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"url": "https://hfy-smc.vault.azure.net/secrets/smc-azure-lga-sig?api-version=7.0",
-							"connectVia": {
-								"referenceName": "shir",
-								"type": "IntegrationRuntimeReference"
-							},
-							"method": "GET",
-							"headers": {},
-							"linkedServices": [
-								{
-									"referenceName": "KeyVaultADF",
-									"type": "LinkedServiceReference"
-								}
-							],
-							"authentication": {
-								"resource": "https://vault.azure.net",
-								"credential": {
-									"referenceName": "AzureManageIdentity",
-									"type": "CredentialReference"
-								}
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/KeyVaultADF')]",
-				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]",
-				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -3484,7 +3430,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "FtpServerLocation",
-						"folderPath": "NASDATA/B2K/SMC/SIT"
+						"folderPath": "SIT"
 					},
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
