@@ -3459,8 +3459,7 @@
 				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
-						"type": "FtpServerLocation",
-						"folderPath": "mpay/SIT"
+						"type": "FtpServerLocation"
 					},
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
