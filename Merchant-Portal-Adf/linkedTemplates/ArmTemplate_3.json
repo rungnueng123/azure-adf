@@ -13,6 +13,152 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/MasterActivityPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Execute Merchant",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute SCB",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "MERCHANT_ACTIVITY_LOG",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute SCB",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SCB_ACTIVITY_LOG",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Send Email Error 2",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 2",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Execute SCB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "ACHRIVELOG_DATA_FAILED"
+						}
+					},
+					{
+						"name": "Set PipelineStep 2",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Execute Merchant",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "ACHRIVELOG_DATA_FAILED"
+						}
+					},
+					{
+						"name": "Send Email Error 1",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_AchriveLog"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/triggerKafKaLog')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -838,7 +984,9 @@
 					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/MasterActivityPipeline')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/triggerB2K')]",
