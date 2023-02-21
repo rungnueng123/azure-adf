@@ -319,7 +319,7 @@
 					}
 				},
 				"folder": {
-					"name": "SMC_AchieveLog"
+					"name": "SMC_AchriveLog"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-16T03:36:51Z"
@@ -711,7 +711,7 @@
 					}
 				},
 				"folder": {
-					"name": "SMC_AchieveLog"
+					"name": "SMC_AchriveLog"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-16T03:36:51Z"
@@ -2653,7 +2653,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "ACHIEVELOG_DATA_FAILED"
+							"value": "ACHRIVELOG_DATA_FAILED"
 						}
 					},
 					{
@@ -2671,7 +2671,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "pipelineStep",
-							"value": "ACHIEVELOG_DATA_FAILED"
+							"value": "ACHRIVELOG_DATA_FAILED"
 						}
 					},
 					{
@@ -2711,7 +2711,7 @@
 					}
 				},
 				"folder": {
-					"name": "SMC_AchieveLog"
+					"name": "SMC_AchriveLog"
 				},
 				"annotations": []
 			},
