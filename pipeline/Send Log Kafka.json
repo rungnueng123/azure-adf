@@ -48,6 +48,10 @@
 						"pipelineStep": {
 							"value": "@variables('pipelineStep')",
 							"type": "Expression"
+						},
+						"pipelineMstKey": {
+							"value": "@variables('pipelineMstKey')",
+							"type": "Expression"
 						}
 					}
 				}
@@ -74,6 +78,10 @@
 		"variables": {
 			"pipelineStep": {
 				"type": "String"
+			},
+			"pipelineMstKey": {
+				"type": "String",
+				"defaultValue": "f26e08ca7ade4b8c974a99a81c4989f6"
 			}
 		},
 		"folder": {

@@ -57,6 +57,10 @@
 						"pipelineStep": {
 							"value": "@variables('pipelineStep')",
 							"type": "Expression"
+						},
+						"pipelineMstKey": {
+							"value": "@variables('pipelineMstKey')",
+							"type": "Expression"
 						}
 					}
 				}
@@ -157,6 +161,10 @@
 						"pipelineStep": {
 							"value": "@variables('pipelineStep')",
 							"type": "Expression"
+						},
+						"pipelineMstKey": {
+							"value": "@variables('pipelineMstKey')",
+							"type": "Expression"
 						}
 					}
 				}
@@ -183,6 +191,10 @@
 						"pipelineStep": {
 							"value": "@variables('pipelineStep')",
 							"type": "Expression"
+						},
+						"pipelineMstKey": {
+							"value": "@variables('pipelineMstKey')",
+							"type": "Expression"
 						}
 					}
 				}
@@ -191,6 +203,10 @@
 		"variables": {
 			"pipelineStep": {
 				"type": "String"
+			},
+			"pipelineMstKey": {
+				"type": "String",
+				"defaultValue": "6f215d46e6c64b58bea218b89094b01c"
 			}
 		},
 		"folder": {

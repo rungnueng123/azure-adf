@@ -57,6 +57,10 @@
 						"pipelineStep": {
 							"value": "@variables('pipelineStep')",
 							"type": "Expression"
+						},
+						"pipelineMstKey": {
+							"value": "@variables('pipelineMstKey')",
+							"type": "Expression"
 						}
 					}
 				}
@@ -119,6 +123,10 @@
 						"pipelineStep": {
 							"value": "@variables('pipelineStep')",
 							"type": "Expression"
+						},
+						"pipelineMstKey": {
+							"value": "@variables('pipelineMstKey')",
+							"type": "Expression"
 						}
 					}
 				}
@@ -127,6 +135,10 @@
 		"variables": {
 			"pipelineStep": {
 				"type": "String"
+			},
+			"pipelineMstKey": {
+				"type": "String",
+				"defaultValue": "4345c0af4223436bb8dce390b2b8aa10"
 			}
 		},
 		"folder": {
