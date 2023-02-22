@@ -2780,7 +2780,7 @@
 								"Content-Type": "application/json"
 							},
 							"body": {
-								"value": "@concat(\n\t'{\"to\": \"',\n\t'lalita.yaichom@stream.co.th,rungnueng.luangkamchorn@stream.co.th,bhurita.chayakunphakdi@scb.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'\",\"isSendMST\": true',\n\t'}'\n)",
+								"value": "@concat(\n\t'{\"to\": \"',\n\t'lalita.yaichom@stream.co.th,rungnueng.luangkamchorn@stream.co.th,bhurita.chayakunphakdi@scb.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'\",\"mstUrl\": \"',\n\tvariables('mstUrl'),\n\tpipeline().parameters.pipelineMstKey,\n\t'\",\"isSendMST\": true',\n\t'}'\n)",
 								"type": "Expression"
 							}
 						}
@@ -2888,6 +2888,10 @@
 					"sig": {
 						"type": "String",
 						"defaultValue": "9_O_kZlaVNwOGbQ4-H_tGe4-SXM8UDFZ9WCMRGljI3k"
+					},
+					"mstUrl": {
+						"type": "String",
+						"defaultValue": "https://scbcorp.webhook.office.com/webhookb2/6c31876e-5491-4377-8b01-5e565074bbe5@45202dee-4088-4e8c-8ebd-c01f56740e8f/IncomingWebhook/a72c52c3094e46e2aede504507f47994/"
 					}
 				},
 				"folder": {
