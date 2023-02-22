@@ -16,14 +16,6 @@
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDB'",
 			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=hfympcdb.database.windows.net;Initial Catalog=mpcdb"
 		},
-		"SmcFtpB2k_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'SmcFtpB2k'"
-		},
-		"SmcFtpMps_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'SmcFtpMps'"
-		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 			"type": "string",
 			"defaultValue": "https://scbsmcseafunc001streamit-test.azurewebsites.net"
@@ -4612,13 +4604,13 @@
 				"typeProperties": {
 					"baseUrl": "[parameters('KeyVaultADF_properties_typeProperties_baseUrl')]",
 					"credential": {
-						"referenceName": "credentialblob",
+						"referenceName": "AzureManageIdentity",
 						"type": "CredentialReference"
 					}
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/credentials/credentialblob')]"
+				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
 			]
 		},
 		{
@@ -4636,8 +4628,12 @@
 					"authenticationType": "Basic",
 					"userName": "[parameters('SmcFtpB2k_properties_typeProperties_userName')]",
 					"password": {
-						"type": "SecureString",
-						"value": "[parameters('SmcFtpB2k_password')]"
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "KeyVaultADF",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "smc-b2k-sftp-password"
 					}
 				},
 				"connectVia": {
@@ -4646,7 +4642,8 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]",
+				"[concat(variables('factoryId'), '/linkedServices/KeyVaultADF')]"
 			]
 		},
 		{
@@ -4664,8 +4661,12 @@
 					"authenticationType": "Basic",
 					"userName": "[parameters('SmcFtpMps_properties_typeProperties_userName')]",
 					"password": {
-						"type": "SecureString",
-						"value": "[parameters('SmcFtpMps_password')]"
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "KeyVaultADF",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "smc-msp-sftp-password"
 					}
 				},
 				"connectVia": {
@@ -4674,7 +4675,8 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]",
+				"[concat(variables('factoryId'), '/linkedServices/KeyVaultADF')]"
 			]
 		},
 		{
@@ -5562,18 +5564,6 @@
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AzureManageIdentity')]",
-			"type": "Microsoft.DataFactory/factories/credentials",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "ManagedIdentity",
-				"typeProperties": {
-					"resourceId": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourcegroups/HFY-Merchant-Portal/providers/Microsoft.ManagedIdentity/userAssignedIdentities/SmcManageIdentity"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/credentialblob')]",
 			"type": "Microsoft.DataFactory/factories/credentials",
 			"apiVersion": "2018-06-01",
 			"properties": {

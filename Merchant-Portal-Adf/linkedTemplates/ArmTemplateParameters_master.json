@@ -11,12 +11,6 @@
 		"AzureSqlDB_connectionString": {
 			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=hfympcdb.database.windows.net;Initial Catalog=mpcdb"
 		},
-		"SmcFtpB2k_password": {
-			"value": ""
-		},
-		"SmcFtpMps_password": {
-			"value": ""
-		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 			"value": "https://scbsmcseafunc001streamit-test.azurewebsites.net"
 		},

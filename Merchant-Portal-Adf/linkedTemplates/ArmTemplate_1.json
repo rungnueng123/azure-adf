@@ -7,17 +7,13 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "Merchant-Portal-Adf"
 		},
-		"AzureFunctionKafKa_functionKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'functionKey' of 'AzureFunctionKafKa'"
-		},
-		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
+		"SmcFtpMps_properties_typeProperties_host": {
 			"type": "string",
-			"defaultValue": "https://scbsmcseafunc001streamit-test.azurewebsites.net"
+			"defaultValue": "GreenOak.se.scb.co.th"
 		},
-		"B2Kblob_properties_typeProperties_serviceEndpoint": {
+		"SmcFtpMps_properties_typeProperties_userName": {
 			"type": "string",
-			"defaultValue": "https://merchantportalblob.blob.core.windows.net/"
+			"defaultValue": "se\\SMCUsrSit"
 		}
 	},
 	"variables": {
@@ -25,134 +21,30 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/SMCSql')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDB",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/B2K/SMC_IMPORT_MERCHANT_PROFILE"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "MID_L11",
-						"type": "varchar"
-					},
-					{
-						"name": "MID_L11_DESC",
-						"type": "varchar"
-					},
-					{
-						"name": "REMARK",
-						"type": "varchar"
-					},
-					{
-						"name": "UPDATE_DATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "SMC_IMPORT_MERCHANT_PROFILE"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/TerminalProfileTempSql')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDB",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/Database"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "TERMINAL_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "TERMINAL_NAME_TH",
-						"type": "varchar"
-					},
-					{
-						"name": "TERMINAL_NAME_EN",
-						"type": "varchar"
-					},
-					{
-						"name": "MERCHANT_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "ACTIVE_STATUS",
-						"type": "varchar"
-					},
-					{
-						"name": "UPDATE_DATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "TERMINAL_PROFILE_TEMP"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureFunctionKafKa')]",
+			"name": "[concat(parameters('factoryName'), '/SmcFtpMps')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"type": "AzureFunction",
+				"type": "FtpServer",
 				"typeProperties": {
-					"functionAppUrl": "[parameters('AzureFunctionKafKa_properties_typeProperties_functionAppUrl')]",
-					"functionKey": {
-						"type": "SecureString",
-						"value": "[parameters('AzureFunctionKafKa_functionKey')]"
-					},
-					"authentication": "Anonymous"
-				},
-				"connectVia": {
-					"referenceName": "AzureIR-ManagedVNet",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/B2Kblob')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"serviceEndpoint": "[parameters('B2Kblob_properties_typeProperties_serviceEndpoint')]",
-					"accountKind": "StorageV2",
-					"credential": {
-						"referenceName": "AzureManageIdentity",
-						"type": "CredentialReference"
+					"host": "[parameters('SmcFtpMps_properties_typeProperties_host')]",
+					"port": "991",
+					"enableSsl": true,
+					"enableServerCertificateValidation": false,
+					"authenticationType": "Basic",
+					"userName": "[parameters('SmcFtpMps_properties_typeProperties_userName')]",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "KeyVaultADF",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "smc-msp-sftp-password"
 					}
 				},
 				"connectVia": {
-					"referenceName": "AzureIR-ManagedVNet",
+					"referenceName": "shir",
 					"type": "IntegrationRuntimeReference"
 				}
 			},
@@ -357,9 +249,7 @@
 					}
 				]
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM_OUTPUT')]",
@@ -392,9 +282,7 @@
 				},
 				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM_TEMP')]",
@@ -448,9 +336,7 @@
 					}
 				]
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/B2K_EMSMRMST')]",
@@ -486,9 +372,7 @@
 				},
 				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/B2K_EMSMRMST_OUTPUT')]",
@@ -521,9 +405,7 @@
 				},
 				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/B2K_EMSMRMST_TEMP')]",
@@ -556,9 +438,7 @@
 				},
 				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/B2K_MCRMRCH')]",
@@ -598,9 +478,7 @@
 					}
 				]
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/B2K_MCRMRCH_OUTPUT')]",
@@ -633,9 +511,7 @@
 				},
 				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/B2K_MCRMRCH_TEMP')]",
@@ -701,8 +577,63 @@
 					}
 				]
 			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FTPB2KOnPrem')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SmcFtpB2k",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/SFTP/B2K"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "FtpServerLocation",
+						"folderPath": "SIT"
+					},
+					"columnDelimiter": ",",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FTPMPSOnPrem')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SmcFtpMps",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/SFTP/MPS"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "FtpServerLocation"
+					},
+					"columnDelimiter": ",",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+				"[concat(variables('factoryId'), '/linkedServices/SmcFtpMps')]"
 			]
 		},
 		{
@@ -739,9 +670,7 @@
 				},
 				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/MPS_ODSPP')]",
@@ -802,9 +731,7 @@
 					}
 				]
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/MPS_PP_DEBITADVICE')]",
@@ -889,9 +816,7 @@
 					}
 				]
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/MPS_PP_DEBITADVICE_OUTPUT')]",
@@ -924,9 +849,7 @@
 				},
 				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/MPS_PP_DEBITADVICE_TEMP')]",
@@ -959,9 +882,7 @@
 				},
 				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/MPS_PP_MERCHANTFILE')]",
@@ -998,9 +919,40 @@
 					}
 				]
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
-			]
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MPS_PP_MERCHANTFILE_OUTPUT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/MPS/TSBP1VNP"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "MPS_PP_MERCHANTFILE_TEMP.txt",
+						"folderPath": {
+							"value": "@concat(\n    'mps/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
+						"container": "file-upload"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
 		}
 	]
 }
