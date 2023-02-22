@@ -11,7 +11,7 @@
 			"enableServerCertificateValidation": false,
 			"authenticationType": "Basic",
 			"userName": "smcadfusr",
-			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI4OTcyODAwYy1jMzJmLTQ0OWEtOTkzYy1kYjVmYThjMmQzZjQiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIyZjBjZGQwOS1lMWFmLTQyMDktYjcwOC03YTI5ZDJmMzdmZjciLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
 		},
 		"connectVia": {
 			"referenceName": "shir",
