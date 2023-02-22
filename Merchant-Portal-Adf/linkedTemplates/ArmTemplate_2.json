@@ -386,6 +386,10 @@
 								"pipelineStep": {
 									"value": "@variables('pipelineStep')",
 									"type": "Expression"
+								},
+								"pipelineMstKey": {
+									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
 								}
 							}
 						}
@@ -398,6 +402,10 @@
 				"variables": {
 					"pipelineStep": {
 						"type": "String"
+					},
+					"pipelineMstKey": {
+						"type": "String",
+						"defaultValue": "777c4388223e47e2a975478a043947dc"
 					}
 				},
 				"folder": {
@@ -468,6 +476,10 @@
 								"pipelineStep": {
 									"value": "@variables('pipelineStep')",
 									"type": "Expression"
+								},
+								"pipelineMstKey": {
+									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
 								}
 							}
 						}
@@ -480,6 +492,10 @@
 				"variables": {
 					"pipelineStep": {
 						"type": "String"
+					},
+					"pipelineMstKey": {
+						"type": "String",
+						"defaultValue": "6f215d46e6c64b58bea218b89094b01c"
 					}
 				},
 				"folder": {
@@ -549,6 +565,10 @@
 								"pipelineStep": {
 									"value": "@variables('pipelineStep')",
 									"type": "Expression"
+								},
+								"pipelineMstKey": {
+									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
 								}
 							}
 						}
@@ -561,6 +581,10 @@
 				"variables": {
 					"pipelineStep": {
 						"type": "String"
+					},
+					"pipelineMstKey": {
+						"type": "String",
+						"defaultValue": "70cd180d2eb6480b9553262b321c781b"
 					}
 				},
 				"folder": {
@@ -1211,6 +1235,10 @@
 								"pipelineStep": {
 									"value": "@variables('pipelineStep')",
 									"type": "Expression"
+								},
+								"pipelineMstKey": {
+									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
 								}
 							}
 						}
@@ -1241,6 +1269,10 @@
 				"variables": {
 					"pipelineStep": {
 						"type": "String"
+					},
+					"pipelineMstKey": {
+						"type": "String",
+						"defaultValue": "f26e08ca7ade4b8c974a99a81c4989f6"
 					}
 				},
 				"folder": {
@@ -2634,6 +2666,10 @@
 								"pipelineStep": {
 									"value": "@variables('pipelineStep')",
 									"type": "Expression"
+								},
+								"pipelineMstKey": {
+									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
 								}
 							}
 						}
@@ -2696,6 +2732,10 @@
 								"pipelineStep": {
 									"value": "@variables('pipelineStep')",
 									"type": "Expression"
+								},
+								"pipelineMstKey": {
+									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
 								}
 							}
 						}
@@ -2708,6 +2748,10 @@
 				"variables": {
 					"pipelineStep": {
 						"type": "String"
+					},
+					"pipelineMstKey": {
+						"type": "String",
+						"defaultValue": "4345c0af4223436bb8dce390b2b8aa10"
 					}
 				},
 				"folder": {

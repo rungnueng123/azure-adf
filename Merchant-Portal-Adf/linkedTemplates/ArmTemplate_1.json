@@ -275,6 +275,10 @@
 					"pipelineStep": {
 						"type": "string",
 						"defaultValue": "Email Body"
+					},
+					"pipelineMstKey": {
+						"type": "string",
+						"defaultValue": "MicrosoftTeamKey"
 					}
 				},
 				"variables": {
