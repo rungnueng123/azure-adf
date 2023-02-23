@@ -112,7 +112,10 @@
 									"edctermSink": {},
 									"emsmrmstSink": {},
 									"mcrmrchFailSink": {},
-									"mcrmrchFilterFailSink": {}
+									"mcrmrchFilterFailSink": {},
+									"edctermFailSink": {},
+									"emsmrmstFailSink": {},
+									"sink1": {}
 								}
 							},
 							"staging": {},
@@ -1491,6 +1494,9 @@
 					"pipelineMstKey": {
 						"type": "String",
 						"defaultValue": "777c4388223e47e2a975478a043947dc"
+					},
+					"pipelineError": {
+						"type": "String"
 					}
 				},
 				"folder": {
@@ -3366,6 +3372,83 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM_DATA_ERROR')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EDCTERM"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat(\n    'B2K_EDCTERM_DATA_ERROR_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.csv'\n)",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd'),\n    '/error_log'\n)",
+							"type": "Expression"
+						},
+						"container": "file-upload"
+					},
+					"columnDelimiter": "|",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM_FILTER_ERROR')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EDCTERM"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat(\n    'B2K_EDCTERM_FILTER_ERROR_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd'),\n    '/error_log'\n)",
+							"type": "Expression"
+						},
+						"container": "file-upload"
+					},
+					"columnDelimiter": ",",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM_OUTPUT')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -3479,6 +3562,44 @@
 						},
 						"folderPath": {
 							"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd')\n)",
+							"type": "Expression"
+						},
+						"container": "file-upload"
+					},
+					"columnDelimiter": "|",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EMSMRMST_DATA_ERROR')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/EMSMRMST"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat(\n    'B2K_EMSMRMST_DATA_ERROR_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.csv'\n)",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd'),\n    '/error_log'\n)",
 							"type": "Expression"
 						},
 						"container": "file-upload"
@@ -5294,6 +5415,27 @@
 								"type": "DatasetReference"
 							},
 							"name": "mcrmrchFilterFailSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "B2K_EDCTERM_DATA_ERROR",
+								"type": "DatasetReference"
+							},
+							"name": "edctermFailSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "B2K_EMSMRMST_DATA_ERROR",
+								"type": "DatasetReference"
+							},
+							"name": "emsmrmstFailSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "B2K_EDCTERM_FILTER_ERROR",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
 						}
 					],
 					"transformations": [
@@ -5326,6 +5468,15 @@
 						},
 						{
 							"name": "mcrmrchFilterCheck"
+						},
+						{
+							"name": "edctermDataCheck"
+						},
+						{
+							"name": "emsmrmstDataCheck"
+						},
+						{
+							"name": "edctermFilterCheck"
 						}
 					],
 					"scriptLines": [
@@ -5372,7 +5523,7 @@
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> mcrmrchOutputFixedLength",
-						"edctermFixedLength derive(MERCHANT_ID = trim(substring(data, 11, 16)),",
+						"edctermDataCheck@edctermDataPass derive(MERCHANT_ID = trim(substring(data, 11, 16)),",
 						"          Terminal_ID = trim(substring(data, 1, 8)),",
 						"          Terminal_Name_EN = trim(substring(data, 30, 30)),",
 						"          Terminal_Name_TH = trim(substring(data, 30, 30)),",
@@ -5389,7 +5540,7 @@
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> edctermOutputFixedLength",
-						"emsmrmstFixedLength derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
+						"emsmrmstDataCheck@emsmrmstDataPass derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
 						"          EMAIL_1 = trim(substring(data, 24, 70)),",
 						"          EMAIL_2 = trim(substring(data, 94, 70)),",
 						"          EMAIL_3 = trim(substring(data, 164, 70))) ~> emsmrmstColumn1",
@@ -5403,11 +5554,17 @@
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> emsmrmstOutputFixedLength",
 						"mcrmrchFilterCheck@mcrmrchFilterPass filter(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '') ~> filterSequenceKey",
-						"edctermOutputFixedLength filter(MERCHANT_ID != '' && Terminal_ID != '' && Terminal_Name_EN != '' && Terminal_Name_TH != '') ~> filterSequence",
+						"edctermFilterCheck@edctermFilterPass filter(MERCHANT_ID != '' && Terminal_ID != '' && Terminal_Name_EN != '' && Terminal_Name_TH != '') ~> filterSequence",
 						"mcrmrchFixedLength split(length(data) == 1200,",
 						"     disjoint: false) ~> mcrmrchDataCheck@(mcrmrchDataPass, mcrmrchDataFail)",
 						"mcrmrchOutputFixedLength split(length(BILLER_MERCHANT_ID) > 0 && length(ACCOUNT_ID) > 0 && length(TAX_ID) > 0 && length(NAME_TH) > 0 && length(NAME_EN) > 0,",
 						"     disjoint: false) ~> mcrmrchFilterCheck@(mcrmrchFilterPass, mcrmrchFilterFail)",
+						"edctermFixedLength split(length(data) == 450,",
+						"     disjoint: false) ~> edctermDataCheck@(edctermDataPass, edctermDataFail)",
+						"emsmrmstFixedLength split(length(data) == 250,",
+						"     disjoint: false) ~> emsmrmstDataCheck@(emsmrmstDataPass, emsmrmstDatafail)",
+						"edctermOutputFixedLength split(length(MERCHANT_ID) > 0 && length(Terminal_ID) > 0 && length(Terminal_Name_EN) > 0 && length(Terminal_Name_TH) > 0,",
+						"     disjoint: false) ~> edctermFilterCheck@(edctermFilterPass, edctermFilterFail)",
 						"filterSequenceKey sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     partitionFileNames:['B2K_MCRMRCH_TEMP.txt'],",
@@ -5479,7 +5636,45 @@
 						"          UPDATE_DATE,",
 						"          SOURCE",
 						"     ),",
-						"     partitionBy('hash', 1)) ~> mcrmrchFilterFailSink"
+						"     partitionBy('hash', 1)) ~> mcrmrchFilterFailSink",
+						"edctermDataCheck@edctermDataFail sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(concat(\r",
+						"    'B2K_EDCTERM_DATA_ERROR_',\r",
+						"    $FileErrorDate,\r",
+						"    '.txt'\r",
+						"))],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> edctermFailSink",
+						"emsmrmstDataCheck@emsmrmstDatafail sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(concat(\r",
+						"    'B2K_EMSMRMST_DATA_ERROR_',\r",
+						"    $FileErrorDate,\r",
+						"    '.txt'\r",
+						"))],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> emsmrmstFailSink",
+						"edctermFilterCheck@edctermFilterFail sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(concat(\r",
+						"    'B2K_EDCTERM_FILTER_ERROR_',\r",
+						"    $FileErrorDate,\r",
+						"    '.csv'\r",
+						"))],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          MERCHANT_ID,",
+						"          Terminal_ID,",
+						"          Terminal_Name_EN,",
+						"          Terminal_Name_TH,",
+						"          UPDATE_DATE,",
+						"          ACTIVE_STATUS",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> sink1"
 					]
 				}
 			},
@@ -5491,7 +5686,10 @@
 				"[concat(variables('factoryId'), '/datasets/B2K_EDCTERM_OUTPUT')]",
 				"[concat(variables('factoryId'), '/datasets/B2K_EMSMRMST_OUTPUT')]",
 				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH_DATA_ERROR')]",
-				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH_FILTER_ERROR')]"
+				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH_FILTER_ERROR')]",
+				"[concat(variables('factoryId'), '/datasets/B2K_EDCTERM_DATA_ERROR')]",
+				"[concat(variables('factoryId'), '/datasets/B2K_EMSMRMST_DATA_ERROR')]",
+				"[concat(variables('factoryId'), '/datasets/B2K_EDCTERM_FILTER_ERROR')]"
 			]
 		},
 		{

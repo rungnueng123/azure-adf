@@ -13,6 +13,157 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/MPS_PP_DEBITADVICE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/MPS/PPDebitAdvice"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat(\n    'MPS_PP_DebitAdvice_Info_D',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@concat(\n    'mps/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd')\n)",
+							"type": "Expression"
+						},
+						"container": "file-upload"
+					},
+					"columnDelimiter": "|",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MPS_PP_DEBITADVICE_OUTPUT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/MPS/PPDebitAdvice"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "MPS_PP_DEBITADVICE_TEMP.txt",
+						"folderPath": {
+							"value": "@concat(\n    'mps/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
+						"container": "file-upload"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MPS_PP_DEBITADVICE_TEMP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/MPS/PPDebitAdvice"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "MPS_PP_DEBITADVICE_TEMP.txt",
+						"folderPath": {
+							"value": "@concat(\n    'mps/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
+						"container": "file-upload"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/MPS_PP_MERCHANTFILE')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -859,7 +1010,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/MPS_PP_DEBITADVICE_TEMP')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/MPS_PP_MerchantFile to SQL')]",
@@ -1572,584 +1725,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/SFTPB2KBlobTemp')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SFTP MPS to Blob')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "PP_APINOTI SFTP To Blob Storage",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "FtpReadSettings",
-									"recursive": true,
-									"wildcardFileName": {
-										"value": "@concat(\n\t'MPS_ODS_PP_APINOTI_D',\n    formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'yyyyMMdd'),\n\t'.DAT'\n)",
-										"type": "Expression"
-									},
-									"enablePartitionDiscovery": false,
-									"useBinaryTransfer": true,
-									"disableChunking": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "FTPMPSOnPrem",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "SFTPMPSBlobTemp",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "PP_DebitAdvice SFTP To Blob Storage_copy1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "FtpReadSettings",
-									"recursive": true,
-									"wildcardFileName": {
-										"value": "@concat(\n\t'MPS_PP_DebitAdvice_Info_D',\n    formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
-										"type": "Expression"
-									},
-									"enablePartitionDiscovery": false,
-									"useBinaryTransfer": true,
-									"disableChunking": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "FTPMPSOnPrem",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "SFTPMPSBlobTemp",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "PP_MerchantFile SFTP To Blob Storage_copy1_copy1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "FtpReadSettings",
-									"recursive": true,
-									"wildcardFileName": {
-										"value": "@concat(\n\t'PP_MerchantFile',\n\t'.txt'\n)",
-										"type": "Expression"
-									},
-									"enablePartitionDiscovery": false,
-									"useBinaryTransfer": true,
-									"disableChunking": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "FTPMPSOnPrem",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "SFTPMPSBlobTemp",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "SMC_MPS"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-12-13T09:46:48Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/SFTPMPSBlobTemp')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Send Log Kafka')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Azure Function1",
-						"type": "AzureFunctionActivity",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"functionName": {
-								"value": "piilog",
-								"type": "Expression"
-							},
-							"method": "GET",
-							"headers": {}
-						},
-						"linkedServiceName": {
-							"referenceName": "AzureFunctionKafKa",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "Send Email Error",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineStep 1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Send Email",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"pipelineStep": {
-									"value": "@variables('pipelineStep')",
-									"type": "Expression"
-								},
-								"pipelineMstKey": {
-									"value": "@variables('pipelineMstKey')",
-									"type": "Expression"
-								}
-							}
-						}
-					},
-					{
-						"name": "Set PipelineStep 1",
-						"description": "Error key message",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Azure Function1",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "PIILOG_DATA_FAILED"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"pipelineStep": {
-						"type": "String"
-					},
-					"pipelineMstKey": {
-						"type": "String",
-						"defaultValue": "f26e08ca7ade4b8c974a99a81c4989f6"
-					}
-				},
-				"folder": {
-					"name": "SMC_PIILog"
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/B2K_FixLenghtProcessDataFlow')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "B2KMPS"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "B2K_MCRMRCH",
-								"type": "DatasetReference"
-							},
-							"name": "mcrmrchFixedLength"
-						},
-						{
-							"dataset": {
-								"referenceName": "B2K_EDCTERM",
-								"type": "DatasetReference"
-							},
-							"name": "edctermFixedLength"
-						},
-						{
-							"dataset": {
-								"referenceName": "B2K_EMSMRMST",
-								"type": "DatasetReference"
-							},
-							"name": "emsmrmstFixedLength"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "B2K_MCRMRCH_OUTPUT",
-								"type": "DatasetReference"
-							},
-							"name": "mcrmrchSink"
-						},
-						{
-							"dataset": {
-								"referenceName": "B2K_EDCTERM_OUTPUT",
-								"type": "DatasetReference"
-							},
-							"name": "edctermSink"
-						},
-						{
-							"dataset": {
-								"referenceName": "B2K_EMSMRMST_OUTPUT",
-								"type": "DatasetReference"
-							},
-							"name": "emsmrmstSink"
-						},
-						{
-							"dataset": {
-								"referenceName": "B2K_MCRMRCH_DATA_ERROR",
-								"type": "DatasetReference"
-							},
-							"name": "mcrmrchFailSink"
-						},
-						{
-							"dataset": {
-								"referenceName": "B2K_MCRMRCH_FILTER_ERROR",
-								"type": "DatasetReference"
-							},
-							"name": "mcrmrchFilterFailSink"
-						}
-					],
-					"transformations": [
-						{
-							"name": "mcrmrchDerivedFixedLength"
-						},
-						{
-							"name": "mcrmrchOutputFixedLength"
-						},
-						{
-							"name": "edctermDerivedFixedLength"
-						},
-						{
-							"name": "edctermOutputFixedLength"
-						},
-						{
-							"name": "emsmrmstColumn1"
-						},
-						{
-							"name": "emsmrmstOutputFixedLength"
-						},
-						{
-							"name": "filterSequenceKey"
-						},
-						{
-							"name": "filterSequence"
-						},
-						{
-							"name": "mcrmrchDataCheck"
-						},
-						{
-							"name": "mcrmrchFilterCheck"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     UPDATE_DATE as string (toString(currentTimestamp())),",
-						"     FileErrorDate as string ('')",
-						"}",
-						"source(output(",
-						"          data as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> mcrmrchFixedLength",
-						"source(output(",
-						"          data as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> edctermFixedLength",
-						"source(output(",
-						"          data as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> emsmrmstFixedLength",
-						"mcrmrchDataCheck@mcrmrchDataPass derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
-						"          ACCOUNT_ID = trim(substring(data, 310, 10)),",
-						"          TAX_ID = trim(substring(data, 988, 13)),",
-						"          NAME_TH = trim(substring(data, 1029, 40)),",
-						"          NAME_EN = trim(substring(data, 23, 30)),",
-						"          ACTIVE_STATUS = case(or(substring(data, 210, 1) == '2', substring(data, 210, 1) == '5'), 'A', 'I'),",
-						"          UPDATE_DATE = $UPDATE_DATE,",
-						"          SOURCE = \"B2K\") ~> mcrmrchDerivedFixedLength",
-						"mcrmrchDerivedFixedLength select(mapColumn(",
-						"          data,",
-						"          BILLER_MERCHANT_ID,",
-						"          ACCOUNT_ID,",
-						"          TAX_ID,",
-						"          NAME_TH,",
-						"          NAME_EN,",
-						"          ACTIVE_STATUS,",
-						"          UPDATE_DATE,",
-						"          SOURCE",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> mcrmrchOutputFixedLength",
-						"edctermFixedLength derive(MERCHANT_ID = trim(substring(data, 11, 16)),",
-						"          Terminal_ID = trim(substring(data, 1, 8)),",
-						"          Terminal_Name_EN = trim(substring(data, 30, 30)),",
-						"          Terminal_Name_TH = trim(substring(data, 30, 30)),",
-						"          UPDATE_DATE = $UPDATE_DATE,",
-						"          ACTIVE_STATUS = 'A') ~> edctermDerivedFixedLength",
-						"edctermDerivedFixedLength select(mapColumn(",
-						"          data,",
-						"          MERCHANT_ID,",
-						"          Terminal_ID,",
-						"          Terminal_Name_EN,",
-						"          Terminal_Name_TH,",
-						"          UPDATE_DATE,",
-						"          ACTIVE_STATUS",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> edctermOutputFixedLength",
-						"emsmrmstFixedLength derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
-						"          EMAIL_1 = trim(substring(data, 24, 70)),",
-						"          EMAIL_2 = trim(substring(data, 94, 70)),",
-						"          EMAIL_3 = trim(substring(data, 164, 70))) ~> emsmrmstColumn1",
-						"emsmrmstColumn1 select(mapColumn(",
-						"          data,",
-						"          BILLER_MERCHANT_ID,",
-						"          EMAIL_1,",
-						"          EMAIL_2,",
-						"          EMAIL_3",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> emsmrmstOutputFixedLength",
-						"mcrmrchFilterCheck@mcrmrchFilterPass filter(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '') ~> filterSequenceKey",
-						"edctermOutputFixedLength filter(MERCHANT_ID != '' && Terminal_ID != '' && Terminal_Name_EN != '' && Terminal_Name_TH != '') ~> filterSequence",
-						"mcrmrchFixedLength split(length(data) == 1200,",
-						"     disjoint: false) ~> mcrmrchDataCheck@(mcrmrchDataPass, mcrmrchDataFail)",
-						"mcrmrchOutputFixedLength split(length(BILLER_MERCHANT_ID) > 0 && length(ACCOUNT_ID) > 0 && length(TAX_ID) > 0 && length(NAME_TH) > 0 && length(NAME_EN) > 0,",
-						"     disjoint: false) ~> mcrmrchFilterCheck@(mcrmrchFilterPass, mcrmrchFilterFail)",
-						"filterSequenceKey sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:['B2K_MCRMRCH_TEMP.txt'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          BILLER_MERCHANT_ID,",
-						"          ACCOUNT_ID,",
-						"          TAX_ID,",
-						"          NAME_TH,",
-						"          NAME_EN,",
-						"          ACTIVE_STATUS,",
-						"          UPDATE_DATE,",
-						"          SOURCE",
-						"     ),",
-						"     partitionBy('hash', 1)) ~> mcrmrchSink",
-						"filterSequence sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:['B2K_EDCTERM_TEMP.txt'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          MERCHANT_ID,",
-						"          Terminal_ID,",
-						"          Terminal_Name_EN,",
-						"          Terminal_Name_TH,",
-						"          UPDATE_DATE,",
-						"          ACTIVE_STATUS",
-						"     ),",
-						"     partitionBy('hash', 1)) ~> edctermSink",
-						"emsmrmstOutputFixedLength sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:['B2K_EMSMRMST_TEMP.txt'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          BILLER_MERCHANT_ID,",
-						"          EMAIL_1,",
-						"          EMAIL_2,",
-						"          EMAIL_3",
-						"     ),",
-						"     partitionBy('hash', 1)) ~> emsmrmstSink",
-						"mcrmrchDataCheck@mcrmrchDataFail sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:[(concat(\r",
-						"    'B2K_MCRMRCH_DATA_ERROR_',\r",
-						"    $FileErrorDate,\r",
-						"    '.txt'\r",
-						"))],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> mcrmrchFailSink",
-						"mcrmrchFilterCheck@mcrmrchFilterFail sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:[(concat(\r",
-						"    'B2K_MCRMRCH_FILTER_ERROR_',\r",
-						"    $FileErrorDate,\r",
-						"    '.csv'\r",
-						"))],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          BILLER_MERCHANT_ID,",
-						"          ACCOUNT_ID,",
-						"          TAX_ID,",
-						"          NAME_TH,",
-						"          NAME_EN,",
-						"          ACTIVE_STATUS,",
-						"          UPDATE_DATE,",
-						"          SOURCE",
-						"     ),",
-						"     partitionBy('hash', 1)) ~> mcrmrchFilterFailSink"
-					]
-				}
-			},
-			"dependsOn": []
 		}
 	]
 }
