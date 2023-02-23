@@ -52,6 +52,11 @@
 						"pipelineMstKey": {
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
+						},
+						"pipelineName": "Send Log Kafka",
+						"pipelineError": {
+							"value": "@variables('pipelineError')",
+							"type": "Expression"
 						}
 					}
 				}

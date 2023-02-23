@@ -61,6 +61,11 @@
 						"pipelineMstKey": {
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
+						},
+						"pipelineName": "MasterActivityPipeline",
+						"pipelineError": {
+							"value": "@variables('pipelineError')",
+							"type": "Expression"
 						}
 					}
 				}
@@ -126,6 +131,11 @@
 						},
 						"pipelineMstKey": {
 							"value": "@variables('pipelineMstKey')",
+							"type": "Expression"
+						},
+						"pipelineName": "MasterActivityPipeline",
+						"pipelineError": {
+							"value": "@variables('pipelineError')",
 							"type": "Expression"
 						}
 					}

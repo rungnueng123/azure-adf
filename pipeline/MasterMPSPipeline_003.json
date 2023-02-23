@@ -60,7 +60,11 @@
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
 						},
-						"pipelineName": "MasterMPSPipeline_003"
+						"pipelineName": "MasterMPSPipeline_003",
+						"pipelineError": {
+							"value": "@variables('pipelineError')",
+							"type": "Expression"
+						}
 					}
 				}
 			},

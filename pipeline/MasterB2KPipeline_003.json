@@ -59,6 +59,11 @@
 						"pipelineMstKey": {
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
+						},
+						"pipelineName": "MasterB2KPipeline_003",
+						"pipelineError": {
+							"value": "@variables('pipelineError')",
+							"type": "Expression"
 						}
 					}
 				}

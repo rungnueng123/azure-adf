@@ -62,7 +62,11 @@
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
 						},
-						"pipelineName": "MasterMPSPipeline_001"
+						"pipelineName": "MasterMPSPipeline_001",
+						"pipelineError": {
+							"value": "@variables('pipelineError')",
+							"type": "Expression"
+						}
 					}
 				}
 			},
@@ -167,7 +171,11 @@
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
 						},
-						"pipelineName": "MasterMPSPipeline_002"
+						"pipelineName": "MasterMPSPipeline_002",
+						"pipelineError": {
+							"value": "@variables('pipelineError')",
+							"type": "Expression"
+						}
 					}
 				}
 			},
@@ -198,7 +206,11 @@
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
 						},
-						"pipelineName": "MasterMPSPipeline_003"
+						"pipelineName": "MasterMPSPipeline_003",
+						"pipelineError": {
+							"value": "@variables('pipelineError')",
+							"type": "Expression"
+						}
 					}
 				}
 			},

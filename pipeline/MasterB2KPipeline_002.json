@@ -43,7 +43,11 @@
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
 						},
-						"pipelineName": "MasterB2KPipeline_002"
+						"pipelineName": "MasterB2KPipeline_002",
+						"pipelineError": {
+							"value": "@variables('pipelineError')",
+							"type": "Expression"
+						}
 					}
 				}
 			},
@@ -130,7 +134,11 @@
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
 						},
-						"pipelineName": "MasterB2KPipeline_003"
+						"pipelineName": "MasterB2KPipeline_003",
+						"pipelineError": {
+							"value": "@variables('pipelineError')",
+							"type": "Expression"
+						}
 					}
 				}
 			},

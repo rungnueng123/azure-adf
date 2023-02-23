@@ -58,6 +58,11 @@
 						"pipelineMstKey": {
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
+						},
+						"pipelineName": "MasterTaskExpirePipeline",
+						"pipelineError": {
+							"value": "@variables('pipelineError')",
+							"type": "Expression"
 						}
 					}
 				}
