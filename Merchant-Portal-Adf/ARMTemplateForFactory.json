@@ -5432,6 +5432,11 @@
 						"     partitionBy('hash', 1)) ~> emsmrmstSink",
 						"mcrmrchDataCheck@mcrmrchDataFail sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     partitionFileNames:[(concat(\r",
+						"    'B2K_MCRMRCH_DATA_ERROR_',\r",
+						"    $FileErrorDate,\r",
+						"    '.csv'\r",
+						"))],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     partitionBy('hash', 1)) ~> mcrmrchFailSink"
