@@ -1188,9 +1188,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Execute SCB",
+								"activity": "Set PipelineError 1",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1206,9 +1206,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Execute Merchant",
+								"activity": "Set PipelineError 2",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1247,6 +1247,46 @@
 								}
 							}
 						}
+					},
+					{
+						"name": "Set PipelineError 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Execute SCB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Execute SCB').output",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineError 2",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Execute Merchant",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Execute Merchant').output",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -1260,6 +1300,9 @@
 					"pipelineMstKey": {
 						"type": "String",
 						"defaultValue": "4345c0af4223436bb8dce390b2b8aa10"
+					},
+					"pipelineError": {
+						"type": "String"
 					}
 				},
 				"folder": {
@@ -1351,9 +1394,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Get File From SFTP",
+								"activity": "Set PipelineError 1",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1369,9 +1412,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Insert B2K To DB",
+								"activity": "Set PipelineError 2",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1387,9 +1430,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Update Merchant Profile",
+								"activity": "Set PipelineError 3",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1479,6 +1522,66 @@
 									"type": "Expression"
 								},
 								"pipelineName": "MasterB2KPipeline_003"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineError 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get File From SFTP",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Get File From SFTP').output",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineError 2",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Insert B2K To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Insert B2K To DB').output",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineError 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update Merchant Profile').output",
+								"type": "Expression"
 							}
 						}
 					}
@@ -1570,9 +1673,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Insert B2K To DB",
+								"activity": "Set PipelineError 2",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1588,9 +1691,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Update Merchant Profile",
+								"activity": "Set PipelineError 3",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1651,6 +1754,46 @@
 								"pipelineName": "MasterB2KPipeline_003"
 							}
 						}
+					},
+					{
+						"name": "Set PipelineError 2",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Insert B2K To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Insert B2K To DB').output",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineError 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update Merchant Profile').output",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -1664,6 +1807,9 @@
 					"pipelineMstKey": {
 						"type": "String",
 						"defaultValue": "777c4388223e47e2a975478a043947dc"
+					},
+					"pipelineError": {
+						"type": "String"
 					}
 				},
 				"folder": {
@@ -1690,9 +1836,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Update Merchant Profile",
+								"activity": "Set PipelineError 3",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1745,6 +1891,26 @@
 								}
 							}
 						}
+					},
+					{
+						"name": "Set PipelineError 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update Merchant Profile').output",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -1758,6 +1924,9 @@
 					"pipelineMstKey": {
 						"type": "String",
 						"defaultValue": "777c4388223e47e2a975478a043947dc"
+					},
+					"pipelineError": {
+						"type": "String"
 					}
 				},
 				"folder": {
@@ -1849,9 +2018,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Get File From SFTP",
+								"activity": "Set PipelineError 1",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1867,9 +2036,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Insert MPS To DB",
+								"activity": "Set PipelineError 2",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1885,9 +2054,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Update Merchant Profile",
+								"activity": "Set PipelineError 3",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1979,6 +2148,66 @@
 								"pipelineName": "MasterMPSPipeline_003"
 							}
 						}
+					},
+					{
+						"name": "Set PipelineError 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get File From SFTP",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Get File From SFTP').output",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineError 2",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Insert MPS To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Insert MPS To DB').output",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineError 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update Merchant Profile').output",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -1992,6 +2221,9 @@
 					"pipelineMstKey": {
 						"type": "String",
 						"defaultValue": "6f215d46e6c64b58bea218b89094b01c"
+					},
+					"pipelineError": {
+						"type": "String"
 					}
 				},
 				"folder": {
@@ -2065,9 +2297,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Insert MPS To DB",
+								"activity": "Set PipelineError 2",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -2083,9 +2315,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Update Merchant Profile",
+								"activity": "Set PipelineError 3",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -2146,6 +2378,46 @@
 								"pipelineName": "MasterMPSPipeline_003"
 							}
 						}
+					},
+					{
+						"name": "Set PipelineError 2",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Insert MPS To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Insert MPS To DB').output",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineError 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update Merchant Profile').output",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -2159,6 +2431,9 @@
 					"pipelineMstKey": {
 						"type": "String",
 						"defaultValue": "6f215d46e6c64b58bea218b89094b01c"
+					},
+					"pipelineError": {
+						"type": "String"
 					}
 				},
 				"folder": {
@@ -2185,9 +2460,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Update Merchant Profile",
+								"activity": "Set PipelineError 3",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -2241,6 +2516,26 @@
 								"pipelineName": "MasterMPSPipeline_003"
 							}
 						}
+					},
+					{
+						"name": "Set PipelineError 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update Merchant Profile').output",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -2254,6 +2549,9 @@
 					"pipelineMstKey": {
 						"type": "String",
 						"defaultValue": "6f215d46e6c64b58bea218b89094b01c"
+					},
+					"pipelineError": {
+						"type": "String"
 					}
 				},
 				"folder": {
@@ -2292,9 +2590,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Update Task Expire",
+								"activity": "Set PipelineError 1",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -2333,6 +2631,26 @@
 								}
 							}
 						}
+					},
+					{
+						"name": "Set PipelineError 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Task Expire",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update Task Expire').output",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -2346,6 +2664,9 @@
 					"pipelineMstKey": {
 						"type": "String",
 						"defaultValue": "70cd180d2eb6480b9553262b321c781b"
+					},
+					"pipelineError": {
+						"type": "String"
 					}
 				},
 				"folder": {
@@ -3213,6 +3534,23 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
+								"activity": "Set PipelineError 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "PIILOG_DATA_FAILED"
+						}
+					},
+					{
+						"name": "Set PipelineError 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
 								"activity": "Azure Function1",
 								"dependencyConditions": [
 									"Failed"
@@ -3221,8 +3559,11 @@
 						],
 						"userProperties": [],
 						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "PIILOG_DATA_FAILED"
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Azure Function1').output",
+								"type": "Expression"
+							}
 						}
 					}
 				],
@@ -3237,6 +3578,9 @@
 					"pipelineMstKey": {
 						"type": "String",
 						"defaultValue": "f26e08ca7ade4b8c974a99a81c4989f6"
+					},
+					"pipelineError": {
+						"type": "String"
 					}
 				},
 				"folder": {

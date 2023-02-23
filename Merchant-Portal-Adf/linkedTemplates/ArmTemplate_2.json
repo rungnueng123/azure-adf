@@ -1100,9 +1100,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Update Merchant Profile",
+								"activity": "Set PipelineError 3",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1155,6 +1155,26 @@
 								}
 							}
 						}
+					},
+					{
+						"name": "Set PipelineError 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update Merchant Profile').output",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -1168,6 +1188,9 @@
 					"pipelineMstKey": {
 						"type": "String",
 						"defaultValue": "777c4388223e47e2a975478a043947dc"
+					},
+					"pipelineError": {
+						"type": "String"
 					}
 				},
 				"folder": {
@@ -1190,9 +1213,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Update Merchant Profile",
+								"activity": "Set PipelineError 3",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1246,6 +1269,26 @@
 								"pipelineName": "MasterMPSPipeline_003"
 							}
 						}
+					},
+					{
+						"name": "Set PipelineError 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update Merchant Profile').output",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -1259,6 +1302,9 @@
 					"pipelineMstKey": {
 						"type": "String",
 						"defaultValue": "6f215d46e6c64b58bea218b89094b01c"
+					},
+					"pipelineError": {
+						"type": "String"
 					}
 				},
 				"folder": {
@@ -1294,9 +1340,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Update Task Expire",
+								"activity": "Set PipelineError 1",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1335,6 +1381,26 @@
 								}
 							}
 						}
+					},
+					{
+						"name": "Set PipelineError 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Task Expire",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update Task Expire').output",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -1348,6 +1414,9 @@
 					"pipelineMstKey": {
 						"type": "String",
 						"defaultValue": "70cd180d2eb6480b9553262b321c781b"
+					},
+					"pipelineError": {
+						"type": "String"
 					}
 				},
 				"folder": {
