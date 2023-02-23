@@ -476,6 +476,10 @@
 									"UPDATE_DATE": {
 										"value": "'@{variables('UPDATE_DATE')}'",
 										"type": "Expression"
+									},
+									"FileErrorDate": {
+										"value": "'@{variables('FileErrorDate')}'",
+										"type": "Expression"
 									}
 								},
 								"datasetParameters": {

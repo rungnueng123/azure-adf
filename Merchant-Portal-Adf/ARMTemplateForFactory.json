@@ -98,6 +98,10 @@
 									"UPDATE_DATE": {
 										"value": "'@{variables('UPDATE_DATE')}'",
 										"type": "Expression"
+									},
+									"FileErrorDate": {
+										"value": "'@{variables('FileErrorDate')}'",
+										"type": "Expression"
 									}
 								},
 								"datasetParameters": {
@@ -5318,7 +5322,7 @@
 							"name": "mcrmrchDataCheck"
 						},
 						{
-							"name": "filter"
+							"name": "mcrmrchFilterCheck"
 						}
 					],
 					"scriptLines": [
@@ -5395,12 +5399,12 @@
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> emsmrmstOutputFixedLength",
-						"filter@mcrmrchFilterPass filter(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '') ~> filterSequenceKey",
+						"mcrmrchFilterCheck@mcrmrchFilterPass filter(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '') ~> filterSequenceKey",
 						"edctermOutputFixedLength filter(MERCHANT_ID != '' && Terminal_ID != '' && Terminal_Name_EN != '' && Terminal_Name_TH != '') ~> filterSequence",
 						"mcrmrchFixedLength split(length(data) == 1200,",
 						"     disjoint: false) ~> mcrmrchDataCheck@(mcrmrchDataPass, mcrmrchDataFail)",
-						"mcrmrchOutputFixedLength split(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '',",
-						"     disjoint: false) ~> filter@(mcrmrchFilterPass, mcrmrchFilterFail)",
+						"mcrmrchOutputFixedLength split(length(BILLER_MERCHANT_ID) > 0 && length(ACCOUNT_ID) > 0 && length(TAX_ID) > 0 && length(NAME_TH) > 0 && length(NAME_EN) > 0,",
+						"     disjoint: false) ~> mcrmrchFilterCheck@(mcrmrchFilterPass, mcrmrchFilterFail)",
 						"filterSequenceKey sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     partitionFileNames:['B2K_MCRMRCH_TEMP.txt'],",
@@ -5453,7 +5457,7 @@
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     partitionBy('hash', 1)) ~> mcrmrchFailSink",
-						"filter@mcrmrchFilterFail sink(allowSchemaDrift: true,",
+						"mcrmrchFilterCheck@mcrmrchFilterFail sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     partitionFileNames:[(concat(\r",
 						"    'B2K_MCRMRCH_FILTER_ERROR_',\r",
