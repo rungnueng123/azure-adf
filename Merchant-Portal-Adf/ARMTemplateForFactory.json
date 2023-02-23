@@ -5464,7 +5464,7 @@
 						"     partitionFileNames:[(concat(\r",
 						"    'B2K_MCRMRCH_FILTER_ERROR_',\r",
 						"    $FileErrorDate,\r",
-						"    '.txt'\r",
+						"    '.csv'\r",
 						"))],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
