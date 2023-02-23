@@ -485,7 +485,8 @@
 									"mcrmrchSink": {},
 									"edctermSink": {},
 									"emsmrmstSink": {},
-									"mcrmrchFailSink": {}
+									"mcrmrchFailSink": {},
+									"mcrmrchFilterFailSink": {}
 								}
 							},
 							"staging": {},
