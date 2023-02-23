@@ -164,7 +164,7 @@
 				"     skipDuplicateMapOutputs: true) ~> emsmrmstOutputFixedLength",
 				"mcrmrchOutputFixedLength filter(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '') ~> filterSequenceKey",
 				"edctermOutputFixedLength filter(MERCHANT_ID != '' && Terminal_ID != '' && Terminal_Name_EN != '' && Terminal_Name_TH != '') ~> filterSequence",
-				"mcrmrchDerivedFixedLength split(ERROR_FUNCTION(''),",
+				"mcrmrchDerivedFixedLength split(length(TAX_ID) > 0,",
 				"     disjoint: false) ~> split1@(mcrmrchDataPass, mcrmrchDataFail)",
 				"filterSequenceKey sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
