@@ -77,7 +77,11 @@
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
 								},
-								"pipelineName": "MasterMPSPipeline_003"
+								"pipelineName": "MasterMPSPipeline_003",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								}
 							}
 						}
 					},
@@ -188,6 +192,11 @@
 								},
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
+								},
+								"pipelineName": "MasterTaskExpirePipeline",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
 									"type": "Expression"
 								}
 							}
@@ -875,6 +884,11 @@
 								},
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
+								},
+								"pipelineName": "Send Log Kafka",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
 									"type": "Expression"
 								}
 							}
@@ -2253,6 +2267,11 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
+								},
+								"pipelineName": "MasterActivityPipeline",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
 								}
 							}
 						}
@@ -2318,6 +2337,11 @@
 								},
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
+								},
+								"pipelineName": "MasterActivityPipeline",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
 									"type": "Expression"
 								}
 							}
@@ -2533,7 +2557,11 @@
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
 								},
-								"pipelineName": "MasterB2KPipeline_001"
+								"pipelineName": "MasterB2KPipeline_001",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								}
 							}
 						}
 					},
@@ -2639,7 +2667,11 @@
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
 								},
-								"pipelineName": "MasterB2KPipeline_002"
+								"pipelineName": "MasterB2KPipeline_002",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								}
 							}
 						}
 					},
@@ -2670,7 +2702,11 @@
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
 								},
-								"pipelineName": "MasterB2KPipeline_003"
+								"pipelineName": "MasterB2KPipeline_003",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								}
 							}
 						}
 					},
@@ -2810,7 +2846,11 @@
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
 								},
-								"pipelineName": "MasterB2KPipeline_002"
+								"pipelineName": "MasterB2KPipeline_002",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								}
 							}
 						}
 					},
@@ -2898,7 +2938,11 @@
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
 								},
-								"pipelineName": "MasterB2KPipeline_003"
+								"pipelineName": "MasterB2KPipeline_003",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								}
 							}
 						}
 					},
@@ -3037,7 +3081,11 @@
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
 								},
-								"pipelineName": "MasterMPSPipeline_001"
+								"pipelineName": "MasterMPSPipeline_001",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								}
 							}
 						}
 					},
@@ -3143,7 +3191,11 @@
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
 								},
-								"pipelineName": "MasterMPSPipeline_002"
+								"pipelineName": "MasterMPSPipeline_002",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								}
 							}
 						}
 					},
@@ -3174,7 +3226,11 @@
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
 								},
-								"pipelineName": "MasterMPSPipeline_003"
+								"pipelineName": "MasterMPSPipeline_003",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								}
 							}
 						}
 					},
@@ -3314,7 +3370,11 @@
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
 								},
-								"pipelineName": "MasterMPSPipeline_002"
+								"pipelineName": "MasterMPSPipeline_002",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								}
 							}
 						}
 					},
@@ -3402,7 +3462,11 @@
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
 								},
-								"pipelineName": "MasterMPSPipeline_003"
+								"pipelineName": "MasterMPSPipeline_003",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								}
 							}
 						}
 					},

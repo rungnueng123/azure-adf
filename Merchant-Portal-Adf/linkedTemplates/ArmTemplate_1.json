@@ -195,6 +195,10 @@
 					"pipelineName": {
 						"type": "string",
 						"defaultValue": "Pipeline Name"
+					},
+					"pipelineError": {
+						"type": "string",
+						"defaultValue": "pipelineError"
 					}
 				},
 				"variables": {
