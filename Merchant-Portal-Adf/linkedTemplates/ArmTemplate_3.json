@@ -13,6 +13,579 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG_FLOW')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Log"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "B2K_EDCTERM",
+								"type": "DatasetReference"
+							},
+							"name": "querySCBACTIVITYLOG"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "SCB_ACTIVITY_LOG_OUTPUT",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"description": "Export data to SCB_ACTIVITY_LOG_OUTPUT"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     schemaName as string ('dbo'),",
+						"     tableName as string ('SCB_ACTIVITY_LOG'),",
+						"     startDate as string ('2021-12-15 00:00:00.000'),",
+						"     endDate as string ('2021-12-16 00:00:00.000'),",
+						"     columnName as string ('TRANSACTION_DATE'),",
+						"     fileName as string ('temp')",
+						"}",
+						"source(output(",
+						"          ID as integer,",
+						"          TRANSACTION_DATE as timestamp,",
+						"          FUNCTION_CODE as string,",
+						"          LOG as string,",
+						"          LOG_TYPE as string,",
+						"          APPLICATION_NAME as string,",
+						"          EVENT as string,",
+						"          EVENT_TYPE as string,",
+						"          URL as string,",
+						"          MERCHANT_CENTER_ID as string,",
+						"          SOURCE_ADDRESS as string,",
+						"          SOURCE_HOSTNAME as string,",
+						"          SOURCE_USERNAME as string,",
+						"          SOURCE_OBJECT as string,",
+						"          DESTINATION_ADDRESS as string,",
+						"          DESTINATION_HOSTNAME as string,",
+						"          DESTINATION_USERNAME as string,",
+						"          DESTINATION_OBJECT as string,",
+						"          CHANGE_FROM as string,",
+						"          CHANGE_TO as string,",
+						"          SEARCH_CRITERIA as string,",
+						"          RESULT_STATUS as string,",
+						"          MESSAGE as string,",
+						"          UPDATE_PII_LOG_STATUS as string,",
+						"          UPDATE_PII_LOG_DATE as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> querySCBACTIVITYLOG",
+						"querySCBACTIVITYLOG select(mapColumn(",
+						"          TRANSACTION_DATE,",
+						"          FUNCTION_CODE,",
+						"          LOG,",
+						"          LOG_TYPE,",
+						"          APPLICATION_NAME,",
+						"          EVENT,",
+						"          EVENT_TYPE,",
+						"          URL,",
+						"          MERCHANT_CENTER_ID,",
+						"          SOURCE_ADDRESS,",
+						"          SOURCE_HOSTNAME,",
+						"          SOURCE_USERNAME,",
+						"          SOURCE_OBJECT,",
+						"          DESTINATION_ADDRESS,",
+						"          DESTINATION_HOSTNAME,",
+						"          DESTINATION_USERNAME,",
+						"          DESTINATION_OBJECT,",
+						"          CHANGE_FROM,",
+						"          CHANGE_TO,",
+						"          SEARCH_CRITERIA,",
+						"          RESULT_STATUS,",
+						"          MESSAGE,",
+						"          UPDATE_PII_LOG_STATUS,",
+						"          UPDATE_PII_LOG_DATE",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(\"{$fileName}\" + \".log\")],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K Blob to DB')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "FixLenghtProcessFlow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Set UPDATE_DATE",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "B2K_FixLenghtProcessDataFlow",
+								"type": "DataFlowReference",
+								"parameters": {
+									"UPDATE_DATE": {
+										"value": "'@{variables('UPDATE_DATE')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"mcrmrchFixedLength": {},
+									"edctermFixedLength": {},
+									"emsmrmstFixedLength": {},
+									"mcrmrchSink": {},
+									"edctermSink": {},
+									"emsmrmstSink": {}
+								}
+							},
+							"staging": {},
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Set UPDATE_DATE",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "UPDATE_DATE",
+							"value": {
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'yyyy-MM-dd HH:mm:ss')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Insert B2K_MCRMRCH to SQL",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "FixLenghtProcessFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "B2K_MCRMRCH to SQL",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Insert B2K_EDCTERM to SQL",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "FixLenghtProcessFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "B2K_EDCTERM to SQL",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Insert B2K_EMSMRMST to SQL",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "FixLenghtProcessFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "B2K_EMSMRMST to SQL",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"UPDATE_DATE": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_B2K"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-15T07:06:00Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MPS Blob to DB')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "FixLenghtProcessFlow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Set UPDATE_DATE",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "MPS_FixLenghtProcessDataFlow",
+								"type": "DataFlowReference",
+								"parameters": {
+									"UPDATE_DATE": "toString(currentTimestamp())"
+								},
+								"datasetParameters": {
+									"ppmerchantFixedLength": {},
+									"ODSPP": {},
+									"ppdebitadviceFixedLength": {},
+									"ppmerchantSink": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Set UPDATE_DATE",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "UPDATE_DATE",
+							"value": {
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'yyyy-MM-dd HH:mm:ss')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Insert MPS_PP_MerchantFile to SQL",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "FixLenghtProcessFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "MPS_PP_MerchantFile to SQL",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Insert MPS_PP_DebitAdvice to SQL",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "FixLenghtProcessFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "MPS_PP_DebitAdvice to SQL",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"UPDATE_DATE": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_MPS"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MasterActivityPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Execute Merchant",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute SCB",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "MERCHANT_ACTIVITY_LOG",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute SCB",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SCB_ACTIVITY_LOG",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Send Email Error 2",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 2",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								},
+								"pipelineMstKey": {
+									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Execute SCB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "ACHRIVELOG_DATA_FAILED"
+						}
+					},
+					{
+						"name": "Set PipelineStep 2",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Execute Merchant",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "ACHRIVELOG_DATA_FAILED"
+						}
+					},
+					{
+						"name": "Send Email Error 1",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								},
+								"pipelineMstKey": {
+									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
+								}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					},
+					"pipelineMstKey": {
+						"type": "String",
+						"defaultValue": "4345c0af4223436bb8dce390b2b8aa10"
+					}
+				},
+				"folder": {
+					"name": "SMC_AchriveLog"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/triggerKafKaLog')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "Send Log Kafka",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-01-09T12:00:00",
+						"timeZone": "SE Asia Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								1
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/triggerTaskExpire')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -274,7 +847,9 @@
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/MasterB2KPipeline_002')]",
@@ -434,7 +1009,9 @@
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/MasterMPSPipeline_001')]",
@@ -662,7 +1239,9 @@
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/MPS Blob to DB')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/MasterMPSPipeline_002')]",
@@ -822,7 +1401,9 @@
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/MPS Blob to DB')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/triggerActivityLog')]",
@@ -858,7 +1439,9 @@
 					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/MasterActivityPipeline')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/triggerB2K')]",

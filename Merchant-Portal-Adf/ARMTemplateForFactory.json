@@ -118,8 +118,21 @@
 						}
 					},
 					{
-						"name": "B2K_MCRMRCH to SQL",
-						"type": "Copy",
+						"name": "Set UPDATE_DATE",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "UPDATE_DATE",
+							"value": {
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'yyyy-MM-dd HH:mm:ss')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Insert B2K_MCRMRCH to SQL",
+						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
 								"activity": "FixLenghtProcessFlow",
@@ -128,6 +141,354 @@
 								]
 							}
 						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "B2K_MCRMRCH to SQL",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Insert B2K_EDCTERM to SQL",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "FixLenghtProcessFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "B2K_EDCTERM to SQL",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Insert B2K_EMSMRMST to SQL",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "FixLenghtProcessFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "B2K_EMSMRMST to SQL",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"UPDATE_DATE": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_B2K"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-15T07:06:00Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/B2K_FixLenghtProcessDataFlow')]",
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]",
+				"[concat(variables('factoryId'), '/pipelines/B2K_MCRMRCH to SQL')]",
+				"[concat(variables('factoryId'), '/pipelines/B2K_EDCTERM to SQL')]",
+				"[concat(variables('factoryId'), '/pipelines/B2K_EMSMRMST to SQL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM to SQL')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "B2K_EDCTERM to SQL",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Terminal_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "TERMINAL_ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Terminal_Name_TH",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "TERMINAL_NAME_TH",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Terminal_Name_EN",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "TERMINAL_NAME_EN",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "MERCHANT_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "MERCHANT_ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "UPDATE_DATE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "UPDATE_DATE",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "B2K_EDCTERM_TEMP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "TerminalProfileTempSql",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "SMC_B2K"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/B2K_EDCTERM_TEMP')]",
+				"[concat(variables('factoryId'), '/datasets/TerminalProfileTempSql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_EMSMRMST to SQL')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "B2K_EMSMRMST to SQL",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "BILLER_MERCHANT_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BILLER_MERCHANT_ID",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "EMAIL_1",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "EMAIL_1",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "EMAIL_2",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "EMAIL_2",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "EMAIL_3",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "EMAIL_3",
+											"type": "String",
+											"physicalType": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "B2K_EMSMRMST_TEMP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "MerchantEmailTempSQL",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "SMC_B2K"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/B2K_EMSMRMST_TEMP')]",
+				"[concat(variables('factoryId'), '/datasets/MerchantEmailTempSQL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K_MCRMRCH to SQL')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "B2K_MCRMRCH to SQL",
+						"type": "Copy",
+						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -275,279 +636,20 @@
 								"parameters": {}
 							}
 						]
-					},
-					{
-						"name": "B2K_EDCTERM to SQL",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "FixLenghtProcessFlow",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "Terminal_ID",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "TERMINAL_ID",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "Terminal_Name_TH",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "TERMINAL_NAME_TH",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "Terminal_Name_EN",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "TERMINAL_NAME_EN",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "MERCHANT_ID",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "MERCHANT_ID",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "UPDATE_DATE",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "UPDATE_DATE",
-											"type": "DateTime",
-											"physicalType": "datetime"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "B2K_EDCTERM_TEMP",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "TerminalProfileTempSql",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "B2K_EMSMRMST to SQL",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "FixLenghtProcessFlow",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "BILLER_MERCHANT_ID",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "BILLER_MERCHANT_ID",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "EMAIL_1",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "EMAIL_1",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "EMAIL_2",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "EMAIL_2",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "EMAIL_3",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "EMAIL_3",
-											"type": "String",
-											"physicalType": "String"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "B2K_EMSMRMST_TEMP",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "MerchantEmailTempSQL",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "Set UPDATE_DATE",
-						"type": "SetVariable",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "UPDATE_DATE",
-							"value": {
-								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'yyyy-MM-dd HH:mm:ss')",
-								"type": "Expression"
-							}
-						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
-				"variables": {
-					"UPDATE_DATE": {
-						"type": "String"
-					}
-				},
 				"folder": {
 					"name": "SMC_B2K"
 				},
-				"annotations": [],
-				"lastPublishTime": "2022-12-15T07:06:00Z"
+				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/B2K_FixLenghtProcessDataFlow')]",
-				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]",
 				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH_TEMP')]",
-				"[concat(variables('factoryId'), '/datasets/MerchantProfileTempSQL')]",
-				"[concat(variables('factoryId'), '/datasets/B2K_EDCTERM_TEMP')]",
-				"[concat(variables('factoryId'), '/datasets/TerminalProfileTempSql')]",
-				"[concat(variables('factoryId'), '/datasets/B2K_EMSMRMST_TEMP')]",
-				"[concat(variables('factoryId'), '/datasets/MerchantEmailTempSQL')]"
+				"[concat(variables('factoryId'), '/datasets/MerchantProfileTempSQL')]"
 			]
 		},
 		{
@@ -750,8 +852,21 @@
 						}
 					},
 					{
-						"name": "MPS_PP_MerchantFile to SQL",
-						"type": "Copy",
+						"name": "Set UPDATE_DATE",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "UPDATE_DATE",
+							"value": {
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'yyyy-MM-dd HH:mm:ss')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Insert MPS_PP_MerchantFile to SQL",
+						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
 								"activity": "FixLenghtProcessFlow",
@@ -760,67 +875,70 @@
 								]
 							}
 						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
 						"userProperties": [],
 						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
+							"pipeline": {
+								"referenceName": "MPS_PP_MerchantFile to SQL",
+								"type": "PipelineReference"
 							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Insert MPS_PP_DebitAdvice to SQL",
+						"type": "ExecutePipeline",
+						"dependsOn": [
 							{
-								"referenceName": "MPS_PP_MERCHANTFILE_TEMP",
-								"type": "DatasetReference",
-								"parameters": {}
+								"activity": "FixLenghtProcessFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
 							}
 						],
-						"outputs": [
-							{
-								"referenceName": "MerchantProfileTempSQL",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "MPS_PP_DebitAdvice to SQL",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"UPDATE_DATE": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_MPS"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/MPS_FixLenghtProcessDataFlow')]",
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]",
+				"[concat(variables('factoryId'), '/pipelines/MPS_PP_MerchantFile to SQL')]",
+				"[concat(variables('factoryId'), '/pipelines/MPS_PP_DebitAdvice to SQL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MPS_PP_DebitAdvice to SQL')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
 					{
 						"name": "MPS_PP_DebitAdvice to SQL",
 						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "FixLenghtProcessFlow",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
+						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -870,43 +988,95 @@
 								"parameters": {}
 							}
 						]
-					},
-					{
-						"name": "Set UPDATE_DATE",
-						"type": "SetVariable",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "UPDATE_DATE",
-							"value": {
-								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'yyyy-MM-dd HH:mm:ss')",
-								"type": "Expression"
-							}
-						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
-				"variables": {
-					"UPDATE_DATE": {
-						"type": "String"
+				"folder": {
+					"name": "SMC_MPS"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/MPS_PP_DEBITADVICE_TEMP')]",
+				"[concat(variables('factoryId'), '/datasets/MerchantEmailTempSQL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MPS_PP_MerchantFile to SQL')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "MPS_PP_MerchantFile to SQL",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "MPS_PP_MERCHANTFILE_TEMP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "MerchantProfileTempSQL",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
 				},
 				"folder": {
 					"name": "SMC_MPS"
 				},
-				"annotations": [],
-				"lastPublishTime": "2022-12-13T09:46:48Z"
+				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/MPS_FixLenghtProcessDataFlow')]",
-				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]",
 				"[concat(variables('factoryId'), '/datasets/MPS_PP_MERCHANTFILE_TEMP')]",
-				"[concat(variables('factoryId'), '/datasets/MerchantProfileTempSQL')]",
-				"[concat(variables('factoryId'), '/datasets/MPS_PP_DEBITADVICE_TEMP')]",
-				"[concat(variables('factoryId'), '/datasets/MerchantEmailTempSQL')]"
+				"[concat(variables('factoryId'), '/datasets/MerchantProfileTempSQL')]"
 			]
 		},
 		{
