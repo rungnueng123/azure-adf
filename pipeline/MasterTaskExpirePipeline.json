@@ -20,9 +20,9 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Update Task Expire",
+						"activity": "Set PipelineError 1",
 						"dependencyConditions": [
-							"Failed"
+							"Succeeded"
 						]
 					}
 				],
@@ -61,6 +61,26 @@
 						}
 					}
 				}
+			},
+			{
+				"name": "Set PipelineError 1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Update Task Expire",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineError",
+					"value": {
+						"value": "@activity('Update Task Expire').output",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"variables": {
@@ -70,6 +90,9 @@
 			"pipelineMstKey": {
 				"type": "String",
 				"defaultValue": "70cd180d2eb6480b9553262b321c781b"
+			},
+			"pipelineError": {
+				"type": "String"
 			}
 		},
 		"folder": {

@@ -71,9 +71,9 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Execute SCB",
+						"activity": "Set PipelineError 1",
 						"dependencyConditions": [
-							"Failed"
+							"Succeeded"
 						]
 					}
 				],
@@ -89,9 +89,9 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Execute Merchant",
+						"activity": "Set PipelineError 2",
 						"dependencyConditions": [
-							"Failed"
+							"Succeeded"
 						]
 					}
 				],
@@ -130,6 +130,46 @@
 						}
 					}
 				}
+			},
+			{
+				"name": "Set PipelineError 1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Execute SCB",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineError",
+					"value": {
+						"value": "@activity('Execute SCB').output",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set PipelineError 2",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Execute Merchant",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineError",
+					"value": {
+						"value": "@activity('Execute Merchant').output",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"variables": {
@@ -139,6 +179,9 @@
 			"pipelineMstKey": {
 				"type": "String",
 				"defaultValue": "4345c0af4223436bb8dce390b2b8aa10"
+			},
+			"pipelineError": {
+				"type": "String"
 			}
 		},
 		"folder": {

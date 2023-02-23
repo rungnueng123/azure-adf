@@ -62,6 +62,23 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
+						"activity": "Set PipelineError 1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineStep",
+					"value": "PIILOG_DATA_FAILED"
+				}
+			},
+			{
+				"name": "Set PipelineError 1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
 						"activity": "Azure Function1",
 						"dependencyConditions": [
 							"Failed"
@@ -70,8 +87,11 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "pipelineStep",
-					"value": "PIILOG_DATA_FAILED"
+					"variableName": "pipelineError",
+					"value": {
+						"value": "@activity('Azure Function1').output",
+						"type": "Expression"
+					}
 				}
 			}
 		],
@@ -82,6 +102,9 @@
 			"pipelineMstKey": {
 				"type": "String",
 				"defaultValue": "f26e08ca7ade4b8c974a99a81c4989f6"
+			},
+			"pipelineError": {
+				"type": "String"
 			}
 		},
 		"folder": {

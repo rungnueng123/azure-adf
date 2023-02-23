@@ -8,9 +8,9 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Update Merchant Profile",
+						"activity": "Set PipelineError 3",
 						"dependencyConditions": [
-							"Failed"
+							"Succeeded"
 						]
 					}
 				],
@@ -63,6 +63,26 @@
 						"pipelineName": "MasterMPSPipeline_003"
 					}
 				}
+			},
+			{
+				"name": "Set PipelineError 3",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Update Merchant Profile",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineError",
+					"value": {
+						"value": "@activity('Update Merchant Profile').output",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"variables": {
@@ -72,6 +92,9 @@
 			"pipelineMstKey": {
 				"type": "String",
 				"defaultValue": "6f215d46e6c64b58bea218b89094b01c"
+			},
+			"pipelineError": {
+				"type": "String"
 			}
 		},
 		"folder": {
