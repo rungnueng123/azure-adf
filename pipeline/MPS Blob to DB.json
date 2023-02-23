@@ -26,7 +26,14 @@
 						"referenceName": "MPS_FixLenghtProcessDataFlow",
 						"type": "DataFlowReference",
 						"parameters": {
-							"UPDATE_DATE": "toString(currentTimestamp())"
+							"UPDATE_DATE": {
+								"value": "'@{variables('UPDATE_DATE')}'",
+								"type": "Expression"
+							},
+							"FileErrorDate": {
+								"value": "'@{variables('FileErrorDate')}'",
+								"type": "Expression"
+							}
 						}
 					},
 					"integrationRuntime": {
@@ -39,7 +46,14 @@
 			{
 				"name": "Set UPDATE_DATE",
 				"type": "SetVariable",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Set FileErrorDate",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"userProperties": [],
 				"typeProperties": {
 					"variableName": "UPDATE_DATE",
@@ -88,10 +102,26 @@
 					},
 					"waitOnCompletion": true
 				}
+			},
+			{
+				"name": "Set FileErrorDate",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "FileErrorDate",
+					"value": {
+						"value": "@formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd')",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"variables": {
 			"UPDATE_DATE": {
+				"type": "String"
+			},
+			"FileErrorDate": {
 				"type": "String"
 			}
 		},

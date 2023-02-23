@@ -84,7 +84,7 @@
 						"referenceName": "B2K_EDCTERM_FILTER_ERROR",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "edctermFilterFailSink"
 				}
 			],
 			"transformations": [
@@ -323,7 +323,7 @@
 				"          UPDATE_DATE,",
 				"          ACTIVE_STATUS",
 				"     ),",
-				"     partitionBy('hash', 1)) ~> sink1"
+				"     partitionBy('hash', 1)) ~> edctermFilterFailSink"
 			]
 		}
 	}

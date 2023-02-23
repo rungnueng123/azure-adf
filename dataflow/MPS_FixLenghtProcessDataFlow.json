@@ -42,7 +42,35 @@
 						"referenceName": "MPS_PP_DEBITADVICE_OUTPUT",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "ppdebitadviceSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "MPS_PP_MERCHANTFILE_DATA_ERROR",
+						"type": "DatasetReference"
+					},
+					"name": "ppmerchantFailSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "MPS_PP_MERCHANTFILE_FILTER_DATA_ERROR",
+						"type": "DatasetReference"
+					},
+					"name": "ppmerchantFilterFailDataSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "MPS_PP_MERCHANTFILE_FILTER_KEY_ERROR",
+						"type": "DatasetReference"
+					},
+					"name": "ppmerchantFilterFailKeySink"
+				},
+				{
+					"dataset": {
+						"referenceName": "MPS_ODSPP_DATA_ERROR",
+						"type": "DatasetReference"
+					},
+					"name": "odsppFailSink"
 				}
 			],
 			"transformations": [
@@ -66,11 +94,24 @@
 				},
 				{
 					"name": "filterType"
+				},
+				{
+					"name": "ppmerchantDataCheck"
+				},
+				{
+					"name": "ppmerchantFilterDataCheck"
+				},
+				{
+					"name": "ppmerchantFilterKeyCheck"
+				},
+				{
+					"name": "odsppDataCheck"
 				}
 			],
 			"scriptLines": [
 				"parameters{",
-				"     UPDATE_DATE as string (toString(currentTimestamp()))",
+				"     UPDATE_DATE as string (toString(currentTimestamp())),",
+				"     FileErrorDate as string ('')",
 				"}",
 				"source(output(",
 				"          data as string",
@@ -112,7 +153,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> ppdebitadviceFixedLength",
-				"ppmerchantFixedLength derive(BILLER_MERCHANT_ID = trim(substring(data, 1, 15)),",
+				"ppmerchantDataCheck@ppmerchantDataPass derive(BILLER_MERCHANT_ID = trim(substring(data, 1, 15)),",
 				"          ACCOUNT_ID = trim(substring(data, 23, 10)),",
 				"          TAX_ID = trim(substring(data, 1, 13)),",
 				"          NAME_TH = trim(substring(data, 1445, 50)),",
@@ -168,9 +209,17 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> ppdebitadviceOutputFixedLength",
-				"ODSPP filter(REF3 == 'IFB') ~> filterODSPP",
-				"ppmerchantOutputFixedLength filter(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '' && REF1_TH != '' && REF1_EN != '') ~> filterSequenceKey",
-				"ppmerchantDerivedFixedLength filter(BILLER_TYPE == 'TQRC' && BANK_TYPE == 'SCB') ~> filterType",
+				"odsppDataCheck@odsppDataPass filter(REF3 == 'IFB') ~> filterODSPP",
+				"ppmerchantFilterKeyCheck@ppmerchantFilterKeyPass filter(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '' && REF1_TH != '' && REF1_EN != '') ~> filterSequenceKey",
+				"ppmerchantFilterDataCheck@ppmerchantFilterDataPass filter(BILLER_TYPE == 'TQRC' && BANK_TYPE == 'SCB') ~> filterType",
+				"ppmerchantFixedLength split(length(data) == 15086,",
+				"     disjoint: false) ~> ppmerchantDataCheck@(ppmerchantDataPass, ppmerchantDataFail)",
+				"ppmerchantDerivedFixedLength split(BILLER_TYPE == 'TQRC' && BANK_TYPE == 'SCB',",
+				"     disjoint: false) ~> ppmerchantFilterDataCheck@(ppmerchantFilterDataPass, ppmerchantFilterDataFail)",
+				"ppmerchantOutputFixedLength split(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '' && REF1_TH != '' && REF1_EN != '',",
+				"     disjoint: false) ~> ppmerchantFilterKeyCheck@(ppmerchantFilterKeyPass, ppmerchantFilterKeyFail)",
+				"ODSPP split(REF3 == 'IFB',",
+				"     disjoint: false) ~> odsppDataCheck@(odsppDataPass, odsppDataFail)",
 				"filterSequenceKey sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['MPS_PP_MERCHANTFILE_TEMP.txt'],",
@@ -200,7 +249,101 @@
 				"     partitionFileNames:['MPS_PP_DEBITADVICE_TEMP.txt'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink1"
+				"     partitionBy('hash', 1)) ~> ppdebitadviceSink",
+				"ppmerchantDataCheck@ppmerchantDataFail sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:[(concat(\r",
+				"    'MPS_PP_MERCHANT_DATA_ERROR_',\r",
+				"    $FileErrorDate,\r",
+				"    '.txt'\r",
+				"))],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> ppmerchantFailSink",
+				"ppmerchantFilterDataCheck@ppmerchantFilterDataFail sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:[(concat(\r",
+				"    'PP_MERCHANT_FILTER_DATA_ERROR_',\r",
+				"    $FileErrorDate,\r",
+				"    '.csv'\r",
+				"))],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          BILLER_MERCHANT_ID,",
+				"          ACCOUNT_ID,",
+				"          TAX_ID,",
+				"          NAME_TH,",
+				"          NAME_EN,",
+				"          COMPANY_NAME_TH,",
+				"          COMPANY_NAME_EN,",
+				"          ACTIVE_STATUS,",
+				"          UPDATE_DATE,",
+				"          BUSINESS_TYPE,",
+				"          REF1_TH,",
+				"          REF1_EN,",
+				"          REF2_TH,",
+				"          REF2_EN,",
+				"          SOURCE,",
+				"          BILLER_TYPE,",
+				"          BANK_TYPE",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> ppmerchantFilterFailDataSink",
+				"ppmerchantFilterKeyCheck@ppmerchantFilterKeyFail sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:[(concat(\r",
+				"    'PP_MERCHANT_FILTER_KEY_ERROR_',\r",
+				"    $FileErrorDate,\r",
+				"    '.csv'\r",
+				"))],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          BILLER_MERCHANT_ID,",
+				"          ACCOUNT_ID,",
+				"          TAX_ID,",
+				"          NAME_TH,",
+				"          NAME_EN,",
+				"          COMPANY_NAME_TH,",
+				"          COMPANY_NAME_EN,",
+				"          ACTIVE_STATUS,",
+				"          UPDATE_DATE,",
+				"          BUSINESS_TYPE,",
+				"          REF1_TH,",
+				"          REF1_EN,",
+				"          REF2_TH,",
+				"          REF2_EN,",
+				"          SOURCE,",
+				"          Id,",
+				"          Biller_id,",
+				"          Englishname,",
+				"          Thainame,",
+				"          REF3,",
+				"          Method_type,",
+				"          Method_value,",
+				"          MethodPrecedence",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> ppmerchantFilterFailKeySink",
+				"odsppDataCheck@odsppDataFail sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:[(concat(\r",
+				"    'MPS_ODSPP_DATA_ERROR_',\r",
+				"    $FileErrorDate,\r",
+				"    '.csv'\r",
+				"))],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Id,",
+				"          Biller_id,",
+				"          Englishname,",
+				"          Thainame,",
+				"          REF3,",
+				"          Method_type,",
+				"          Method_value,",
+				"          MethodPrecedence",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> odsppFailSink"
 			]
 		}
 	}
