@@ -62,6 +62,10 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
+					"pipeline": {
+						"referenceName": "MPS_PP_MerchantFile to SQL",
+						"type": "PipelineReference"
+					},
 					"waitOnCompletion": true
 				}
 			},
@@ -78,6 +82,10 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
+					"pipeline": {
+						"referenceName": "MPS_PP_DebitAdvice to SQL",
+						"type": "PipelineReference"
+					},
 					"waitOnCompletion": true
 				}
 			}
