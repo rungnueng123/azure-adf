@@ -37,124 +37,6 @@
 				}
 			},
 			{
-				"name": "MPS_PP_MerchantFile to SQL",
-				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "FixLenghtProcessFlow",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
-					},
-					"sink": {
-						"type": "AzureSqlSink",
-						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "MPS_PP_MERCHANTFILE_TEMP",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "MerchantProfileTempSQL",
-						"type": "DatasetReference"
-					}
-				]
-			},
-			{
-				"name": "MPS_PP_DebitAdvice to SQL",
-				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "FixLenghtProcessFlow",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
-					},
-					"sink": {
-						"type": "AzureSqlSink",
-						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "MPS_PP_DEBITADVICE_TEMP",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "MerchantEmailTempSQL",
-						"type": "DatasetReference"
-					}
-				]
-			},
-			{
 				"name": "Set UPDATE_DATE",
 				"type": "SetVariable",
 				"dependsOn": [],
@@ -165,6 +47,38 @@
 						"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'yyyy-MM-dd HH:mm:ss')",
 						"type": "Expression"
 					}
+				}
+			},
+			{
+				"name": "Insert MPS_PP_MerchantFile to SQL",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "FixLenghtProcessFlow",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Insert MPS_PP_DebitAdvice to SQL",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "FixLenghtProcessFlow",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitOnCompletion": true
 				}
 			}
 		],
