@@ -42,7 +42,8 @@
 						"pipelineMstKey": {
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
-						}
+						},
+						"pipelineName": "MasterMPSPipeline_002"
 					}
 				}
 			},
@@ -128,7 +129,8 @@
 						"pipelineMstKey": {
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
-						}
+						},
+						"pipelineName": "MasterMPSPipeline_003"
 					}
 				}
 			}

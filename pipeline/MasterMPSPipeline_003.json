@@ -59,7 +59,8 @@
 						"pipelineMstKey": {
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
-						}
+						},
+						"pipelineName": "MasterMPSPipeline_003"
 					}
 				}
 			}
