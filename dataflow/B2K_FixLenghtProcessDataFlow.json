@@ -50,6 +50,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "emsmrmstSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "B2K_MCRMRCH_DATA_ERROR",
+						"type": "DatasetReference"
+					},
+					"name": "mcrmrchFailSink"
 				}
 			],
 			"transformations": [
@@ -76,11 +83,15 @@
 				},
 				{
 					"name": "filterSequence"
+				},
+				{
+					"name": "split1"
 				}
 			],
 			"scriptLines": [
 				"parameters{",
-				"     UPDATE_DATE as string (toString(currentTimestamp()))",
+				"     UPDATE_DATE as string (toString(currentTimestamp())),",
+				"     FileErrorDate as string ('')",
 				"}",
 				"source(output(",
 				"          data as string",
@@ -108,7 +119,7 @@
 				"          ACTIVE_STATUS = case(or(substring(data, 210, 1) == '2', substring(data, 210, 1) == '5'), 'A', 'I'),",
 				"          UPDATE_DATE = $UPDATE_DATE,",
 				"          SOURCE = \"B2K\") ~> mcrmrchDerivedFixedLength",
-				"mcrmrchDerivedFixedLength select(mapColumn(",
+				"split1@mcrmrchDataPass select(mapColumn(",
 				"          data,",
 				"          BILLER_MERCHANT_ID,",
 				"          ACCOUNT_ID,",
@@ -153,6 +164,8 @@
 				"     skipDuplicateMapOutputs: true) ~> emsmrmstOutputFixedLength",
 				"mcrmrchOutputFixedLength filter(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '') ~> filterSequenceKey",
 				"edctermOutputFixedLength filter(MERCHANT_ID != '' && Terminal_ID != '' && Terminal_Name_EN != '' && Terminal_Name_TH != '') ~> filterSequence",
+				"mcrmrchDerivedFixedLength split(ERROR_FUNCTION(''),",
+				"     disjoint: false) ~> split1@(mcrmrchDataPass, mcrmrchDataFail)",
 				"filterSequenceKey sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['B2K_MCRMRCH_TEMP.txt'],",
@@ -194,7 +207,17 @@
 				"          EMAIL_2,",
 				"          EMAIL_3",
 				"     ),",
-				"     partitionBy('hash', 1)) ~> emsmrmstSink"
+				"     partitionBy('hash', 1)) ~> emsmrmstSink",
+				"split1@mcrmrchDataFail sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:[(concat(\r",
+				"    'B2K_MCRMRCH_DATA_ERROR_',\r",
+				"    $FileErrorDate,\r",
+				"    '.csv'\r",
+				"))],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> mcrmrchFailSink"
 			]
 		}
 	}
