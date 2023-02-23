@@ -688,7 +688,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterB2KPipeline_001"
 							}
 						}
 					},
@@ -793,7 +794,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterB2KPipeline_002"
 							}
 						}
 					},
@@ -823,7 +825,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterB2KPipeline_003"
 							}
 						}
 					}
@@ -898,7 +901,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterB2KPipeline_002"
 							}
 						}
 					},
@@ -985,7 +989,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterB2KPipeline_003"
 							}
 						}
 					}
@@ -1080,7 +1085,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterMPSPipeline_001"
 							}
 						}
 					},
@@ -1185,7 +1191,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterMPSPipeline_002"
 							}
 						}
 					},
@@ -1215,7 +1222,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterMPSPipeline_003"
 							}
 						}
 					}
@@ -1290,7 +1298,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterMPSPipeline_002"
 							}
 						}
 					},
@@ -1377,7 +1386,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterMPSPipeline_003"
 							}
 						}
 					}

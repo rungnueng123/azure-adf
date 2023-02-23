@@ -1308,7 +1308,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterB2KPipeline_001"
 							}
 						}
 					},
@@ -1413,7 +1414,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterB2KPipeline_002"
 							}
 						}
 					},
@@ -1443,7 +1445,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterB2KPipeline_003"
 							}
 						}
 					}
@@ -1521,7 +1524,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterB2KPipeline_002"
 							}
 						}
 					},
@@ -1608,7 +1612,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterB2KPipeline_003"
 							}
 						}
 					}
@@ -1798,7 +1803,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterMPSPipeline_001"
 							}
 						}
 					},
@@ -1903,7 +1909,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterMPSPipeline_002"
 							}
 						}
 					},
@@ -1933,7 +1940,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterMPSPipeline_003"
 							}
 						}
 					}
@@ -2011,7 +2019,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterMPSPipeline_002"
 							}
 						}
 					},
@@ -2098,7 +2107,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterMPSPipeline_003"
 							}
 						}
 					}
@@ -2192,7 +2202,8 @@
 								"pipelineMstKey": {
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
-								}
+								},
+								"pipelineName": "MasterMPSPipeline_003"
 							}
 						}
 					}
@@ -2942,7 +2953,7 @@
 								"Content-Type": "application/json"
 							},
 							"body": {
-								"value": "@concat(\n\t'{\"to\": \"',\n\t'lalita.yaichom@stream.co.th,rungnueng.luangkamchorn@stream.co.th,bhurita.chayakunphakdi@scb.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'\",\"mstUrl\": \"',\n\tvariables('mstUrl'),\n\tpipeline().parameters.pipelineMstKey,\n\tvariables('mstUrlKey'),\n\t'\",\"isSendMST\": true',\n\t'}'\n)",
+								"value": "@concat(\n\t'{\"to\": \"',\n\t'lalita.yaichom@stream.co.th,rungnueng.luangkamchorn@stream.co.th,bhurita.chayakunphakdi@scb.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t' (',\n\tpipeline().parameters.pipelineName,\n\t') วันที่ ',\n\tvariables('subjectDate'),\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'\",\"mstUrl\": \"',\n\tvariables('mstUrl'),\n\tpipeline().parameters.pipelineMstKey,\n\tvariables('mstUrlKey'),\n\t'\",\"isSendMST\": true',\n\t'}'\n)",
 								"type": "Expression"
 							}
 						}
@@ -2985,7 +2996,14 @@
 					{
 						"name": "Get Email Body",
 						"type": "Lookup",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Set Subject Date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -3010,6 +3028,19 @@
 								"parameters": {}
 							}
 						}
+					},
+					{
+						"name": "Set Subject Date",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "subjectDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -3024,6 +3055,10 @@
 					"pipelineMstKey": {
 						"type": "string",
 						"defaultValue": "MicrosoftTeamKey"
+					},
+					"pipelineName": {
+						"type": "string",
+						"defaultValue": "Pipeline Name"
 					}
 				},
 				"variables": {
@@ -3058,6 +3093,9 @@
 					"mstUrlKey": {
 						"type": "String",
 						"defaultValue": "/21f0e5ae-977c-4a51-8fcf-d16ea01f2450"
+					},
+					"subjectDate": {
+						"type": "String"
 					}
 				},
 				"folder": {
