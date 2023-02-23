@@ -24,6 +24,7 @@
 				"container": "file-upload"
 			},
 			"columnDelimiter": ",",
+			"encodingName": "WINDOWS-874",
 			"escapeChar": "\\",
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
