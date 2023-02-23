@@ -210,7 +210,7 @@
 				"     disjoint: false) ~> mcrmrchFilterCheck@(mcrmrchFilterPass, mcrmrchFilterFail)",
 				"edctermFixedLength split(length(data) == 450,",
 				"     disjoint: false) ~> edctermDataCheck@(edctermDataPass, edctermDataFail)",
-				"emsmrmstFixedLength split(length(data) == 250,",
+				"emsmrmstFixedLength split(length(data) >= 234,",
 				"     disjoint: false) ~> emsmrmstDataCheck@(emsmrmstDataPass, emsmrmstDatafail)",
 				"edctermOutputFixedLength split(length(MERCHANT_ID) > 0 && length(Terminal_ID) > 0 && length(Terminal_Name_EN) > 0 && length(Terminal_Name_TH) > 0,",
 				"     disjoint: false) ~> edctermFilterCheck@(edctermFilterPass, edctermFilterFail)",
