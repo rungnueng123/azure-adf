@@ -64,6 +64,27 @@
 						"type": "DatasetReference"
 					},
 					"name": "mcrmrchFilterFailSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "B2K_EDCTERM_DATA_ERROR",
+						"type": "DatasetReference"
+					},
+					"name": "edctermFailSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "B2K_EMSMRMST_DATA_ERROR",
+						"type": "DatasetReference"
+					},
+					"name": "emsmrmstFailSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "B2K_EDCTERM_FILTER_ERROR",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
 				}
 			],
 			"transformations": [
@@ -96,6 +117,15 @@
 				},
 				{
 					"name": "mcrmrchFilterCheck"
+				},
+				{
+					"name": "edctermDataCheck"
+				},
+				{
+					"name": "emsmrmstDataCheck"
+				},
+				{
+					"name": "edctermFilterCheck"
 				}
 			],
 			"scriptLines": [
@@ -142,7 +172,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> mcrmrchOutputFixedLength",
-				"edctermFixedLength derive(MERCHANT_ID = trim(substring(data, 11, 16)),",
+				"edctermDataCheck@edctermDataPass derive(MERCHANT_ID = trim(substring(data, 11, 16)),",
 				"          Terminal_ID = trim(substring(data, 1, 8)),",
 				"          Terminal_Name_EN = trim(substring(data, 30, 30)),",
 				"          Terminal_Name_TH = trim(substring(data, 30, 30)),",
@@ -159,7 +189,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> edctermOutputFixedLength",
-				"emsmrmstFixedLength derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
+				"emsmrmstDataCheck@emsmrmstDataPass derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
 				"          EMAIL_1 = trim(substring(data, 24, 70)),",
 				"          EMAIL_2 = trim(substring(data, 94, 70)),",
 				"          EMAIL_3 = trim(substring(data, 164, 70))) ~> emsmrmstColumn1",
@@ -173,11 +203,17 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> emsmrmstOutputFixedLength",
 				"mcrmrchFilterCheck@mcrmrchFilterPass filter(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '') ~> filterSequenceKey",
-				"edctermOutputFixedLength filter(MERCHANT_ID != '' && Terminal_ID != '' && Terminal_Name_EN != '' && Terminal_Name_TH != '') ~> filterSequence",
+				"edctermFilterCheck@edctermFilterPass filter(MERCHANT_ID != '' && Terminal_ID != '' && Terminal_Name_EN != '' && Terminal_Name_TH != '') ~> filterSequence",
 				"mcrmrchFixedLength split(length(data) == 1200,",
 				"     disjoint: false) ~> mcrmrchDataCheck@(mcrmrchDataPass, mcrmrchDataFail)",
 				"mcrmrchOutputFixedLength split(length(BILLER_MERCHANT_ID) > 0 && length(ACCOUNT_ID) > 0 && length(TAX_ID) > 0 && length(NAME_TH) > 0 && length(NAME_EN) > 0,",
 				"     disjoint: false) ~> mcrmrchFilterCheck@(mcrmrchFilterPass, mcrmrchFilterFail)",
+				"edctermFixedLength split(length(data) == 450,",
+				"     disjoint: false) ~> edctermDataCheck@(edctermDataPass, edctermDataFail)",
+				"emsmrmstFixedLength split(length(data) == 250,",
+				"     disjoint: false) ~> emsmrmstDataCheck@(emsmrmstDataPass, emsmrmstDatafail)",
+				"edctermOutputFixedLength split(length(MERCHANT_ID) > 0 && length(Terminal_ID) > 0 && length(Terminal_Name_EN) > 0 && length(Terminal_Name_TH) > 0,",
+				"     disjoint: false) ~> edctermFilterCheck@(edctermFilterPass, edctermFilterFail)",
 				"filterSequenceKey sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['B2K_MCRMRCH_TEMP.txt'],",
@@ -249,7 +285,45 @@
 				"          UPDATE_DATE,",
 				"          SOURCE",
 				"     ),",
-				"     partitionBy('hash', 1)) ~> mcrmrchFilterFailSink"
+				"     partitionBy('hash', 1)) ~> mcrmrchFilterFailSink",
+				"edctermDataCheck@edctermDataFail sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:[(concat(\r",
+				"    'B2K_EDCTERM_DATA_ERROR_',\r",
+				"    $FileErrorDate,\r",
+				"    '.txt'\r",
+				"))],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> edctermFailSink",
+				"emsmrmstDataCheck@emsmrmstDatafail sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:[(concat(\r",
+				"    'B2K_EMSMRMST_DATA_ERROR_',\r",
+				"    $FileErrorDate,\r",
+				"    '.txt'\r",
+				"))],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> emsmrmstFailSink",
+				"edctermFilterCheck@edctermFilterFail sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:[(concat(\r",
+				"    'B2K_EDCTERM_FILTER_ERROR_',\r",
+				"    $FileErrorDate,\r",
+				"    '.csv'\r",
+				"))],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          MERCHANT_ID,",
+				"          Terminal_ID,",
+				"          Terminal_Name_EN,",
+				"          Terminal_Name_TH,",
+				"          UPDATE_DATE,",
+				"          ACTIVE_STATUS",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
 	}

@@ -210,6 +210,9 @@
 			"pipelineMstKey": {
 				"type": "String",
 				"defaultValue": "777c4388223e47e2a975478a043947dc"
+			},
+			"pipelineError": {
+				"type": "String"
 			}
 		},
 		"folder": {
