@@ -13,6 +13,596 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/MasterMPSPipeline_003')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set PipelineStep 2",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineError 3",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "MPS_INTEGRATE_FAILED"
+						}
+					},
+					{
+						"name": "Update Merchant Profile",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Update Merchant Profile",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Send Email Error 3",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 2",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								},
+								"pipelineMstKey": {
+									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
+								},
+								"pipelineName": "MasterMPSPipeline_003"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineError 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update Merchant Profile').output",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					},
+					"pipelineMstKey": {
+						"type": "String",
+						"defaultValue": "6f215d46e6c64b58bea218b89094b01c"
+					},
+					"pipelineError": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_MPS"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MasterTaskExpirePipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Update Task Expire",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Update All Task Expire",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineError 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "EXPIRE_JOBS_FAILED"
+						}
+					},
+					{
+						"name": "Send Email Error",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								},
+								"pipelineMstKey": {
+									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Set PipelineError 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Task Expire",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update Task Expire').output",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					},
+					"pipelineMstKey": {
+						"type": "String",
+						"defaultValue": "70cd180d2eb6480b9553262b321c781b"
+					},
+					"pipelineError": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_Task_Expire"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set Date Start",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "startDateSCB",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),1,'Year'),'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Date End",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date Start",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "endDateSCB",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Year'),'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set File Name",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date End",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "fileNameSCB",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Backup SCB Log",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Set File Name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat(\n\t'SELECT * FROM SCB_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateSCB'),\n\t''' AND ''',\n\tvariables('endDateSCB'),\n\t''''\n)",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SCB_ACTIVITY_LOG",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SCB_ACTIVITY_LOG_OUTPUT",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"startDateSCB": {
+						"type": "String"
+					},
+					"endDateSCB": {
+						"type": "String"
+					},
+					"fileNameSCB": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_AchriveLog"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-16T03:36:51Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SFTP B2K to Blob')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get File EDCTERM SFTP To Blob Storage_copy1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "FtpReadSettings",
+									"recursive": true,
+									"wildcardFileName": {
+										"value": "@concat(\n\t'B2K_EDCTERM_',\n    formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
+										"type": "Expression"
+									},
+									"enablePartitionDiscovery": false,
+									"useBinaryTransfer": true,
+									"disableChunking": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "FTPB2KOnPrem",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SFTPB2KBlobTemp",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Get File EMSMRMST SFTP To Blob Storage_copy1_copy1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "FtpReadSettings",
+									"recursive": true,
+									"wildcardFileName": {
+										"value": "@concat(\n\t'B2K_EMSMRMST_',\n    formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
+										"type": "Expression"
+									},
+									"enablePartitionDiscovery": false,
+									"useBinaryTransfer": true,
+									"disableChunking": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "FTPB2KOnPrem",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SFTPB2KBlobTemp",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Get File MCRMRCH SFTP To Blob Storage_copy1_copy1_copy1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "FtpReadSettings",
+									"recursive": true,
+									"wildcardFileName": {
+										"value": "@concat(\n\t'B2K_MCRMRCH_',\n    formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'yyyyMMdd'),\n\t'.txt'\n)",
+										"type": "Expression"
+									},
+									"enablePartitionDiscovery": false,
+									"useBinaryTransfer": true,
+									"disableChunking": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "FTPB2KOnPrem",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SFTPB2KBlobTemp",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "SMC_B2K"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SFTP MPS to Blob')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -440,7 +1030,7 @@
 								"referenceName": "B2K_EDCTERM_FILTER_ERROR",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "edctermFilterFailSink"
 						}
 					],
 					"transformations": [
@@ -679,7 +1269,7 @@
 						"          UPDATE_DATE,",
 						"          ACTIVE_STATUS",
 						"     ),",
-						"     partitionBy('hash', 1)) ~> sink1"
+						"     partitionBy('hash', 1)) ~> edctermFilterFailSink"
 					]
 				}
 			},
@@ -840,7 +1430,35 @@
 								"referenceName": "MPS_PP_DEBITADVICE_OUTPUT",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "ppdebitadviceSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "MPS_PP_MERCHANTFILE_DATA_ERROR",
+								"type": "DatasetReference"
+							},
+							"name": "ppmerchantFailSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "MPS_PP_MERCHANTFILE_FILTER_DATA_ERROR",
+								"type": "DatasetReference"
+							},
+							"name": "ppmerchantFilterFailDataSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "MPS_PP_MERCHANTFILE_FILTER_KEY_ERROR",
+								"type": "DatasetReference"
+							},
+							"name": "ppmerchantFilterFailKeySink"
+						},
+						{
+							"dataset": {
+								"referenceName": "MPS_ODSPP_DATA_ERROR",
+								"type": "DatasetReference"
+							},
+							"name": "odsppFailSink"
 						}
 					],
 					"transformations": [
@@ -864,11 +1482,24 @@
 						},
 						{
 							"name": "filterType"
+						},
+						{
+							"name": "ppmerchantDataCheck"
+						},
+						{
+							"name": "ppmerchantFilterDataCheck"
+						},
+						{
+							"name": "ppmerchantFilterKeyCheck"
+						},
+						{
+							"name": "odsppDataCheck"
 						}
 					],
 					"scriptLines": [
 						"parameters{",
-						"     UPDATE_DATE as string (toString(currentTimestamp()))",
+						"     UPDATE_DATE as string (toString(currentTimestamp())),",
+						"     FileErrorDate as string ('')",
 						"}",
 						"source(output(",
 						"          data as string",
@@ -910,7 +1541,7 @@
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false) ~> ppdebitadviceFixedLength",
-						"ppmerchantFixedLength derive(BILLER_MERCHANT_ID = trim(substring(data, 1, 15)),",
+						"ppmerchantDataCheck@ppmerchantDataPass derive(BILLER_MERCHANT_ID = trim(substring(data, 1, 15)),",
 						"          ACCOUNT_ID = trim(substring(data, 23, 10)),",
 						"          TAX_ID = trim(substring(data, 1, 13)),",
 						"          NAME_TH = trim(substring(data, 1445, 50)),",
@@ -966,9 +1597,17 @@
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> ppdebitadviceOutputFixedLength",
-						"ODSPP filter(REF3 == 'IFB') ~> filterODSPP",
-						"ppmerchantOutputFixedLength filter(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '' && REF1_TH != '' && REF1_EN != '') ~> filterSequenceKey",
-						"ppmerchantDerivedFixedLength filter(BILLER_TYPE == 'TQRC' && BANK_TYPE == 'SCB') ~> filterType",
+						"odsppDataCheck@odsppDataPass filter(REF3 == 'IFB') ~> filterODSPP",
+						"ppmerchantFilterKeyCheck@ppmerchantFilterKeyPass filter(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '' && REF1_TH != '' && REF1_EN != '') ~> filterSequenceKey",
+						"ppmerchantFilterDataCheck@ppmerchantFilterDataPass filter(BILLER_TYPE == 'TQRC' && BANK_TYPE == 'SCB') ~> filterType",
+						"ppmerchantFixedLength split(length(data) == 15086,",
+						"     disjoint: false) ~> ppmerchantDataCheck@(ppmerchantDataPass, ppmerchantDataFail)",
+						"ppmerchantDerivedFixedLength split(BILLER_TYPE == 'TQRC' && BANK_TYPE == 'SCB',",
+						"     disjoint: false) ~> ppmerchantFilterDataCheck@(ppmerchantFilterDataPass, ppmerchantFilterDataFail)",
+						"ppmerchantOutputFixedLength split(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '' && REF1_TH != '' && REF1_EN != '',",
+						"     disjoint: false) ~> ppmerchantFilterKeyCheck@(ppmerchantFilterKeyPass, ppmerchantFilterKeyFail)",
+						"ODSPP split(REF3 == 'IFB',",
+						"     disjoint: false) ~> odsppDataCheck@(odsppDataPass, odsppDataFail)",
 						"filterSequenceKey sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     partitionFileNames:['MPS_PP_MERCHANTFILE_TEMP.txt'],",
@@ -998,7 +1637,101 @@
 						"     partitionFileNames:['MPS_PP_DEBITADVICE_TEMP.txt'],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> sink1"
+						"     partitionBy('hash', 1)) ~> ppdebitadviceSink",
+						"ppmerchantDataCheck@ppmerchantDataFail sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(concat(\r",
+						"    'MPS_PP_MERCHANT_DATA_ERROR_',\r",
+						"    $FileErrorDate,\r",
+						"    '.txt'\r",
+						"))],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> ppmerchantFailSink",
+						"ppmerchantFilterDataCheck@ppmerchantFilterDataFail sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(concat(\r",
+						"    'PP_MERCHANT_FILTER_DATA_ERROR_',\r",
+						"    $FileErrorDate,\r",
+						"    '.csv'\r",
+						"))],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          BILLER_MERCHANT_ID,",
+						"          ACCOUNT_ID,",
+						"          TAX_ID,",
+						"          NAME_TH,",
+						"          NAME_EN,",
+						"          COMPANY_NAME_TH,",
+						"          COMPANY_NAME_EN,",
+						"          ACTIVE_STATUS,",
+						"          UPDATE_DATE,",
+						"          BUSINESS_TYPE,",
+						"          REF1_TH,",
+						"          REF1_EN,",
+						"          REF2_TH,",
+						"          REF2_EN,",
+						"          SOURCE,",
+						"          BILLER_TYPE,",
+						"          BANK_TYPE",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> ppmerchantFilterFailDataSink",
+						"ppmerchantFilterKeyCheck@ppmerchantFilterKeyFail sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(concat(\r",
+						"    'PP_MERCHANT_FILTER_KEY_ERROR_',\r",
+						"    $FileErrorDate,\r",
+						"    '.csv'\r",
+						"))],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          BILLER_MERCHANT_ID,",
+						"          ACCOUNT_ID,",
+						"          TAX_ID,",
+						"          NAME_TH,",
+						"          NAME_EN,",
+						"          COMPANY_NAME_TH,",
+						"          COMPANY_NAME_EN,",
+						"          ACTIVE_STATUS,",
+						"          UPDATE_DATE,",
+						"          BUSINESS_TYPE,",
+						"          REF1_TH,",
+						"          REF1_EN,",
+						"          REF2_TH,",
+						"          REF2_EN,",
+						"          SOURCE,",
+						"          Id,",
+						"          Biller_id,",
+						"          Englishname,",
+						"          Thainame,",
+						"          REF3,",
+						"          Method_type,",
+						"          Method_value,",
+						"          MethodPrecedence",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> ppmerchantFilterFailKeySink",
+						"odsppDataCheck@odsppDataFail sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(concat(\r",
+						"    'MPS_ODSPP_DATA_ERROR_',\r",
+						"    $FileErrorDate,\r",
+						"    '.csv'\r",
+						"))],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          Id,",
+						"          Biller_id,",
+						"          Englishname,",
+						"          Thainame,",
+						"          REF3,",
+						"          Method_type,",
+						"          Method_value,",
+						"          MethodPrecedence",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> odsppFailSink"
 					]
 				}
 			},
@@ -1166,7 +1899,7 @@
 									"mcrmrchFilterFailSink": {},
 									"edctermFailSink": {},
 									"emsmrmstFailSink": {},
-									"sink1": {}
+									"edctermFilterFailSink": {}
 								}
 							},
 							"staging": {},
@@ -1326,14 +2059,25 @@
 								"referenceName": "MPS_FixLenghtProcessDataFlow",
 								"type": "DataFlowReference",
 								"parameters": {
-									"UPDATE_DATE": "toString(currentTimestamp())"
+									"UPDATE_DATE": {
+										"value": "'@{variables('UPDATE_DATE')}'",
+										"type": "Expression"
+									},
+									"FileErrorDate": {
+										"value": "'@{variables('FileErrorDate')}'",
+										"type": "Expression"
+									}
 								},
 								"datasetParameters": {
 									"ppmerchantFixedLength": {},
 									"ODSPP": {},
 									"ppdebitadviceFixedLength": {},
 									"ppmerchantSink": {},
-									"sink1": {}
+									"ppdebitadviceSink": {},
+									"ppmerchantFailSink": {},
+									"ppmerchantFilterFailDataSink": {},
+									"ppmerchantFilterFailKeySink": {},
+									"odsppFailSink": {}
 								}
 							},
 							"staging": {},
@@ -1347,7 +2091,14 @@
 					{
 						"name": "Set UPDATE_DATE",
 						"type": "SetVariable",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Set FileErrorDate",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "UPDATE_DATE",
@@ -1398,6 +2149,19 @@
 							"waitOnCompletion": true,
 							"parameters": {}
 						}
+					},
+					{
+						"name": "Set FileErrorDate",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "FileErrorDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd')",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -1406,6 +2170,9 @@
 				},
 				"variables": {
 					"UPDATE_DATE": {
+						"type": "String"
+					},
+					"FileErrorDate": {
 						"type": "String"
 					}
 				},
@@ -1618,7 +2385,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/SCB_ACTIVITY_LOG')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/triggerKafKaLog')]",
@@ -1692,7 +2461,9 @@
 					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/MasterTaskExpirePipeline')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/MasterB2KPipeline_001')]",
@@ -1987,6 +2758,7 @@
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/SFTP B2K to Blob')]",
 				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]"
 			]
 		},
@@ -2737,82 +3509,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/MasterActivityPipeline')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/triggerB2K')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "MasterB2KPipeline_001",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2023-01-17T12:00:00",
-						"timeZone": "SE Asia Standard Time",
-						"schedule": {
-							"minutes": [
-								0
-							],
-							"hours": [
-								1
-							]
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/MasterB2KPipeline_001')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/triggerMPS')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "MasterMPSPipeline_001",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2023-01-09T00:00:00",
-						"timeZone": "SE Asia Standard Time",
-						"schedule": {
-							"minutes": [
-								0
-							],
-							"hours": [
-								1
-							]
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/MasterMPSPipeline_001')]"
 			]
 		}
 	]
