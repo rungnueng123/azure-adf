@@ -89,7 +89,7 @@
 								"Content-Type": "application/json"
 							},
 							"body": {
-								"value": "@concat(\n\t'{\"to\": \"',\n\t'rungnueng.luangkamchorn@stream.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t' (',\n\tpipeline().parameters.pipelineName,\n\t') วันที่ ',\n\tvariables('subjectDate'),\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'\",\"mstUrl\": \"',\n\tvariables('mstUrl'),\n\tpipeline().parameters.pipelineMstKey,\n\tvariables('mstUrlKey'),\n\t'\",\"pipelineError\": \"',\n\tvariables('errorMessage'),\n\t'\",\"isSendMST\": true',\n\t'}'\n)",
+								"value": "@concat(\n\t'{\"to\": \"',\n\t'rungnueng.luangkamchornstream.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t' (',\n\tpipeline().parameters.pipelineName,\n\t') วันที่ ',\n\tvariables('subjectDate'),\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'\",\"mstUrl\": \"',\n\tvariables('mstUrl'),\n\tpipeline().parameters.pipelineMstKey,\n\tvariables('mstUrlKey'),\n\t'\",\"pipelineError\": \"',\n\tvariables('errorMessage'),\n\t'\",\"errorFileName\":\"',\n\tvariables('errorFileName'),\n\t'\",\"isSendMST\": true',\n\t'}'\n)",
 								"type": "Expression"
 							}
 						}
@@ -134,7 +134,7 @@
 						"type": "Lookup",
 						"dependsOn": [
 							{
-								"activity": "Set Subject Date",
+								"activity": "Set Error File Name",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -193,7 +193,27 @@
 						"typeProperties": {
 							"variableName": "errorMessage",
 							"value": {
-								"value": "@concat(\n\t'Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'\\\\nService : ',\n\tvariables('ResourceService'),\n\t'\\\\nADF Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'\\\\n\\\\n',\n\tpipeline().parameters.pipelineError\n)",
+								"value": "@concat(\n\t'Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'Service : ',\n\tvariables('ResourceService'),\n\t'ADF Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'',\n\tpipeline().parameters.pipelineError\n)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Error File Name",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Subject Date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "errorFileName",
+							"value": {
+								"value": "@concat(\n    pipeline().parameters.pipelineName,\n    '_',\n    variables('subjectDate')\n)",
 								"type": "Expression"
 							}
 						}
@@ -266,6 +286,9 @@
 						"defaultValue": "Merchant-Portal-Adf"
 					},
 					"errorMessage": {
+						"type": "String"
+					},
+					"errorFileName": {
 						"type": "String"
 					}
 				},
