@@ -825,7 +825,7 @@
 					}
 				},
 				"folder": {
-					"name": "SMC_AchriveLog"
+					"name": "SMC_ArchiveLog"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-16T03:36:51Z"
@@ -1350,7 +1350,7 @@
 					}
 				},
 				"folder": {
-					"name": "SMC_AchriveLog"
+					"name": "SMC_ArchiveLog"
 				},
 				"annotations": []
 			},
@@ -2918,7 +2918,7 @@
 					}
 				},
 				"folder": {
-					"name": "SMC_AchriveLog"
+					"name": "SMC_ArchiveLog"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-12-16T03:36:51Z"
