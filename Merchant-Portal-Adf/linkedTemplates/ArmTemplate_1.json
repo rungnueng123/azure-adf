@@ -51,210 +51,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Send Email')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Send Email Error",
-						"type": "WebActivity",
-						"dependsOn": [
-							{
-								"activity": "Get Email Body",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"url": {
-								"value": "@concat(\n    variables('hostUrl'),\n    variables('serviceUrl'),\n\t'?api-version=',\n\tvariables('api-version'),\n\t'&sp=',\n\tvariables('sp'),\n\t'&sv=',\n\tvariables('sv'),\n\t'&sig=',\n\tvariables('sig')\n)",
-								"type": "Expression"
-							},
-							"connectVia": {
-								"referenceName": "shir",
-								"type": "IntegrationRuntimeReference"
-							},
-							"method": "POST",
-							"headers": {
-								"Content-Type": "application/json"
-							},
-							"body": {
-								"value": "@concat(\n\t'{\"to\": \"',\n\t'lalita.yaichom@stream.co.th,rungnueng.luangkamchorn@stream.co.th,bhurita.chayakunphakdi@scb.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t' (',\n\tpipeline().parameters.pipelineName,\n\t') วันที่ ',\n\tvariables('subjectDate'),\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'<html><body>',\n\t'<p>Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'</p><p>Service : ',\n\tvariables('ResourceService'),\n\t'</p><p>ADF Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'</p><br>',\n\tpipeline().parameters.pipelineError,\n\t'</body></html>',\n\t'\",\"mstUrl\": \"',\n\tvariables('mstUrl'),\n\tpipeline().parameters.pipelineMstKey,\n\tvariables('mstUrlKey'),\n\t'\",\"pipelineError\": \"',\n\tpipeline().parameters.pipelineError,\n\t'\",\"isSendMST\": true',\n\t'}'\n)",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Get Key Vault",
-						"type": "WebActivity",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"url": "https://hfy-smc.vault.azure.net/secrets/smc-azure-lga-sig?api-version=7.0",
-							"connectVia": {
-								"referenceName": "shir",
-								"type": "IntegrationRuntimeReference"
-							},
-							"method": "GET",
-							"headers": {},
-							"linkedServices": [
-								{
-									"referenceName": "KeyVaultADF",
-									"type": "LinkedServiceReference"
-								}
-							],
-							"authentication": {
-								"resource": "https://vault.azure.net",
-								"credential": {
-									"referenceName": "AzureManageIdentity",
-									"type": "CredentialReference"
-								}
-							}
-						}
-					},
-					{
-						"name": "Get Email Body",
-						"type": "Lookup",
-						"dependsOn": [
-							{
-								"activity": "Set Subject Date",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": {
-									"value": "@concat(\n\t'SELECT TOP 1 EMAIL_EVENT, EMAIL_SUBJECT, EMAIL_BODY, ACTIVE_STATUS, EMAIL_TO FROM EMAIL_TEMPLATE WHERE ACTIVE_STATUS = ''A'' AND EMAIL_EVENT = ''',\n\tpipeline().parameters.pipelineStep,\n\t''''\n)",
-									"type": "Expression"
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "EmailBodySql",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						}
-					},
-					{
-						"name": "Set Subject Date",
-						"type": "SetVariable",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "subjectDate",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"parameters": {
-					"pipelineStep": {
-						"type": "string",
-						"defaultValue": "Email Body"
-					},
-					"pipelineMstKey": {
-						"type": "string",
-						"defaultValue": "MicrosoftTeamKey"
-					},
-					"pipelineName": {
-						"type": "string",
-						"defaultValue": "Pipeline Name"
-					},
-					"pipelineError": {
-						"type": "string",
-						"defaultValue": "pipelineError"
-					}
-				},
-				"variables": {
-					"hostUrl": {
-						"type": "String",
-						"defaultValue": "https://scbsmcsealga001streamit.azurewebsites.net:443"
-					},
-					"serviceUrl": {
-						"type": "String",
-						"defaultValue": "/api/office365/triggers/manual/invoke"
-					},
-					"api-version": {
-						"type": "String",
-						"defaultValue": "2022-05-01"
-					},
-					"sp": {
-						"type": "String",
-						"defaultValue": "/triggers/manual/run"
-					},
-					"sv": {
-						"type": "String",
-						"defaultValue": "1.0"
-					},
-					"sig": {
-						"type": "String",
-						"defaultValue": "9r7UXcgcCnPEwWnoUJP8eF5N2dE7ANruDcJlfJNv61A"
-					},
-					"mstUrl": {
-						"type": "String",
-						"defaultValue": "https://scbcorp.webhook.office.com/webhookb2/6c31876e-5491-4377-8b01-5e565074bbe5@45202dee-4088-4e8c-8ebd-c01f56740e8f/IncomingWebhook/"
-					},
-					"mstUrlKey": {
-						"type": "String",
-						"defaultValue": "/21f0e5ae-977c-4a51-8fcf-d16ea01f2450"
-					},
-					"subjectDate": {
-						"type": "String"
-					},
-					"ResourceGroup": {
-						"type": "String",
-						"defaultValue": "HFY-Merchant-Portal"
-					},
-					"ResourceService": {
-						"type": "String",
-						"defaultValue": "Merchant-Portal-Adf"
-					}
-				},
-				"folder": {
-					"name": "SMC_Send_Error_Email"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-12-13T09:46:48Z"
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -860,6 +656,38 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/SmcFtpMps')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LOG_ERROR_SEND_MAIL')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Log/ERROR_LOG"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "log.txt",
+						"folderPath": {
+							"value": "@concat(\n    'merchant_activity_log/',\n    formatDateTime(utcNow(),'yyyy'),\n    '/',\n    formatDateTime(utcNow(),'MM'),\n    '/',\n    formatDateTime(utcNow(),'dd')\n)",
+							"type": "Expression"
+						},
+						"container": "log"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG_OUTPUT')]",

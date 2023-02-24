@@ -3486,12 +3486,99 @@
 					{
 						"name": "Set Subject Date",
 						"type": "SetVariable",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Error Log",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "subjectDate",
 							"value": {
 								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Error Log",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Set Error Message",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "LOG_ERROR_SEND_MAIL",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "LOG_ERROR_SEND_MAIL",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Set Error Message",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "errorMessage",
+							"value": {
+								"value": "@concat(\n\t'Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'\\nService : ',\n\tvariables('ResourceService'),\n\t'\\nADF Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'\\n\\n',\n\tpipeline().parameters.pipelineError\n)",
 								"type": "Expression"
 							}
 						}
@@ -3562,6 +3649,9 @@
 					"ResourceService": {
 						"type": "String",
 						"defaultValue": "Merchant-Portal-Adf"
+					},
+					"errorMessage": {
+						"type": "String"
 					}
 				},
 				"folder": {
@@ -3574,6 +3664,7 @@
 				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]",
 				"[concat(variables('factoryId'), '/linkedServices/KeyVaultADF')]",
 				"[concat(variables('factoryId'), '/datasets/EmailBodySql')]",
+				"[concat(variables('factoryId'), '/datasets/LOG_ERROR_SEND_MAIL')]",
 				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
 			]
 		},
@@ -4468,6 +4559,40 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/SmcFtpMps')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LOG_ERROR_SEND_MAIL')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Log/ERROR_LOG"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "log.txt",
+						"folderPath": {
+							"value": "@concat(\n    'merchant_activity_log/',\n    formatDateTime(utcNow(),'yyyy'),\n    '/',\n    formatDateTime(utcNow(),'MM'),\n    '/',\n    formatDateTime(utcNow(),'dd')\n)",
+							"type": "Expression"
+						},
+						"container": "log"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
 			]
 		},
 		{
