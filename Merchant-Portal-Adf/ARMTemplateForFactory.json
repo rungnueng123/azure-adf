@@ -3504,6 +3504,19 @@
 						}
 					},
 					{
+						"name": "Set Error Message",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "errorMessage",
+							"value": {
+								"value": "@concat(\n\t'Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'\\nService : ',\n\tvariables('ResourceService'),\n\t'\\nADF Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'\\n\\n',\n\tpipeline().parameters.pipelineError\n)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
 						"name": "Error Log",
 						"type": "Copy",
 						"dependsOn": [
@@ -3525,6 +3538,15 @@
 						"typeProperties": {
 							"source": {
 								"type": "DelimitedTextSource",
+								"additionalColumns": [
+									{
+										"name": "msg",
+										"value": {
+											"value": "@variables('errorMessage')",
+											"type": "Expression"
+										}
+									}
+								],
 								"storeSettings": {
 									"type": "AzureBlobStorageReadSettings",
 									"recursive": true,
@@ -3564,24 +3586,11 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "LOG_ERROR_SEND_MAIL",
+								"referenceName": "LOG_ERROR_SEND_MAIL_TEMP",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
 						]
-					},
-					{
-						"name": "Set Error Message",
-						"type": "SetVariable",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "errorMessage",
-							"value": {
-								"value": "@concat(\n\t'Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'\\nService : ',\n\tvariables('ResourceService'),\n\t'\\nADF Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'\\n\\n',\n\tpipeline().parameters.pipelineError\n)",
-								"type": "Expression"
-							}
-						}
 					}
 				],
 				"policy": {
@@ -3665,6 +3674,7 @@
 				"[concat(variables('factoryId'), '/linkedServices/KeyVaultADF')]",
 				"[concat(variables('factoryId'), '/datasets/EmailBodySql')]",
 				"[concat(variables('factoryId'), '/datasets/LOG_ERROR_SEND_MAIL')]",
+				"[concat(variables('factoryId'), '/datasets/LOG_ERROR_SEND_MAIL_TEMP')]",
 				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
 			]
 		},
@@ -4587,6 +4597,41 @@
 					},
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/B2Kblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LOG_ERROR_SEND_MAIL_TEMP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Log/ERROR_LOG"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "temp.txt",
+						"folderPath": {
+							"value": "@concat(\n    'merchant_activity_log/',\n    formatDateTime(utcNow(),'yyyy'),\n    '/',\n    formatDateTime(utcNow(),'MM'),\n    '/',\n    formatDateTime(utcNow(),'dd')\n)",
+							"type": "Expression"
+						},
+						"container": "log"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
 				"schema": []
