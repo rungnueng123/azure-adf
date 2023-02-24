@@ -3409,6 +3409,13 @@
 							"body": {
 								"value": "@concat(\n\t'{\"to\": \"',\n\t'rungnueng.luangkamchorn@stream.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t' (',\n\tpipeline().parameters.pipelineName,\n\t') วันที่ ',\n\tvariables('subjectDate'),\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'\",\"mstUrl\": \"',\n\tvariables('mstUrl'),\n\tpipeline().parameters.pipelineMstKey,\n\tvariables('mstUrlKey'),\n\t'\",\"pipelineError\": \"',\n\tvariables('errorMessage'),\n\t'\",\"isSendMST\": true',\n\t'}'\n)",
 								"type": "Expression"
+							},
+							"authentication": {
+								"resource": "https://https://scbsmcsealga001streamit.azurewebsites.net/",
+								"credential": {
+									"referenceName": "AzureManageIdentity",
+									"type": "CredentialReference"
+								}
 							}
 						}
 					},
