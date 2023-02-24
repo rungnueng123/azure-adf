@@ -927,7 +927,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@activity('Azure Function1').output",
+								"value": "@activity('Azure Function1').error.Message",
 								"type": "Expression"
 							}
 						}
