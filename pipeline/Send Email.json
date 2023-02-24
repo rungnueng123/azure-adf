@@ -39,7 +39,7 @@
 						"type": "Expression"
 					},
 					"authentication": {
-						"resource": "https://https://scbsmcsealga001streamit.azurewebsites.net/",
+						"resource": "https://scbsmcsealga001streamit.azurewebsites.net/",
 						"credential": {
 							"referenceName": "AzureManageIdentity",
 							"type": "CredentialReference"
