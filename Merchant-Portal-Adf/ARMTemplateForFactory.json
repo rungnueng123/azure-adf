@@ -3521,7 +3521,7 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Set variable1",
+								"activity": "Set Error Folder Name",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -3537,7 +3537,7 @@
 						}
 					},
 					{
-						"name": "Set variable1",
+						"name": "Set Error Folder Name",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
