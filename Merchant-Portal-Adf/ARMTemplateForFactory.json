@@ -1307,7 +1307,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@activity('Execute SCB').output",
+								"value": "@activity('Execute SCB').error.Message",
 								"type": "Expression"
 							}
 						}
@@ -1327,7 +1327,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@activity('Execute Merchant').output",
+								"value": "@activity('Execute Merchant').error.Message",
 								"type": "Expression"
 							}
 						}
@@ -1596,7 +1596,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@activity('Get File From SFTP').output",
+								"value": "@activity('Get File From SFTP').error.Message",
 								"type": "Expression"
 							}
 						}
@@ -1616,7 +1616,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@activity('Insert B2K To DB').output",
+								"value": "@activity('Insert B2K To DB').error.Message",
 								"type": "Expression"
 							}
 						}
@@ -1636,7 +1636,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@activity('Update Merchant Profile').output",
+								"value": "@activity('Update Merchant Profile').error.Message",
 								"type": "Expression"
 							}
 						}
@@ -1834,7 +1834,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@activity('Insert B2K To DB').output",
+								"value": "@activity('Insert B2K To DB').error.Message",
 								"type": "Expression"
 							}
 						}
@@ -1854,7 +1854,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@activity('Update Merchant Profile').output",
+								"value": "@activity('Update Merchant Profile').error.Message",
 								"type": "Expression"
 							}
 						}
@@ -1976,7 +1976,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@activity('Update Merchant Profile').output",
+								"value": "@activity('Update Merchant Profile').error.Message",
 								"type": "Expression"
 							}
 						}
@@ -2245,7 +2245,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@activity('Get File From SFTP').output",
+								"value": "@activity('Get File From SFTP').error.Message",
 								"type": "Expression"
 							}
 						}
@@ -2265,7 +2265,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@activity('Insert MPS To DB').output",
+								"value": "@activity('Insert MPS To DB').error.Message",
 								"type": "Expression"
 							}
 						}
@@ -2285,7 +2285,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@activity('Update Merchant Profile').output",
+								"value": "@activity('Update Merchant Profile').error.Message",
 								"type": "Expression"
 							}
 						}
@@ -2483,7 +2483,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@activity('Insert MPS To DB').output",
+								"value": "@activity('Insert MPS To DB').error.Message",
 								"type": "Expression"
 							}
 						}
@@ -2503,7 +2503,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@activity('Update Merchant Profile').output",
+								"value": "@activity('Update Merchant Profile').error.Message",
 								"type": "Expression"
 							}
 						}
@@ -2625,7 +2625,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@activity('Update Merchant Profile').output",
+								"value": "@activity('Update Merchant Profile').error.Message",
 								"type": "Expression"
 							}
 						}
@@ -2745,7 +2745,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@activity('Update Task Expire').output",
+								"value": "@activity('Update Task Expire').error.Message",
 								"type": "Expression"
 							}
 						}

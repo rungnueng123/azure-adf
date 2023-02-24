@@ -1323,7 +1323,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@activity('Update Merchant Profile').output",
+								"value": "@activity('Update Merchant Profile').error.Message",
 								"type": "Expression"
 							}
 						}
