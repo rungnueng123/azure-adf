@@ -144,7 +144,7 @@
 			},
 			{
 				"name": "Error Log",
-				"type": "Copy",
+				"type": "WebActivity",
 				"dependsOn": [
 					{
 						"activity": "Set Error Message",
@@ -162,59 +162,28 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"additionalColumns": [
-							{
-								"name": "msg",
-								"value": {
-									"value": "@variables('errorMessage')",
-									"type": "Expression"
-								}
-							}
-						],
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
+					"url": "https://merchantportalblob.blob.core.windows.net/",
+					"connectVia": {
+						"referenceName": "AzureIR-ManagedVNet",
+						"type": "IntegrationRuntimeReference"
 					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
+					"method": "PUT",
+					"headers": {
+						"x-ms-version": "2017-11-09",
+						"x-ms-blob-type": "BlockBlob"
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
+					"body": {
+						"value": "@variables('errorMessage')",
+						"type": "Expression"
+					},
+					"authentication": {
+						"resource": "https://storage.azure.com/",
+						"credential": {
+							"referenceName": "AzureManageIdentity",
+							"type": "CredentialReference"
 						}
 					}
-				},
-				"inputs": [
-					{
-						"referenceName": "LOG_ERROR_SEND_MAIL",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "LOG_ERROR_SEND_MAIL_TEMP",
-						"type": "DatasetReference"
-					}
-				]
+				}
 			}
 		],
 		"parameters": {
