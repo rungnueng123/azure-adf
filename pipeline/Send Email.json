@@ -130,6 +130,19 @@
 				}
 			},
 			{
+				"name": "Set Error Message",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "errorMessage",
+					"value": {
+						"value": "@concat(\n\t'Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'\\nService : ',\n\tvariables('ResourceService'),\n\t'\\nADF Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'\\n\\n',\n\tpipeline().parameters.pipelineError\n)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
 				"name": "Error Log",
 				"type": "Copy",
 				"dependsOn": [
@@ -151,6 +164,15 @@
 				"typeProperties": {
 					"source": {
 						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "msg",
+								"value": {
+									"value": "@variables('errorMessage')",
+									"type": "Expression"
+								}
+							}
+						],
 						"storeSettings": {
 							"type": "AzureBlobStorageReadSettings",
 							"recursive": true,
@@ -189,23 +211,10 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "LOG_ERROR_SEND_MAIL",
+						"referenceName": "LOG_ERROR_SEND_MAIL_TEMP",
 						"type": "DatasetReference"
 					}
 				]
-			},
-			{
-				"name": "Set Error Message",
-				"type": "SetVariable",
-				"dependsOn": [],
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "errorMessage",
-					"value": {
-						"value": "@concat(\n\t'Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'\\nService : ',\n\tvariables('ResourceService'),\n\t'\\nADF Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'\\n\\n',\n\tpipeline().parameters.pipelineError\n)",
-						"type": "Expression"
-					}
-				}
 			}
 		],
 		"parameters": {
