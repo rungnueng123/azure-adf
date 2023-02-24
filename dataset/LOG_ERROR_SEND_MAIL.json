@@ -13,11 +13,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "log.txt",
-				"folderPath": {
-					"value": "@concat(\n    'error_log/',\n    formatDateTime(utcNow(),'yyyy'),\n    '/',\n    formatDateTime(utcNow(),'MM'),\n    '/',\n    formatDateTime(utcNow(),'dd')\n)",
-					"type": "Expression"
-				},
 				"container": "log"
 			},
 			"columnDelimiter": "|",
