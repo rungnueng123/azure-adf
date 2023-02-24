@@ -229,7 +229,7 @@
 				"typeProperties": {
 					"variableName": "pipelineError",
 					"value": {
-						"value": "@activity('Get File From SFTP').output",
+						"value": "@activity('Get File From SFTP').error.Message",
 						"type": "Expression"
 					}
 				}
@@ -249,7 +249,7 @@
 				"typeProperties": {
 					"variableName": "pipelineError",
 					"value": {
-						"value": "@activity('Insert B2K To DB').output",
+						"value": "@activity('Insert B2K To DB').error.Message",
 						"type": "Expression"
 					}
 				}
@@ -269,7 +269,7 @@
 				"typeProperties": {
 					"variableName": "pipelineError",
 					"value": {
-						"value": "@activity('Update Merchant Profile').output",
+						"value": "@activity('Update Merchant Profile').error.Message",
 						"type": "Expression"
 					}
 				}

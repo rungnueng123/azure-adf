@@ -156,7 +156,7 @@
 				"typeProperties": {
 					"variableName": "pipelineError",
 					"value": {
-						"value": "@activity('Execute SCB').output",
+						"value": "@activity('Execute SCB').error.Message",
 						"type": "Expression"
 					}
 				}
@@ -176,7 +176,7 @@
 				"typeProperties": {
 					"variableName": "pipelineError",
 					"value": {
-						"value": "@activity('Execute Merchant').output",
+						"value": "@activity('Execute Merchant').error.Message",
 						"type": "Expression"
 					}
 				}

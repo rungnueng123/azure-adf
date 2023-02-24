@@ -82,7 +82,7 @@
 				"typeProperties": {
 					"variableName": "pipelineError",
 					"value": {
-						"value": "@activity('Update Task Expire').output",
+						"value": "@activity('Update Task Expire').error.Message",
 						"type": "Expression"
 					}
 				}
