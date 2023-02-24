@@ -35,7 +35,7 @@
 						"Content-Type": "application/json"
 					},
 					"body": {
-						"value": "@concat(\n\t'{\"to\": \"',\n\t'lalita.yaichom@stream.co.th,rungnueng.luangkamchorn@stream.co.th,bhurita.chayakunphakdi@scb.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t' (',\n\tpipeline().parameters.pipelineName,\n\t') วันที่ ',\n\tvariables('subjectDate'),\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'<html><body>',\n\t'<p>Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'</p><p>Service : ',\n\tvariables('ResourceService'),\n\t'</p><p>ADF Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'</p><br>',\n\tpipeline().parameters.pipelineError,\n\t'</body></html>',\n\t'\",\"mstUrl\": \"',\n\tvariables('mstUrl'),\n\tpipeline().parameters.pipelineMstKey,\n\tvariables('mstUrlKey'),\n\t'\",\"pipelineError\": \"',\n\tpipeline().parameters.pipelineError,\n\t'\",\"isSendMST\": true',\n\t'}'\n)",
+						"value": "@concat(\n\t'{\"to\": \"',\n\t'lalita.yaichom@stream.co.th,rungnueng.luangkamchorn@stream.co.th,bhurita.chayakunphakdi@scb.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t' (',\n\tpipeline().parameters.pipelineName,\n\t') วันที่ ',\n\tvariables('subjectDate'),\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'\",\"mstUrl\": \"',\n\tvariables('mstUrl'),\n\tpipeline().parameters.pipelineMstKey,\n\tvariables('mstUrlKey'),\n\t'\",\"pipelineError\": \"',\n\tvariables('errorMessage'),\n\t'\",\"isSendMST\": true',\n\t'}'\n)",
 						"type": "Expression"
 					}
 				}
@@ -114,7 +114,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Error Log",
+						"activity": "Set Error Message",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -139,49 +139,6 @@
 					"value": {
 						"value": "@concat(\n\t'Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'\\nService : ',\n\tvariables('ResourceService'),\n\t'\\nADF Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'\\n\\n',\n\tpipeline().parameters.pipelineError\n)",
 						"type": "Expression"
-					}
-				}
-			},
-			{
-				"name": "Error Log",
-				"type": "WebActivity",
-				"dependsOn": [
-					{
-						"activity": "Set Error Message",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"url": "https://merchantportalblob.blob.core.windows.net//log/text.txt",
-					"connectVia": {
-						"referenceName": "AzureIR-ManagedVNet",
-						"type": "IntegrationRuntimeReference"
-					},
-					"method": "PUT",
-					"headers": {
-						"x-ms-version": "2017-11-09",
-						"x-ms-blob-type": "BlockBlob"
-					},
-					"body": {
-						"value": "@variables('errorMessage')",
-						"type": "Expression"
-					},
-					"authentication": {
-						"resource": "https://storage.azure.com/",
-						"credential": {
-							"referenceName": "AzureManageIdentity",
-							"type": "CredentialReference"
-						}
 					}
 				}
 			}
