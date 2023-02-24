@@ -3407,7 +3407,7 @@
 								"Content-Type": "application/json"
 							},
 							"body": {
-								"value": "@concat(\n\t'{\"to\": \"',\n\t'rungnueng.luangkamchornstream.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t' (',\n\tpipeline().parameters.pipelineName,\n\t') วันที่ ',\n\tvariables('subjectDate'),\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'\",\"mstUrl\": \"',\n\tvariables('mstUrl'),\n\tpipeline().parameters.pipelineMstKey,\n\tvariables('mstUrlKey'),\n\t'\",\"pipelineError\": \"',\n\tvariables('errorMessage'),\n\t'\",\"errorFileName\":\"',\n\tvariables('errorFileName'),\n\t'\",\"isSendMST\": true',\n\t'}'\n)",
+								"value": "@concat(\n\t'{\"to\": \"',\n\t'rungnueng.luangkamchornstream.co.th',\n\t'\",\"subject\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_SUBJECT,\n\t' (',\n\tpipeline().parameters.pipelineName,\n\t') วันที่ ',\n\tvariables('subjectDate'),\n\t'\",\"html\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_BODY,\n\t'\",\"mstUrl\": \"',\n\tvariables('mstUrl'),\n\tpipeline().parameters.pipelineMstKey,\n\tvariables('mstUrlKey'),\n\t'\",\"pipelineError\": \"',\n\tvariables('errorMessage'),\n\t'\",\"errorFolderName\":\"',\n\tvariables('errorFolderName'),\n\t'\",\"errorFileName\":\"',\n\tvariables('errorFileName'),\n\t'\",\"isSendMST\": true',\n\t'}'\n)",
 								"type": "Expression"
 							}
 						}
@@ -3521,7 +3521,7 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Set Subject Date",
+								"activity": "Set variable1",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -3531,7 +3531,27 @@
 						"typeProperties": {
 							"variableName": "errorFileName",
 							"value": {
-								"value": "@concat(\n    pipeline().parameters.pipelineName,\n    '_',\n    variables('subjectDate')\n)",
+								"value": "@concat(\n    pipeline().parameters.pipelineName,\n    '_',\n    variables('subjectDate'),\n    '.txt'\n)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Subject Date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "errorFolderName",
+							"value": {
+								"value": "@concat(\n    '/log/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd')\n)",
 								"type": "Expression"
 							}
 						}
@@ -3607,6 +3627,9 @@
 						"type": "String"
 					},
 					"errorFileName": {
+						"type": "String"
+					},
+					"errorFolderName": {
 						"type": "String"
 					}
 				},
