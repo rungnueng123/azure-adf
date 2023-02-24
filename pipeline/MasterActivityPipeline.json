@@ -195,7 +195,7 @@
 			}
 		},
 		"folder": {
-			"name": "SMC_AchriveLog"
+			"name": "SMC_ArchiveLog"
 		},
 		"annotations": []
 	}
