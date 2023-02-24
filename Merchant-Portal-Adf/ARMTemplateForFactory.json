@@ -3554,6 +3554,14 @@
 					},
 					"subjectDate": {
 						"type": "String"
+					},
+					"ResourceGroup": {
+						"type": "String",
+						"defaultValue": "HFY-Merchant-Portal"
+					},
+					"ResourceService": {
+						"type": "String",
+						"defaultValue": "Merchant-Portal-Adf"
 					}
 				},
 				"folder": {
