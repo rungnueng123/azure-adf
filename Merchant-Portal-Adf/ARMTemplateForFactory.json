@@ -4590,7 +4590,7 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "log.txt",
 						"folderPath": {
-							"value": "@concat(\n    'merchant_activity_log/',\n    formatDateTime(utcNow(),'yyyy'),\n    '/',\n    formatDateTime(utcNow(),'MM'),\n    '/',\n    formatDateTime(utcNow(),'dd')\n)",
+							"value": "@concat(\n    'error_log/',\n    formatDateTime(utcNow(),'yyyy'),\n    '/',\n    formatDateTime(utcNow(),'MM'),\n    '/',\n    formatDateTime(utcNow(),'dd')\n)",
 							"type": "Expression"
 						},
 						"container": "log"
@@ -4622,9 +4622,9 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": "temp.txt",
+						"fileName": "log.txt",
 						"folderPath": {
-							"value": "@concat(\n    'merchant_activity_log/',\n    formatDateTime(utcNow(),'yyyy'),\n    '/',\n    formatDateTime(utcNow(),'MM'),\n    '/',\n    formatDateTime(utcNow(),'dd')\n)",
+							"value": "@concat(\n    'error_log/',\n    formatDateTime(utcNow(),'yyyy'),\n    '/',\n    formatDateTime(utcNow(),'MM'),\n    '/',\n    formatDateTime(utcNow(),'dd')\n)",
 							"type": "Expression"
 						},
 						"container": "log"
