@@ -213,7 +213,7 @@
 						"typeProperties": {
 							"variableName": "errorFileName",
 							"value": {
-								"value": "@concat(\n    pipeline().parameters.pipelineName,\n    '_',\n    formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
+								"value": "@concat(\n    formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
 								"type": "Expression"
 							}
 						}
@@ -233,7 +233,7 @@
 						"typeProperties": {
 							"variableName": "errorFolderName",
 							"value": {
-								"value": "@concat(\n    '/log/error_pipeline_log/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd')\n)",
+								"value": "@concat(\n    '/log/error_pipeline_log/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd'),\n    '/',\n    pipeline().parameters.pipelineName\n)",
 								"type": "Expression"
 							}
 						}
