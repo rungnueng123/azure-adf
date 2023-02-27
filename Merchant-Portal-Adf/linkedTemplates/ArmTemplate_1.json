@@ -193,7 +193,7 @@
 						"typeProperties": {
 							"variableName": "errorMessage",
 							"value": {
-								"value": "@concat(\n\t'Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'\\nService : ',\n\tvariables('ResourceService'),\n\t'\\nADF Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'\\nADF Pipeline Error',\n\tpipeline().parameters.pipelineError\n)",
+								"value": "@concat(\n\t'Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'\\nService : ',\n\tvariables('ResourceService'),\n\t'\\nADF Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'\\nADF Pipeline Error : ',\n\tpipeline().parameters.pipelineError\n)",
 								"type": "Expression"
 							}
 						}
