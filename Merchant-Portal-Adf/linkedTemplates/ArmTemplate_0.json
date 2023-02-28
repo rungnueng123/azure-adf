@@ -38,7 +38,7 @@
 		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 			"type": "string",
-			"defaultValue": "https://scbsmcseafunc001streamit-test.azurewebsites.net"
+			"defaultValue": "https://scbsmcseafunc001streamit.azurewebsites.net"
 		},
 		"B2Kblob_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
