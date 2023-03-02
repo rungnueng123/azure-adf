@@ -95,14 +95,7 @@
 					{
 						"name": "Set Subject Date",
 						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set Error Message",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
+						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "subjectDate",
@@ -115,7 +108,14 @@
 					{
 						"name": "Set Error Message",
 						"type": "SetVariable",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Set Subject Date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "errorMessage",
@@ -150,7 +150,7 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Set Subject Date",
+								"activity": "Set Error Message",
 								"dependencyConditions": [
 									"Succeeded"
 								]
