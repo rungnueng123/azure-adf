@@ -44,14 +44,6 @@
 			"type": "string",
 			"defaultValue": "se\\SMCUsrSit"
 		},
-		"adf_func_piilog_properties_privateLinkResourceId": {
-			"type": "string",
-			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit-test"
-		},
-		"adf_func_piilog_properties_groupId": {
-			"type": "string",
-			"defaultValue": "sites"
-		},
 		"az_blob_b2k_properties_privateLinkResourceId": {
 			"type": "string",
 			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Storage/storageAccounts/merchantportalblob"
@@ -96,12 +88,6 @@
 					"KeyVaultADF_properties_typeProperties_baseUrl": {
 						"value": "[parameters('KeyVaultADF_properties_typeProperties_baseUrl')]"
 					},
-					"adf_func_piilog_properties_privateLinkResourceId": {
-						"value": "[parameters('adf_func_piilog_properties_privateLinkResourceId')]"
-					},
-					"adf_func_piilog_properties_groupId": {
-						"value": "[parameters('adf_func_piilog_properties_groupId')]"
-					},
 					"az_blob_b2k_properties_privateLinkResourceId": {
 						"value": "[parameters('az_blob_b2k_properties_privateLinkResourceId')]"
 					},
@@ -119,6 +105,12 @@
 					},
 					"SmcFtpB2k_properties_typeProperties_userName": {
 						"value": "[parameters('SmcFtpB2k_properties_typeProperties_userName')]"
+					},
+					"SmcFtpMps_properties_typeProperties_host": {
+						"value": "[parameters('SmcFtpMps_properties_typeProperties_host')]"
+					},
+					"SmcFtpMps_properties_typeProperties_userName": {
+						"value": "[parameters('SmcFtpMps_properties_typeProperties_userName')]"
 					}
 				}
 			},
@@ -137,12 +129,6 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
-					},
-					"SmcFtpMps_properties_typeProperties_host": {
-						"value": "[parameters('SmcFtpMps_properties_typeProperties_host')]"
-					},
-					"SmcFtpMps_properties_typeProperties_userName": {
-						"value": "[parameters('SmcFtpMps_properties_typeProperties_userName')]"
 					}
 				}
 			},

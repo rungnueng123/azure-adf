@@ -20,14 +20,6 @@
 			"type": "string",
 			"defaultValue": "https://hfy-smc.vault.azure.net/"
 		},
-		"adf_func_piilog_properties_privateLinkResourceId": {
-			"type": "string",
-			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit-test"
-		},
-		"adf_func_piilog_properties_groupId": {
-			"type": "string",
-			"defaultValue": "sites"
-		},
 		"az_blob_b2k_properties_privateLinkResourceId": {
 			"type": "string",
 			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Storage/storageAccounts/merchantportalblob"
@@ -51,6 +43,14 @@
 		"SmcFtpB2k_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "smcadfusr"
+		},
+		"SmcFtpMps_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "GreenOak.se.scb.co.th"
+		},
+		"SmcFtpMps_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "se\\SMCUsrSit"
 		}
 	},
 	"variables": {
@@ -153,18 +153,6 @@
 					"type": "ManagedVirtualNetworkReference",
 					"referenceName": "default"
 				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/default/adf_func_piilog')]",
-			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"privateLinkResourceId": "[parameters('adf_func_piilog_properties_privateLinkResourceId')]",
-				"groupId": "[parameters('adf_func_piilog_properties_groupId')]"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
@@ -853,6 +841,39 @@
 							"type": "LinkedServiceReference"
 						},
 						"secretName": "smc-b2k-sftp-password"
+					}
+				},
+				"connectVia": {
+					"referenceName": "shir",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]",
+				"[concat(variables('factoryId'), '/linkedServices/KeyVaultADF')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SmcFtpMps')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "FtpServer",
+				"typeProperties": {
+					"host": "[parameters('SmcFtpMps_properties_typeProperties_host')]",
+					"port": "991",
+					"enableSsl": true,
+					"enableServerCertificateValidation": false,
+					"authenticationType": "Basic",
+					"userName": "[parameters('SmcFtpMps_properties_typeProperties_userName')]",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "KeyVaultADF",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "smc-msp-sftp-password"
 					}
 				},
 				"connectVia": {
