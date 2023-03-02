@@ -41,45 +41,11 @@
 				}
 			},
 			{
-				"name": "Get Key Vault",
-				"type": "WebActivity",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"url": "https://hfy-smc.vault.azure.net/secrets/smc-azure-lga-sig?api-version=7.0",
-					"connectVia": {
-						"referenceName": "shir",
-						"type": "IntegrationRuntimeReference"
-					},
-					"method": "GET",
-					"linkedServices": [
-						{
-							"referenceName": "KeyVaultADF",
-							"type": "LinkedServiceReference"
-						}
-					],
-					"authentication": {
-						"resource": "https://vault.azure.net",
-						"credential": {
-							"referenceName": "AzureManageIdentity",
-							"type": "CredentialReference"
-						}
-					}
-				}
-			},
-			{
 				"name": "Get Email Body",
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "Set Error File Name",
+						"activity": "Set Subject Email",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -137,7 +103,7 @@
 				"typeProperties": {
 					"variableName": "errorMessage",
 					"value": {
-						"value": "@concat(\n\t'Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'\\nService : ',\n\tvariables('ResourceService'),\n\t'\\nADF Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'\\nADF Pipeline Error : ',\n\treplace(pipeline().parameters.pipelineError, '\"', '\\\"')\n)",
+						"value": "@concat(\n\t'Mail message from ADF : \\n',\n\t'Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'\\nService Name : ',\n\tvariables('ResourceService'),\n\t'\\nPipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'\\nDate : ',\n\tvariables('subjectDate'),\n\t'\\nADF Pipeline Error : ',\n\treplace(pipeline().parameters.pipelineError, '\"', '\\\"')\n)",
 						"type": "Expression"
 					}
 				}
@@ -157,7 +123,7 @@
 				"typeProperties": {
 					"variableName": "errorFileName",
 					"value": {
-						"value": "@concat(\n    formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
+						"value": "@concat(\n    'error_log.txt'\n)",
 						"type": "Expression"
 					}
 				}
@@ -178,6 +144,26 @@
 					"variableName": "errorFolderName",
 					"value": {
 						"value": "@concat(\n    '/log/error_pipeline_log/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd'),\n    '/',\n    pipeline().parameters.pipelineName\n)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set Subject Email",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set Error File Name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "subjectEmail",
+					"value": {
+						"value": "@concat(\n\t'ADF Fail : ',\n\tvariables('ResourceGroup'),\n\t'/',\n\tvariables('ResourceService'),\n\t'/',\n\tpipeline().parameters.pipelineName,\n\t' ** ',\n\tvariables('subjectDate'),\n\t' **'\n)",
 						"type": "Expression"
 					}
 				}
@@ -252,6 +238,9 @@
 				"type": "String"
 			},
 			"errorFolderName": {
+				"type": "String"
+			},
+			"subjectEmail": {
 				"type": "String"
 			}
 		},
