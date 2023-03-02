@@ -51,7 +51,7 @@
 								"Content-Type": "application/json"
 							},
 							"body": {
-								"value": "@concat(\n\t'{\"to\": \"',\n\t'lalita.yaichom@stream.co.th,rungnueng.luangkamchorn@stream.co.th,bhurita.chayakunphakdi@scb.co.th',\n\t'\",\"subject\": \"',\n\tvariables('subjectEmail'),\n\t'\",\"html\": \"',\n\tvariables('errorMessage'),\n\t'\",\"mstUrl\": \"',\n\tvariables('mstUrl'),\n\tpipeline().parameters.pipelineMstKey,\n\tvariables('mstUrlKey'),\n\t'\",\"pipelineError\": \"',\n\tvariables('errorMessage'),\n\t'\",\"errorFolderName\":\"',\n\tvariables('errorFolderName'),\n\t'\",\"errorFileName\":\"',\n\tvariables('errorFileName'),\n\t'\",\"isSendMST\": true',\n\t'}'\n)",
+								"value": "@concat(\n\t'{\"to\": \"',\n\tactivity('Get Email Body').output.firstRow.EMAIL_TO,\n\t'\",\"subject\": \"',\n\tvariables('subjectEmail'),\n\t'\",\"html\": \"',\n\tvariables('errorMessage'),\n\t'\",\"mstUrl\": \"',\n\tvariables('mstUrl'),\n\tpipeline().parameters.pipelineMstKey,\n\tvariables('mstUrlKey'),\n\t'\",\"pipelineError\": \"',\n\tvariables('errorMessage'),\n\t'\",\"errorFolderName\":\"',\n\tvariables('errorFolderName'),\n\t'\",\"errorFileName\":\"',\n\tvariables('errorFileName'),\n\t'\",\"isSendMST\": true',\n\t'}'\n)",
 								"type": "Expression"
 							}
 						}
