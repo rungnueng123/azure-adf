@@ -83,7 +83,7 @@
 				"typeProperties": {
 					"variableName": "subjectDate",
 					"value": {
-						"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
+						"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy hh:mm')",
 						"type": "Expression"
 					}
 				}
@@ -103,7 +103,7 @@
 				"typeProperties": {
 					"variableName": "errorMessage",
 					"value": {
-						"value": "@concat(\n\t'Mail message from ADF : \\n',\n\t'Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'\\nService Name : ',\n\tvariables('ResourceService'),\n\t'\\nPipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'\\nDate : ',\n\tvariables('subjectDate'),\n\t'\\nADF Pipeline Error : ',\n\treplace(pipeline().parameters.pipelineError, '\"', '\\\"')\n)",
+						"value": "@concat(\n\t'<html><body>',\n\t'Mail message from ADF',\n\t'<br><br>Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'<br>Service Name : ',\n\tvariables('ResourceService'),\n\t'<br>Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'<br>Date : ',\n\tvariables('subjectDate'),\n\t'<br><br>Error : <br>',\n\treplace(pipeline().parameters.pipelineError, '\"', '\\\"')\n)",
 						"type": "Expression"
 					}
 				}
