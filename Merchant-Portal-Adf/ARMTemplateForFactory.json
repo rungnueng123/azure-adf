@@ -1424,6 +1424,10 @@
 								"pipelineError": {
 									"value": "@variables('pipelineError')",
 									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
+									"type": "Expression"
 								}
 							}
 						}
@@ -1534,6 +1538,10 @@
 								"pipelineError": {
 									"value": "@variables('pipelineError')",
 									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
+									"type": "Expression"
 								}
 							}
 						}
@@ -1569,6 +1577,10 @@
 								"pipelineError": {
 									"value": "@variables('pipelineError')",
 									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
+									"type": "Expression"
 								}
 							}
 						}
@@ -1578,9 +1590,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Get File From SFTP",
+								"activity": "Set PipelineSubjectDate 1",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1598,9 +1610,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Insert B2K To DB",
+								"activity": "Set PipelineSubjectDate 2",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1618,9 +1630,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Update Merchant Profile",
+								"activity": "Set PipelineSubjectDate 3",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1629,6 +1641,66 @@
 							"variableName": "pipelineError",
 							"value": {
 								"value": "@activity('Update Merchant Profile').error.Message",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get File From SFTP",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 2",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Insert B2K To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
 								"type": "Expression"
 							}
 						}
@@ -1647,6 +1719,9 @@
 						"defaultValue": "777c4388223e47e2a975478a043947dc"
 					},
 					"pipelineError": {
+						"type": "String"
+					},
+					"pipelineSubjectDate": {
 						"type": "String"
 					}
 				},
@@ -1714,6 +1789,10 @@
 								"pipelineName": "MasterB2KPipeline_002",
 								"pipelineError": {
 									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
 									"type": "Expression"
 								}
 							}
@@ -1807,6 +1886,10 @@
 								"pipelineError": {
 									"value": "@variables('pipelineError')",
 									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
+									"type": "Expression"
 								}
 							}
 						}
@@ -1816,9 +1899,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Insert B2K To DB",
+								"activity": "Set PipelineSubjectDate 2",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1836,9 +1919,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Update Merchant Profile",
+								"activity": "Set PipelineSubjectDate 3",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1847,6 +1930,46 @@
 							"variableName": "pipelineError",
 							"value": {
 								"value": "@activity('Update Merchant Profile').error.Message",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 2",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Insert B2K To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
 								"type": "Expression"
 							}
 						}
@@ -1865,6 +1988,9 @@
 						"defaultValue": "777c4388223e47e2a975478a043947dc"
 					},
 					"pipelineError": {
+						"type": "String"
+					},
+					"pipelineSubjectDate": {
 						"type": "String"
 					}
 				},
@@ -1949,12 +2075,36 @@
 								"pipelineError": {
 									"value": "@variables('pipelineError')",
 									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
+									"type": "Expression"
 								}
 							}
 						}
 					},
 					{
 						"name": "Set PipelineError 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineSubjectDate 3",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update Merchant Profile').error.Message",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 3",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1966,9 +2116,9 @@
 						],
 						"userProperties": [],
 						"typeProperties": {
-							"variableName": "pipelineError",
+							"variableName": "pipelineSubjectDate",
 							"value": {
-								"value": "@activity('Update Merchant Profile').error.Message",
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
 								"type": "Expression"
 							}
 						}
@@ -1987,6 +2137,9 @@
 						"defaultValue": "777c4388223e47e2a975478a043947dc"
 					},
 					"pipelineError": {
+						"type": "String"
+					},
+					"pipelineSubjectDate": {
 						"type": "String"
 					}
 				},
@@ -3441,14 +3594,14 @@
 						}
 					},
 					{
-						"name": "Set Subject Date",
+						"name": "Set Error Date",
 						"type": "SetVariable",
 						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
-							"variableName": "subjectDate",
+							"variableName": "errorDate",
 							"value": {
-								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy HH:mm')",
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
 								"type": "Expression"
 							}
 						}
@@ -3458,7 +3611,7 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Set Subject Date",
+								"activity": "Set Error Date",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -3468,7 +3621,7 @@
 						"typeProperties": {
 							"variableName": "errorMessage",
 							"value": {
-								"value": "@concat(\n\t'<html><body>',\n\t'Mail message from ADF',\n\t'<br><br>Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'<br>Service Name : ',\n\tvariables('ResourceService'),\n\t'<br>Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'<br>Date : ',\n\tvariables('subjectDate'),\n\t'<br><br>Error : <br>',\n\treplace(pipeline().parameters.pipelineError, '\"', '\\\"')\n)",
+								"value": "@concat(\n\t'<html><body>',\n\t'Mail message from ADF',\n\t'<br><br>Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'<br>Service Name : ',\n\tvariables('ResourceService'),\n\t'<br>Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'<br>Date : ',\n\tvariables('errorDate'),\n\t'<br><br>Error : <br>',\n\treplace(pipeline().parameters.pipelineError, '\"', '\\\"')\n)",
 								"type": "Expression"
 							}
 						}
@@ -3528,7 +3681,7 @@
 						"typeProperties": {
 							"variableName": "subjectEmail",
 							"value": {
-								"value": "@concat(\n\t'ADF Fail : ',\n\tvariables('ResourceGroup'),\n\t'/',\n\tvariables('ResourceService'),\n\t'/',\n\tpipeline().parameters.pipelineName,\n\t' ** ',\n\tvariables('subjectDate'),\n\t' **'\n)",
+								"value": "@concat(\n\t'ADF Fail : ',\n\tvariables('ResourceGroup'),\n\t'/',\n\tvariables('ResourceService'),\n\t'/',\n\tpipeline().parameters.pipelineName,\n\t' ** ',\n\tpipeline().parameters.pipelineSubjectDate,\n\t' **'\n)",
 								"type": "Expression"
 							}
 						}
@@ -3554,6 +3707,10 @@
 					"pipelineError": {
 						"type": "string",
 						"defaultValue": "pipelineError"
+					},
+					"pipelineSubjectDate": {
+						"type": "string",
+						"defaultValue": "pipelineSubjectDate"
 					}
 				},
 				"variables": {
@@ -3589,7 +3746,7 @@
 						"type": "String",
 						"defaultValue": "/21f0e5ae-977c-4a51-8fcf-d16ea01f2450"
 					},
-					"subjectDate": {
+					"errorDate": {
 						"type": "String"
 					},
 					"ResourceGroup": {
