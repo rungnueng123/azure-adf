@@ -76,14 +76,14 @@
 				}
 			},
 			{
-				"name": "Set Subject Date",
+				"name": "Set Error Date",
 				"type": "SetVariable",
 				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "subjectDate",
+					"variableName": "errorDate",
 					"value": {
-						"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy HH:mm')",
+						"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
 						"type": "Expression"
 					}
 				}
@@ -93,7 +93,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Set Subject Date",
+						"activity": "Set Error Date",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -103,7 +103,7 @@
 				"typeProperties": {
 					"variableName": "errorMessage",
 					"value": {
-						"value": "@concat(\n\t'<html><body>',\n\t'Mail message from ADF',\n\t'<br><br>Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'<br>Service Name : ',\n\tvariables('ResourceService'),\n\t'<br>Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'<br>Date : ',\n\tvariables('subjectDate'),\n\t'<br><br>Error : <br>',\n\treplace(pipeline().parameters.pipelineError, '\"', '\\\"')\n)",
+						"value": "@concat(\n\t'<html><body>',\n\t'Mail message from ADF',\n\t'<br><br>Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'<br>Service Name : ',\n\tvariables('ResourceService'),\n\t'<br>Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'<br>Date : ',\n\tvariables('errorDate'),\n\t'<br><br>Error : <br>',\n\treplace(pipeline().parameters.pipelineError, '\"', '\\\"')\n)",
 						"type": "Expression"
 					}
 				}
@@ -185,6 +185,10 @@
 			"pipelineError": {
 				"type": "string",
 				"defaultValue": "pipelineError"
+			},
+			"pipelineSubjectDate": {
+				"type": "string",
+				"defaultValue": "pipelineSubjectDate"
 			}
 		},
 		"variables": {
@@ -220,7 +224,7 @@
 				"type": "String",
 				"defaultValue": "/21f0e5ae-977c-4a51-8fcf-d16ea01f2450"
 			},
-			"subjectDate": {
+			"errorDate": {
 				"type": "String"
 			},
 			"ResourceGroup": {

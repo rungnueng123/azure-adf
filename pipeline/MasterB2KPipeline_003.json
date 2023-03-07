@@ -64,12 +64,36 @@
 						"pipelineError": {
 							"value": "@variables('pipelineError')",
 							"type": "Expression"
+						},
+						"pipelineSubjectDate": {
+							"value": "@variables('pipelineSubjectDate')",
+							"type": "Expression"
 						}
 					}
 				}
 			},
 			{
 				"name": "Set PipelineError 3",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set PipelineSubjectDate 3",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineError",
+					"value": {
+						"value": "@activity('Update Merchant Profile').error.Message",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set PipelineSubjectDate 3",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
@@ -81,9 +105,9 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "pipelineError",
+					"variableName": "pipelineSubjectDate",
 					"value": {
-						"value": "@activity('Update Merchant Profile').error.Message",
+						"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
 						"type": "Expression"
 					}
 				}
@@ -98,6 +122,9 @@
 				"defaultValue": "777c4388223e47e2a975478a043947dc"
 			},
 			"pipelineError": {
+				"type": "String"
+			},
+			"pipelineSubjectDate": {
 				"type": "String"
 			}
 		},
