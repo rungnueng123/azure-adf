@@ -200,7 +200,7 @@
 						"typeProperties": {
 							"variableName": "errorDate",
 							"value": {
-								"value": "@pipeline().TriggerTime",
+								"value": "@formatDateTime(convertTimeZone(pipeline().TriggerTime, 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
 								"type": "Expression"
 							}
 						}
