@@ -66,6 +66,10 @@
 						"pipelineError": {
 							"value": "@variables('pipelineError')",
 							"type": "Expression"
+						},
+						"pipelineSubjectDate": {
+							"value": "@variables('pipelineSubjectDate')",
+							"type": "Expression"
 						}
 					}
 				}
@@ -175,6 +179,10 @@
 						"pipelineError": {
 							"value": "@variables('pipelineError')",
 							"type": "Expression"
+						},
+						"pipelineSubjectDate": {
+							"value": "@variables('pipelineSubjectDate')",
+							"type": "Expression"
 						}
 					}
 				}
@@ -209,6 +217,10 @@
 						"pipelineName": "MasterMPSPipeline_003",
 						"pipelineError": {
 							"value": "@variables('pipelineError')",
+							"type": "Expression"
+						},
+						"pipelineSubjectDate": {
+							"value": "@variables('pipelineSubjectDate')",
 							"type": "Expression"
 						}
 					}
