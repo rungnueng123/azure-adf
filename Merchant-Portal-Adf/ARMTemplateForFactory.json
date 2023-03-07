@@ -2380,9 +2380,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Get File From SFTP",
+								"activity": "Set PipelineSubjectDate 1",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -2400,9 +2400,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Insert MPS To DB",
+								"activity": "Set PipelineSubjectDate 2",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -2420,9 +2420,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Update Merchant Profile",
+								"activity": "Set PipelineSubjectDate 3",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -2431,6 +2431,66 @@
 							"variableName": "pipelineError",
 							"value": {
 								"value": "@activity('Update Merchant Profile').error.Message",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get File From SFTP",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 2",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Insert MPS To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
 								"type": "Expression"
 							}
 						}
@@ -2449,6 +2509,9 @@
 						"defaultValue": "6f215d46e6c64b58bea218b89094b01c"
 					},
 					"pipelineError": {
+						"type": "String"
+					},
+					"pipelineSubjectDate": {
 						"type": "String"
 					}
 				},
@@ -2618,9 +2681,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Insert MPS To DB",
+								"activity": "Set PipelineSubjectDate 2",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -2638,9 +2701,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Update Merchant Profile",
+								"activity": "Set PipelineSubjectDate 3",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -2649,6 +2712,46 @@
 							"variableName": "pipelineError",
 							"value": {
 								"value": "@activity('Update Merchant Profile').error.Message",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 2",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Insert MPS To DB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
 								"type": "Expression"
 							}
 						}
@@ -2667,6 +2770,9 @@
 						"defaultValue": "6f215d46e6c64b58bea218b89094b01c"
 					},
 					"pipelineError": {
+						"type": "String"
+					},
+					"pipelineSubjectDate": {
 						"type": "String"
 					}
 				},
@@ -2760,9 +2866,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Update Merchant Profile",
+								"activity": "Set PipelineSubjectDate 3",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -2771,6 +2877,26 @@
 							"variableName": "pipelineError",
 							"value": {
 								"value": "@activity('Update Merchant Profile').error.Message",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
 								"type": "Expression"
 							}
 						}
@@ -2789,6 +2915,9 @@
 						"defaultValue": "6f215d46e6c64b58bea218b89094b01c"
 					},
 					"pipelineError": {
+						"type": "String"
+					},
+					"pipelineSubjectDate": {
 						"type": "String"
 					}
 				},
