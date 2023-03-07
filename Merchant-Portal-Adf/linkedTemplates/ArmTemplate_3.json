@@ -226,6 +226,10 @@
 								"pipelineError": {
 									"value": "@variables('pipelineError')",
 									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
+									"type": "Expression"
 								}
 							}
 						}
@@ -366,12 +370,36 @@
 								"pipelineError": {
 									"value": "@variables('pipelineError')",
 									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
+									"type": "Expression"
 								}
 							}
 						}
 					},
 					{
 						"name": "Set PipelineError 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineSubjectDate 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update Task Expire').error.Message",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 1",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -383,9 +411,9 @@
 						],
 						"userProperties": [],
 						"typeProperties": {
-							"variableName": "pipelineError",
+							"variableName": "pipelineSubjectDate",
 							"value": {
-								"value": "@activity('Update Task Expire').error.Message",
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
 								"type": "Expression"
 							}
 						}
@@ -404,6 +432,9 @@
 						"defaultValue": "70cd180d2eb6480b9553262b321c781b"
 					},
 					"pipelineError": {
+						"type": "String"
+					},
+					"pipelineSubjectDate": {
 						"type": "String"
 					}
 				},
@@ -1058,6 +1089,10 @@
 								"pipelineError": {
 									"value": "@variables('pipelineError')",
 									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
+									"type": "Expression"
 								}
 							}
 						}
@@ -1085,9 +1120,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Azure Function1",
+								"activity": "Set PipelineSubjectDate 1",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -1096,6 +1131,26 @@
 							"variableName": "pipelineError",
 							"value": {
 								"value": "@activity('Azure Function1').error.Message",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Azure Function1",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
 								"type": "Expression"
 							}
 						}
@@ -1114,6 +1169,9 @@
 						"defaultValue": "f26e08ca7ade4b8c974a99a81c4989f6"
 					},
 					"pipelineError": {
+						"type": "String"
+					},
+					"pipelineSubjectDate": {
 						"type": "String"
 					}
 				},
@@ -2440,6 +2498,10 @@
 								"pipelineError": {
 									"value": "@variables('pipelineError')",
 									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
+									"type": "Expression"
 								}
 							}
 						}
@@ -2511,6 +2573,10 @@
 								"pipelineError": {
 									"value": "@variables('pipelineError')",
 									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
+									"type": "Expression"
 								}
 							}
 						}
@@ -2520,9 +2586,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Execute SCB",
+								"activity": "Set PipelineSubjectDate 1",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -2540,9 +2606,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Execute Merchant",
+								"activity": "Set PipelineSubjectDate 2",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -2551,6 +2617,46 @@
 							"variableName": "pipelineError",
 							"value": {
 								"value": "@activity('Execute Merchant').error.Message",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Execute SCB",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 2",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Execute Merchant",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
 								"type": "Expression"
 							}
 						}
@@ -2569,6 +2675,9 @@
 						"defaultValue": "4345c0af4223436bb8dce390b2b8aa10"
 					},
 					"pipelineError": {
+						"type": "String"
+					},
+					"pipelineSubjectDate": {
 						"type": "String"
 					}
 				},
