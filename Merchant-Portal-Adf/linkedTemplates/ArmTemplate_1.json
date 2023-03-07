@@ -93,36 +93,9 @@
 						}
 					},
 					{
-						"name": "Set Error Date",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set variable1",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "errorDate",
-							"value": {
-								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
 						"name": "Set Error Message",
 						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set Error Date",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
+						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "errorMessage",
@@ -191,19 +164,6 @@
 								"type": "Expression"
 							}
 						}
-					},
-					{
-						"name": "Set variable1",
-						"type": "SetVariable",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "errorDate",
-							"value": {
-								"value": "@formatDateTime(convertTimeZone(pipeline().TriggerTime, 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
-								"type": "Expression"
-							}
-						}
 					}
 				],
 				"policy": {
@@ -264,9 +224,6 @@
 					"mstUrlKey": {
 						"type": "String",
 						"defaultValue": "/21f0e5ae-977c-4a51-8fcf-d16ea01f2450"
-					},
-					"errorDate": {
-						"type": "String"
 					},
 					"ResourceGroup": {
 						"type": "String",
