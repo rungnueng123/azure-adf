@@ -4012,8 +4012,12 @@
 								"value": "piilog",
 								"type": "Expression"
 							},
-							"method": "GET",
-							"headers": {}
+							"method": "POST",
+							"headers": {},
+							"body": {
+								"value": "@concat(\n    '{\"jobUpdateDate\":\"',\n    formatDateTime(convertTimeZone(pipeline().TriggerTime, 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm'),\n    '\"}'\n)",
+								"type": "Expression"
+							}
 						},
 						"linkedServiceName": {
 							"referenceName": "AzureFunctionKafKa",
