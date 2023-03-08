@@ -14,7 +14,7 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
-					"value": "@concat(formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'), 'dd'),'.log')",
+					"value": "@concat(\n    'merchant_activity_log_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'), 'yyyyMMdd'),'.log'\n)",
 					"type": "Expression"
 				},
 				"folderPath": {
