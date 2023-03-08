@@ -50,7 +50,7 @@
 				"typeProperties": {
 					"variableName": "fileNameSCB",
 					"value": {
-						"value": "@formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'dd')",
+						"value": "@concat(\n    'scbstaff_activity_log_',\n    formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'yyyyMMdd')\n)",
 						"type": "Expression"
 					}
 				}
