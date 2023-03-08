@@ -2,7 +2,7 @@
 	"name": "triggerKafKaLog_3",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Stopped",
+		"runtimeState": "Started",
 		"pipelines": [
 			{
 				"pipelineReference": {
