@@ -33,7 +33,7 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "Set variable1",
+						"activity": "Set Job Date",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -249,7 +249,7 @@
 				}
 			},
 			{
-				"name": "Set variable1",
+				"name": "Set Job Date",
 				"type": "SetVariable",
 				"dependsOn": [],
 				"userProperties": [],
