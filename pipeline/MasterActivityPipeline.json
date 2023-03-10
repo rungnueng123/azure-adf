@@ -19,20 +19,39 @@
 						"referenceName": "MERCHANT_ACTIVITY_LOG",
 						"type": "PipelineReference"
 					},
-					"waitOnCompletion": true
+					"waitOnCompletion": true,
+					"parameters": {
+						"jobDate": {
+							"value": "@variables('jobDate')",
+							"type": "Expression"
+						}
+					}
 				}
 			},
 			{
 				"name": "Execute SCB",
 				"type": "ExecutePipeline",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Set variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
 						"referenceName": "SCB_ACTIVITY_LOG",
 						"type": "PipelineReference"
 					},
-					"waitOnCompletion": true
+					"waitOnCompletion": true,
+					"parameters": {
+						"jobDate": {
+							"value": "@variables('jobDate')",
+							"type": "Expression"
+						}
+					}
 				}
 			},
 			{
@@ -228,6 +247,19 @@
 						"type": "Expression"
 					}
 				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "jobDate",
+					"value": {
+						"value": "@convertTimeZone(utcnow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-dd')",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"variables": {
@@ -242,6 +274,9 @@
 				"type": "String"
 			},
 			"pipelineSubjectDate": {
+				"type": "String"
+			},
+			"jobDate": {
 				"type": "String"
 			}
 		},

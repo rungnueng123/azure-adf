@@ -10,7 +10,7 @@
 				"typeProperties": {
 					"variableName": "startDateSCB",
 					"value": {
-						"value": "@formatDateTime(subtractFromTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),1,'Year'),'yyyy-MM-dd 00:00:00.000')",
+						"value": "@formatDateTime(subtractFromTime(subtractFromTime(pipeline().parameters.jobDate,1,'Day'),1,'Year'),'yyyy-MM-dd 00:00:00.000')",
 						"type": "Expression"
 					}
 				}
@@ -30,7 +30,7 @@
 				"typeProperties": {
 					"variableName": "endDateSCB",
 					"value": {
-						"value": "@formatDateTime(subtractFromTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),1,'Year'),'yyyy-MM-dd 23:59:59.999')",
+						"value": "@formatDateTime(subtractFromTime(subtractFromTime(pipeline().parameters.jobDate,1,'Day'),1,'Year'),'yyyy-MM-dd 23:59:59.999')",
 						"type": "Expression"
 					}
 				}
@@ -50,7 +50,7 @@
 				"typeProperties": {
 					"variableName": "fileNameSCB",
 					"value": {
-						"value": "@concat(\n    'scbstaff_activity_log_',\n    formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'yyyyMMdd')\n)",
+						"value": "@concat(\n    'scbstaff_activity_log_',\n    formatDateTime(subtractFromTime(subtractFromTime(pipeline().parameters.jobDate,1,'Day'),1,'Year'),'yyyyMMdd')\n)",
 						"type": "Expression"
 					}
 				}
@@ -114,11 +114,22 @@
 				"outputs": [
 					{
 						"referenceName": "SCB_ACTIVITY_LOG_OUTPUT",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"fileName": {
+								"value": "@variables('fileNameSCB')",
+								"type": "Expression"
+							}
+						}
 					}
 				]
 			}
 		],
+		"parameters": {
+			"jobDate": {
+				"type": "string"
+			}
+		},
 		"variables": {
 			"startDateSCB": {
 				"type": "String"
