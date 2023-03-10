@@ -697,7 +697,7 @@
 						"typeProperties": {
 							"variableName": "fileNameMerchant",
 							"value": {
-								"value": "@concat(\n    'merchant_activity_log_',\n    formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),6,'Month'),'yyyyMMdd')\n)",
+								"value": "@concat(\n    'merchant_activity_log_',\n    formatDateTime(subtractFromTime(subtractFromTime(pipeline().parameters.jobDate,1,'Day'),6,'Month'),'yyyyMMdd')\n)",
 								"type": "Expression"
 							}
 						}
@@ -763,7 +763,12 @@
 							{
 								"referenceName": "MERCHANT_ACTIVITY_LOG_OUTPUT",
 								"type": "DatasetReference",
-								"parameters": {}
+								"parameters": {
+									"fileName": {
+										"value": "@variables('fileNameMerchant')",
+										"type": "Expression"
+									}
+								}
 							}
 						]
 					},
@@ -775,7 +780,7 @@
 						"typeProperties": {
 							"variableName": "startDateMerchant",
 							"value": {
-								"value": "@formatDateTime(subtractFromTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),6,'Month'),'yyyy-MM-dd 00:00:00.000')",
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(pipeline().parameters.jobDate,1,'Day'),6,'Month'),'yyyy-MM-dd 00:00:00.000')",
 								"type": "Expression"
 							}
 						}
@@ -795,7 +800,7 @@
 						"typeProperties": {
 							"variableName": "endDateMerchant",
 							"value": {
-								"value": "@formatDateTime(subtractFromTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),6,'Month'),'yyyy-MM-dd 23:59:59.999')",
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(pipeline().parameters.jobDate,1,'Day'),6,'Month'),'yyyy-MM-dd 23:59:59.999')",
 								"type": "Expression"
 							}
 						}
@@ -804,6 +809,11 @@
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"parameters": {
+					"jobDate": {
+						"type": "string"
+					}
 				},
 				"variables": {
 					"fileNameMerchant": {
@@ -1161,13 +1171,25 @@
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
-							"parameters": {}
+							"parameters": {
+								"jobDate": {
+									"value": "@variables('jobDate')",
+									"type": "Expression"
+								}
+							}
 						}
 					},
 					{
 						"name": "Execute SCB",
 						"type": "ExecutePipeline",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Set variable1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
@@ -1175,7 +1197,12 @@
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
-							"parameters": {}
+							"parameters": {
+								"jobDate": {
+									"value": "@variables('jobDate')",
+									"type": "Expression"
+								}
+							}
 						}
 					},
 					{
@@ -1371,6 +1398,19 @@
 								"type": "Expression"
 							}
 						}
+					},
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "jobDate",
+							"value": {
+								"value": "@convertTimeZone(utcnow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -1389,6 +1429,9 @@
 						"type": "String"
 					},
 					"pipelineSubjectDate": {
+						"type": "String"
+					},
+					"jobDate": {
 						"type": "String"
 					}
 				},
@@ -3167,7 +3210,7 @@
 						"typeProperties": {
 							"variableName": "startDateSCB",
 							"value": {
-								"value": "@formatDateTime(subtractFromTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),1,'Year'),'yyyy-MM-dd 00:00:00.000')",
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(pipeline().parameters.jobDate,1,'Day'),1,'Year'),'yyyy-MM-dd 00:00:00.000')",
 								"type": "Expression"
 							}
 						}
@@ -3187,7 +3230,7 @@
 						"typeProperties": {
 							"variableName": "endDateSCB",
 							"value": {
-								"value": "@formatDateTime(subtractFromTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),1,'Year'),'yyyy-MM-dd 23:59:59.999')",
+								"value": "@formatDateTime(subtractFromTime(subtractFromTime(pipeline().parameters.jobDate,1,'Day'),1,'Year'),'yyyy-MM-dd 23:59:59.999')",
 								"type": "Expression"
 							}
 						}
@@ -3207,7 +3250,7 @@
 						"typeProperties": {
 							"variableName": "fileNameSCB",
 							"value": {
-								"value": "@concat(\n    'scbstaff_activity_log_',\n    formatDateTime(subtractFromTime(subtractFromTime(utcnow(),1,'Day'),1,'Year'),'yyyyMMdd')\n)",
+								"value": "@concat(\n    'scbstaff_activity_log_',\n    formatDateTime(subtractFromTime(subtractFromTime(pipeline().parameters.jobDate,1,'Day'),1,'Year'),'yyyyMMdd')\n)",
 								"type": "Expression"
 							}
 						}
@@ -3273,7 +3316,12 @@
 							{
 								"referenceName": "SCB_ACTIVITY_LOG_OUTPUT",
 								"type": "DatasetReference",
-								"parameters": {}
+								"parameters": {
+									"fileName": {
+										"value": "@variables('fileNameSCB')",
+										"type": "Expression"
+									}
+								}
 							}
 						]
 					}
@@ -3281,6 +3329,11 @@
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"parameters": {
+					"jobDate": {
+						"type": "string"
+					}
 				},
 				"variables": {
 					"startDateSCB": {
@@ -5106,6 +5159,11 @@
 					"referenceName": "B2Kblob",
 					"type": "LinkedServiceReference"
 				},
+				"parameters": {
+					"fileName": {
+						"type": "string"
+					}
+				},
 				"folder": {
 					"name": "Log/MERCHANT_ACTIVITY_LOG/OUTPUT"
 				},
@@ -5115,7 +5173,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": {
-							"value": "@concat(\n    'merchant_activity_log_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'), 'yyyyMMdd'),'.log'\n)",
+							"value": "@concat(\n    dataset().fileName,\n    '.log'\n)",
 							"type": "Expression"
 						},
 						"folderPath": {
@@ -5890,6 +5948,11 @@
 					"referenceName": "B2Kblob",
 					"type": "LinkedServiceReference"
 				},
+				"parameters": {
+					"fileName": {
+						"type": "string"
+					}
+				},
 				"folder": {
 					"name": "Log/SCB_ACTIVITY_LOG/OUTPUT"
 				},
@@ -5899,7 +5962,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": {
-							"value": "@concat(\n    'scbstaff_activity_log_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'), 'yyyyMMdd'),'.log'\n)",
+							"value": "@concat(\n    dataset().fileName,\n    '.log'\n)",
 							"type": "Expression"
 						},
 						"folderPath": {

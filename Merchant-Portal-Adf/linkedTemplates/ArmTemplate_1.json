@@ -928,6 +928,11 @@
 					"referenceName": "B2Kblob",
 					"type": "LinkedServiceReference"
 				},
+				"parameters": {
+					"fileName": {
+						"type": "string"
+					}
+				},
 				"folder": {
 					"name": "Log/MERCHANT_ACTIVITY_LOG/OUTPUT"
 				},
@@ -937,7 +942,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": {
-							"value": "@concat(\n    'merchant_activity_log_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'), 'yyyyMMdd'),'.log'\n)",
+							"value": "@concat(\n    dataset().fileName,\n    '.log'\n)",
 							"type": "Expression"
 						},
 						"folderPath": {
