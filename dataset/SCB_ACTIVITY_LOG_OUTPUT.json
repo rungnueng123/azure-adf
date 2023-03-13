@@ -8,6 +8,9 @@
 		"parameters": {
 			"fileName": {
 				"type": "string"
+			},
+			"folderName": {
+				"type": "string"
 			}
 		},
 		"folder": {
@@ -23,7 +26,7 @@
 					"type": "Expression"
 				},
 				"folderPath": {
-					"value": "@concat(\n    'scbstaff_activity_log/',\n    formatDateTime(subtractFromTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),1,'Year'),'yyyy'),\n    '/',\n    formatDateTime(subtractFromTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),1,'Year'),'MM')\n)",
+					"value": "@dataset().folderName",
 					"type": "Expression"
 				},
 				"container": "log"
