@@ -569,6 +569,10 @@
 									"fileName": {
 										"value": "@variables('fileNameSCB')",
 										"type": "Expression"
+									},
+									"folderName": {
+										"value": "@concat(\n    'scbstaff_activity_log/',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,365,'Day'),'yyyy/MM')\n)",
+										"type": "Expression"
 									}
 								}
 							}
