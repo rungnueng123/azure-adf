@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"variableName": "fileNameMerchant",
 					"value": {
-						"value": "@concat(\n    'merchant_activity_log_',\n    formatDateTime(subtractFromTime(subtractFromTime(pipeline().parameters.jobDate,1,'Day'),6,'Month'),'yyyyMMdd')\n)",
+						"value": "@concat(\n    'merchant_activity_log_',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyyMMdd')\n)",
 						"type": "Expression"
 					}
 				}
@@ -99,7 +99,7 @@
 				"typeProperties": {
 					"variableName": "startDateMerchant",
 					"value": {
-						"value": "@formatDateTime(subtractFromTime(subtractFromTime(pipeline().parameters.jobDate,1,'Day'),6,'Month'),'yyyy-MM-dd 00:00:00.000')",
+						"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyy-MM-dd 00:00:00.000')",
 						"type": "Expression"
 					}
 				}
@@ -119,7 +119,7 @@
 				"typeProperties": {
 					"variableName": "endDateMerchant",
 					"value": {
-						"value": "@formatDateTime(subtractFromTime(subtractFromTime(pipeline().parameters.jobDate,1,'Day'),6,'Month'),'yyyy-MM-dd 23:59:59.999')",
+						"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyy-MM-dd 23:59:59.999')",
 						"type": "Expression"
 					}
 				}

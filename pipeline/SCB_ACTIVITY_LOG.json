@@ -10,7 +10,7 @@
 				"typeProperties": {
 					"variableName": "startDateSCB",
 					"value": {
-						"value": "@formatDateTime(subtractFromTime(subtractFromTime(pipeline().parameters.jobDate,1,'Day'),1,'Year'),'yyyy-MM-dd 00:00:00.000')",
+						"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,365,'Day'),'yyyy-MM-dd 00:00:00.000')",
 						"type": "Expression"
 					}
 				}
@@ -30,7 +30,7 @@
 				"typeProperties": {
 					"variableName": "endDateSCB",
 					"value": {
-						"value": "@formatDateTime(subtractFromTime(subtractFromTime(pipeline().parameters.jobDate,1,'Day'),1,'Year'),'yyyy-MM-dd 23:59:59.999')",
+						"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,365,'Day'),'yyyy-MM-dd 23:59:59.999')",
 						"type": "Expression"
 					}
 				}
@@ -50,7 +50,7 @@
 				"typeProperties": {
 					"variableName": "fileNameSCB",
 					"value": {
-						"value": "@concat(\n    'scbstaff_activity_log_',\n    formatDateTime(subtractFromTime(subtractFromTime(pipeline().parameters.jobDate,1,'Day'),1,'Year'),'yyyyMMdd')\n)",
+						"value": "@concat(\n    'scbstaff_activity_log_',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,365,'Day'),'yyyyMMdd')\n)",
 						"type": "Expression"
 					}
 				}
