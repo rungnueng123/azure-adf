@@ -88,7 +88,7 @@
 								"type": "Expression"
 							},
 							"folderName": {
-								"value": "@concat(\n    'scbstaff_activity_log/',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyy/MM')\n)",
+								"value": "@concat(\n    'merchant_activity_log/',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyy/MM')\n)",
 								"type": "Expression"
 							}
 						}
