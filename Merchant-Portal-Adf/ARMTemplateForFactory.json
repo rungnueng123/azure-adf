@@ -1958,7 +1958,7 @@
 						"type": "String"
 					},
 					"resultCode": {
-						"type": "String"
+						"type": "Boolean"
 					}
 				},
 				"folder": {
@@ -2365,7 +2365,7 @@
 						"type": "String"
 					},
 					"resultCode": {
-						"type": "String"
+						"type": "Boolean"
 					}
 				},
 				"folder": {
@@ -2652,7 +2652,7 @@
 						"type": "String"
 					},
 					"resultCode": {
-						"type": "String"
+						"type": "Boolean"
 					}
 				},
 				"folder": {
