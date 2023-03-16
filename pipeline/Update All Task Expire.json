@@ -28,7 +28,7 @@
 				}
 			},
 			{
-				"name": "Set variable1",
+				"name": "Return Result",
 				"type": "SetVariable",
 				"dependsOn": [
 					{

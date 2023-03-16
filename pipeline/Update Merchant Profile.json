@@ -43,31 +43,10 @@
 					"variableName": "pipelineReturnValue",
 					"value": [
 						{
-							"key": "resultCode",
+							"key": "result",
 							"value": {
 								"type": "Expression",
-								"content": "@activity('updateMerchantProfile').output.firstRow.CODE"
-							}
-						},
-						{
-							"key": "resultErrorProcedure",
-							"value": {
-								"type": "Expression",
-								"content": "@activity('updateMerchantProfile').output.firstRow.ErrorProcedure"
-							}
-						},
-						{
-							"key": "resultErrorMessage",
-							"value": {
-								"type": "Expression",
-								"content": "@activity('updateMerchantProfile').output.firstRow.ErrorMessage"
-							}
-						},
-						{
-							"key": "resultErrorLine",
-							"value": {
-								"type": "Expression",
-								"content": "@activity('updateMerchantProfile').output.firstRow.ErrorLine"
+								"content": "@activity('updateMerchantProfile').output.firstRow"
 							}
 						}
 					],

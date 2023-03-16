@@ -112,7 +112,7 @@
 				}
 			},
 			{
-				"name": "Set variable1",
+				"name": "Set Result Store",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
@@ -132,11 +132,11 @@
 				}
 			},
 			{
-				"name": "If Condition1",
+				"name": "If Condition resultCode",
 				"type": "IfCondition",
 				"dependsOn": [
 					{
-						"activity": "Set variable1",
+						"activity": "Set Result Store",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -155,9 +155,9 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "If Condition1",
+						"activity": "If Condition resultCode",
 						"dependencyConditions": [
-							"Succeeded"
+							"Failed"
 						]
 					}
 				],
