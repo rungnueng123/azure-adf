@@ -1802,6 +1802,141 @@
 								"type": "Expression"
 							}
 						}
+					},
+					{
+						"name": "Set Result Store",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "resultCode",
+							"value": {
+								"value": "@if(equals(activity('Update Merchant Profile').output.pipelineReturnValue.result.CODE, '000'), true, false)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "If Condition resultCode",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Set Result Store",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@variables('resultCode')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 4",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "If Condition resultCode",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineError 4",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineSubjectDate 4",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    'ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    'ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineStep 4",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineError 4",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "EXPIRE_JOBS_FAILED"
+						}
+					},
+					{
+						"name": "Send Email Error 4",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 4",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								},
+								"pipelineMstKey": {
+									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
+								},
+								"pipelineName": "MasterB2KPipeline_003",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
+									"type": "Expression"
+								}
+							}
+						}
 					}
 				],
 				"policy": {
@@ -1820,6 +1955,9 @@
 						"type": "String"
 					},
 					"pipelineSubjectDate": {
+						"type": "String"
+					},
+					"resultCode": {
 						"type": "String"
 					}
 				},
@@ -2071,6 +2209,141 @@
 								"type": "Expression"
 							}
 						}
+					},
+					{
+						"name": "Set Result Store",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "resultCode",
+							"value": {
+								"value": "@if(equals(activity('Update Merchant Profile').output.pipelineReturnValue.result.CODE, '000'), true, false)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "If Condition resultCode",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Set Result Store",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@variables('resultCode')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 4",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "If Condition resultCode",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineError 4",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineSubjectDate 4",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    'ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    'ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineStep 4",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineError 4",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "EXPIRE_JOBS_FAILED"
+						}
+					},
+					{
+						"name": "Send Email Error 4",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 4",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								},
+								"pipelineMstKey": {
+									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
+								},
+								"pipelineName": "MasterB2KPipeline_003",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
+									"type": "Expression"
+								}
+							}
+						}
 					}
 				],
 				"policy": {
@@ -2089,6 +2362,9 @@
 						"type": "String"
 					},
 					"pipelineSubjectDate": {
+						"type": "String"
+					},
+					"resultCode": {
 						"type": "String"
 					}
 				},
@@ -2220,6 +2496,141 @@
 								"type": "Expression"
 							}
 						}
+					},
+					{
+						"name": "Set Result Store",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "resultCode",
+							"value": {
+								"value": "@if(equals(activity('Update Merchant Profile').output.pipelineReturnValue.result.CODE, '000'), true, false)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "If Condition resultCode",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Set Result Store",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@variables('resultCode')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 4",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "If Condition resultCode",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineError 4",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineSubjectDate 4",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    'ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    'ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineStep 4",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineError 4",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "EXPIRE_JOBS_FAILED"
+						}
+					},
+					{
+						"name": "Send Email Error 4",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 4",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								},
+								"pipelineMstKey": {
+									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
+								},
+								"pipelineName": "MasterB2KPipeline_003",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
+									"type": "Expression"
+								}
+							}
+						}
 					}
 				],
 				"policy": {
@@ -2238,6 +2649,9 @@
 						"type": "String"
 					},
 					"pipelineSubjectDate": {
+						"type": "String"
+					},
+					"resultCode": {
 						"type": "String"
 					}
 				},
@@ -3171,7 +3585,7 @@
 						}
 					},
 					{
-						"name": "Set variable1",
+						"name": "Set Result Store",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -3191,11 +3605,11 @@
 						}
 					},
 					{
-						"name": "If Condition1",
+						"name": "If Condition resultCode",
 						"type": "IfCondition",
 						"dependsOn": [
 							{
-								"activity": "Set variable1",
+								"activity": "Set Result Store",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -3214,9 +3628,9 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "If Condition1",
+								"activity": "If Condition resultCode",
 								"dependencyConditions": [
-									"Succeeded"
+									"Failed"
 								]
 							}
 						],
@@ -4383,7 +4797,7 @@
 						}
 					},
 					{
-						"name": "Set variable1",
+						"name": "Return Result",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -4470,31 +4884,10 @@
 							"variableName": "pipelineReturnValue",
 							"value": [
 								{
-									"key": "resultCode",
+									"key": "result",
 									"value": {
 										"type": "Expression",
-										"content": "@activity('updateMerchantProfile').output.firstRow.CODE"
-									}
-								},
-								{
-									"key": "resultErrorProcedure",
-									"value": {
-										"type": "Expression",
-										"content": "@activity('updateMerchantProfile').output.firstRow.ErrorProcedure"
-									}
-								},
-								{
-									"key": "resultErrorMessage",
-									"value": {
-										"type": "Expression",
-										"content": "@activity('updateMerchantProfile').output.firstRow.ErrorMessage"
-									}
-								},
-								{
-									"key": "resultErrorLine",
-									"value": {
-										"type": "Expression",
-										"content": "@activity('updateMerchantProfile').output.firstRow.ErrorLine"
+										"content": "@activity('updateMerchantProfile').output.firstRow"
 									}
 								}
 							],
