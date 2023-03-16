@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Set PipelineStep 2",
+				"name": "Set PipelineStep 3",
 				"description": "Error key message",
 				"type": "SetVariable",
 				"dependsOn": [
@@ -38,7 +38,7 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "Set PipelineStep 2",
+						"activity": "Set PipelineStep 3",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -111,6 +111,141 @@
 						"type": "Expression"
 					}
 				}
+			},
+			{
+				"name": "Set Result Store",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Update Merchant Profile",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "resultCode",
+					"value": {
+						"value": "@if(equals(activity('Update Merchant Profile').output.pipelineReturnValue.result.CODE, '000'), true, false)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "If Condition resultCode",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Set Result Store",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@variables('resultCode')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set PipelineSubjectDate 4",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "If Condition resultCode",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineSubjectDate",
+					"value": {
+						"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set PipelineError 4",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set PipelineSubjectDate 4",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineError",
+					"value": {
+						"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    'ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    'ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set PipelineStep 4",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set PipelineError 4",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineStep",
+					"value": "EXPIRE_JOBS_FAILED"
+				}
+			},
+			{
+				"name": "Send Email Error 4",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Set PipelineStep 4",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Send Email",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"pipelineStep": {
+							"value": "@variables('pipelineStep')",
+							"type": "Expression"
+						},
+						"pipelineMstKey": {
+							"value": "@variables('pipelineMstKey')",
+							"type": "Expression"
+						},
+						"pipelineName": "MasterB2KPipeline_003",
+						"pipelineError": {
+							"value": "@variables('pipelineError')",
+							"type": "Expression"
+						},
+						"pipelineSubjectDate": {
+							"value": "@variables('pipelineSubjectDate')",
+							"type": "Expression"
+						}
+					}
+				}
 			}
 		],
 		"variables": {
@@ -126,6 +261,9 @@
 			},
 			"pipelineSubjectDate": {
 				"type": "String"
+			},
+			"resultCode": {
+				"type": "Boolean"
 			}
 		},
 		"folder": {

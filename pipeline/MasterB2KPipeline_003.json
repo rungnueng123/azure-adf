@@ -158,7 +158,7 @@
 					{
 						"activity": "If Condition resultCode",
 						"dependencyConditions": [
-							"Succeeded"
+							"Failed"
 						]
 					}
 				],
