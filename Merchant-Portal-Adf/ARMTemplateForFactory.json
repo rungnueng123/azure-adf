@@ -4034,103 +4034,98 @@
 							"expression": {
 								"value": "@variables('resultCode')",
 								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set PipelineSubjectDate 2",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "If Condition resultCode",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineSubjectDate",
-							"value": {
-								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set PipelineError 2",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineSubjectDate 2",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineError",
-							"value": {
-								"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorProcedure,\n    'ERROR_LINE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorLine,\n    'ERROR_MESSAGE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorMessage\n)",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set PipelineStep 2",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineError 2",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "EXPIRE_JOBS_FAILED"
-						}
-					},
-					{
-						"name": "Send Email Error 2",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineStep 2",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Send Email",
-								"type": "PipelineReference"
 							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"pipelineStep": {
-									"value": "@variables('pipelineStep')",
-									"type": "Expression"
+							"ifFalseActivities": [
+								{
+									"name": "Set PipelineSubjectDate 2",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineSubjectDate",
+										"value": {
+											"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
+											"type": "Expression"
+										}
+									}
 								},
-								"pipelineMstKey": {
-									"value": "@variables('pipelineMstKey')",
-									"type": "Expression"
+								{
+									"name": "Set PipelineError 2",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineSubjectDate 2",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineError",
+										"value": {
+											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorProcedure,\n    'ERROR_LINE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorLine,\n    'ERROR_MESSAGE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorMessage\n)",
+											"type": "Expression"
+										}
+									}
 								},
-								"pipelineName": "MasterTaskExpirePipeline",
-								"pipelineError": {
-									"value": "@variables('pipelineError')",
-									"type": "Expression"
+								{
+									"name": "Set PipelineStep 2",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineError 2",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineStep",
+										"value": "EXPIRE_JOBS_FAILED"
+									}
 								},
-								"pipelineSubjectDate": {
-									"value": "@variables('pipelineSubjectDate')",
-									"type": "Expression"
+								{
+									"name": "Send Email Error 2",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineStep 2",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Send Email",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"pipelineStep": {
+												"value": "@variables('pipelineStep')",
+												"type": "Expression"
+											},
+											"pipelineMstKey": {
+												"value": "@variables('pipelineMstKey')",
+												"type": "Expression"
+											},
+											"pipelineName": "MasterTaskExpirePipeline",
+											"pipelineError": {
+												"value": "@variables('pipelineError')",
+												"type": "Expression"
+											},
+											"pipelineSubjectDate": {
+												"value": "@variables('pipelineSubjectDate')",
+												"type": "Expression"
+											}
+										}
+									}
 								}
-							}
+							]
 						}
 					}
 				],
