@@ -3185,7 +3185,7 @@
 						"typeProperties": {
 							"variableName": "resultCode",
 							"value": {
-								"value": "@if(equals(activity('Update Task Expire').output.pipelineReturnValue.resultCode, '200'), true, false)",
+								"value": "@if(equals(activity('Update Task Expire').output.pipelineReturnValue.result.CODE, '200'), true, false)",
 								"type": "Expression"
 							}
 						}
@@ -3244,7 +3244,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.resultErrorProcedure,\n    'ERROR_LINE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.resultErrorLine,\n    'ERROR_MESSAGE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.resultErrorMessage\n)",
+								"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorProcedure,\n    'ERROR_LINE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorLine,\n    'ERROR_MESSAGE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorMessage\n)",
 								"type": "Expression"
 							}
 						}
@@ -4383,7 +4383,7 @@
 						}
 					},
 					{
-						"name": "Return Result",
+						"name": "Set variable1",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -4398,31 +4398,10 @@
 							"variableName": "pipelineReturnValue",
 							"value": [
 								{
-									"key": "resultCode",
+									"key": "result",
 									"value": {
 										"type": "Expression",
-										"content": "@activity('updateAllTaskExpire').output.firstRow.CODE"
-									}
-								},
-								{
-									"key": "resultErrorProcedure",
-									"value": {
-										"type": "Expression",
-										"content": "@if(equals(activity('updateAllTaskExpire').output.firstRow.ErrorProcedure, null), '', activity('updateAllTaskExpire').output.firstRow.ErrorProcedure)"
-									}
-								},
-								{
-									"key": "resultErrorMessage",
-									"value": {
-										"type": "Expression",
-										"content": "@if(equals(activity('updateAllTaskExpire').output.firstRow.ErrorMessage, null), '', activity('updateAllTaskExpire').output.firstRow.ErrorMessage)"
-									}
-								},
-								{
-									"key": "resultErrorLine",
-									"value": {
-										"type": "Expression",
-										"content": "@if(equals(activity('updateAllTaskExpire').output.firstRow.ErrorLine, null), '', activity('updateAllTaskExpire').output.firstRow.ErrorLine)"
+										"content": "@activity('updateAllTaskExpire').output.firstRow"
 									}
 								}
 							],

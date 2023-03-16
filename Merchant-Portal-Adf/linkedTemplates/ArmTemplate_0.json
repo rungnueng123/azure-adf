@@ -1084,7 +1084,7 @@
 						}
 					},
 					{
-						"name": "Return Result",
+						"name": "Set variable1",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1099,31 +1099,10 @@
 							"variableName": "pipelineReturnValue",
 							"value": [
 								{
-									"key": "resultCode",
+									"key": "result",
 									"value": {
 										"type": "Expression",
-										"content": "@activity('updateAllTaskExpire').output.firstRow.CODE"
-									}
-								},
-								{
-									"key": "resultErrorProcedure",
-									"value": {
-										"type": "Expression",
-										"content": "@if(equals(activity('updateAllTaskExpire').output.firstRow.ErrorProcedure, null), '', activity('updateAllTaskExpire').output.firstRow.ErrorProcedure)"
-									}
-								},
-								{
-									"key": "resultErrorMessage",
-									"value": {
-										"type": "Expression",
-										"content": "@if(equals(activity('updateAllTaskExpire').output.firstRow.ErrorMessage, null), '', activity('updateAllTaskExpire').output.firstRow.ErrorMessage)"
-									}
-								},
-								{
-									"key": "resultErrorLine",
-									"value": {
-										"type": "Expression",
-										"content": "@if(equals(activity('updateAllTaskExpire').output.firstRow.ErrorLine, null), '', activity('updateAllTaskExpire').output.firstRow.ErrorLine)"
+										"content": "@activity('updateAllTaskExpire').output.firstRow"
 									}
 								}
 							],
