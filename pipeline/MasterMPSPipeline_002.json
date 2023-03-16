@@ -276,7 +276,7 @@
 							"typeProperties": {
 								"variableName": "pipelineSubjectDate",
 								"value": {
-									"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
+									"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
 									"type": "Expression"
 								}
 							}
@@ -315,7 +315,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"variableName": "pipelineStep",
-								"value": "EXPIRE_JOBS_FAILED"
+								"value": "MPS_INTEGRATE_FAILED"
 							}
 						},
 						{
@@ -345,7 +345,7 @@
 										"value": "@variables('pipelineMstKey')",
 										"type": "Expression"
 									},
-									"pipelineName": "MasterB2KPipeline_003",
+									"pipelineName": "MasterMPSPipeline_003",
 									"pipelineError": {
 										"value": "@variables('pipelineError')",
 										"type": "Expression"
