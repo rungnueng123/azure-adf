@@ -1869,7 +1869,7 @@
 									"typeProperties": {
 										"variableName": "pipelineError",
 										"value": {
-											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    'ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    'ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
+											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    '<br>ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    '<br>ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
 											"type": "Expression"
 										}
 									}
@@ -2271,7 +2271,7 @@
 									"typeProperties": {
 										"variableName": "pipelineError",
 										"value": {
-											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    'ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    'ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
+											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    '<br>ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    '<br>ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
 											"type": "Expression"
 										}
 									}
@@ -2553,7 +2553,7 @@
 									"typeProperties": {
 										"variableName": "pipelineError",
 										"value": {
-											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    'ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    'ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
+											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    '<br>ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    '<br>ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
 											"type": "Expression"
 										}
 									}
@@ -3070,7 +3070,7 @@
 									"typeProperties": {
 										"variableName": "pipelineError",
 										"value": {
-											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    'ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    'ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
+											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    '<br>ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    '<br>ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
 											"type": "Expression"
 										}
 									}
@@ -3472,7 +3472,7 @@
 									"typeProperties": {
 										"variableName": "pipelineError",
 										"value": {
-											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    'ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    'ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
+											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    '<br>ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    '<br>ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
 											"type": "Expression"
 										}
 									}
@@ -3754,7 +3754,7 @@
 									"typeProperties": {
 										"variableName": "pipelineError",
 										"value": {
-											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    'ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    'ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
+											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    '<br>ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    '<br>ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
 											"type": "Expression"
 										}
 									}
@@ -4034,7 +4034,7 @@
 									"typeProperties": {
 										"variableName": "pipelineError",
 										"value": {
-											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorProcedure,\n    'ERROR_LINE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorLine,\n    'ERROR_MESSAGE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorMessage\n)",
+											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorProcedure,\n    '<br>ERROR_LINE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorLine,\n    '<br>ERROR_MESSAGE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorMessage\n)",
 											"type": "Expression"
 										}
 									}
@@ -4824,7 +4824,7 @@
 						"typeProperties": {
 							"variableName": "errorMessage",
 							"value": {
-								"value": "@concat(\n\t'<html><body>',\n\t'Mail message from ADF',\n\t'<br><br>Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'<br>Service Name : ',\n\tvariables('ResourceService'),\n\t'<br>Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'<br>Date : ',\n\tpipeline().parameters.pipelineSubjectDate,\n\t'<br><br>Error : <br>',\n\treplace(pipeline().parameters.pipelineError, '\"', '\\\"')\n)",
+								"value": "@concat(\n\t'<html><body>',\n\t'Mail message from ADF',\n\t'<br><br>Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'<br>Service Name : ',\n\tvariables('ResourceService'),\n\t'<br>Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'<br>Date : ',\n\tpipeline().parameters.pipelineSubjectDate,\n\t'<br><br>Error : <br>',\n\treplace(pipeline().parameters.pipelineError, '\"', '\\\"'),\n\t'</html></body>'\n)",
 								"type": "Expression"
 							}
 						}
