@@ -4,7 +4,7 @@
 		"activities": [
 			{
 				"name": "updateMerchantProfile",
-				"type": "SqlServerStoredProcedure",
+				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -15,11 +15,63 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[updateMerchantProfile]"
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDB",
-					"type": "LinkedServiceReference"
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[updateMerchantProfile]",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "SMCSql",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Return Result",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "updateMerchantProfile",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineReturnValue",
+					"value": [
+						{
+							"key": "resultCode",
+							"value": {
+								"type": "Expression",
+								"content": "@activity('updateMerchantProfile').output.firstRow.CODE"
+							}
+						},
+						{
+							"key": "resultErrorProcedure",
+							"value": {
+								"type": "Expression",
+								"content": "@activity('updateMerchantProfile').output.firstRow.ErrorProcedure"
+							}
+						},
+						{
+							"key": "resultErrorMessage",
+							"value": {
+								"type": "Expression",
+								"content": "@activity('updateMerchantProfile').output.firstRow.ErrorMessage"
+							}
+						},
+						{
+							"key": "resultErrorLine",
+							"value": {
+								"type": "Expression",
+								"content": "@activity('updateMerchantProfile').output.firstRow.ErrorLine"
+							}
+						}
+					],
+					"setSystemVariable": true
 				}
 			}
 		],
