@@ -5163,7 +5163,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"url": {
-								"value": "@concat(\n    variables('hostFunctionUrl'),\n    variables('hostFunctionName'),\n    '?testingdeploy=testingdeploy'\n)",
+								"value": "@concat(\n    variables('hostFunctionUrl'),\n    variables('hostFunctionName'),\n    variables('hostFunctionParam')\n)",
 								"type": "Expression"
 							},
 							"method": "POST",
@@ -5187,6 +5187,10 @@
 					"hostFunctionName": {
 						"type": "String",
 						"defaultValue": "piilog"
+					},
+					"hostFunctionParam": {
+						"type": "String",
+						"defaultValue": "?testingdeploy=testingdeploy"
 					}
 				},
 				"folder": {
