@@ -30,11 +30,11 @@
 		"variables": {
 			"hostFunctionUrl": {
 				"type": "String",
-				"defaultValue": "https://scbsmcseafunc001dev.azurewebsites.net/api/"
+				"defaultValue": "https://scbsmcseafunc001dev.azurewebsites.net"
 			},
 			"hostFunctionName": {
 				"type": "String",
-				"defaultValue": "piilog"
+				"defaultValue": "/api/piilog"
 			},
 			"hostFunctionParam": {
 				"type": "String",
