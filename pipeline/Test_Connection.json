@@ -1,0 +1,45 @@
+{
+	"name": "Test_Connection",
+	"properties": {
+		"activities": [
+			{
+				"name": "Azure Function Test",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@concat(\n    variables('hostFunctionUrl'),\n    variables('hostFunctionName'),\n    '?testingdeploy=testingdeploy'\n)",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"body": {
+						"value": "{\"jobUpdateDate\":\"\"}",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"hostFunctionUrl": {
+				"type": "String",
+				"defaultValue": "https://scbsmcseafunc001dev.azurewebsites.net/api/"
+			},
+			"hostFunctionName": {
+				"type": "String",
+				"defaultValue": "piilog"
+			}
+		},
+		"folder": {
+			"name": "SMC_Test_Connection"
+		},
+		"annotations": []
+	}
+}
