@@ -5144,6 +5144,59 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Test_Connection')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Azure Function Test",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@concat(\n    variables('hostFunctionUrl'),\n    variables('hostFunctionName'),\n    '?testingdeploy=testingdeploy'\n)",
+								"type": "Expression"
+							},
+							"method": "POST",
+							"headers": {},
+							"body": {
+								"value": "{\"jobUpdateDate\":\"\"}",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"hostFunctionUrl": {
+						"type": "String",
+						"defaultValue": "https://scbsmcseafunc001dev.azurewebsites.net/api/"
+					},
+					"hostFunctionName": {
+						"type": "String",
+						"defaultValue": "piilog"
+					}
+				},
+				"folder": {
+					"name": "SMC_Test_Connection"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Update All Task Expire')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
