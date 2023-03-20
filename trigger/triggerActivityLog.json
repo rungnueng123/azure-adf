@@ -2,7 +2,7 @@
 	"name": "triggerActivityLog",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Started",
+		"runtimeState": "Stopped",
 		"pipelines": [
 			{
 				"pipelineReference": {
@@ -20,10 +20,10 @@
 				"timeZone": "SE Asia Standard Time",
 				"schedule": {
 					"minutes": [
-						45
+						0
 					],
 					"hours": [
-						13
+						1
 					]
 				}
 			}
