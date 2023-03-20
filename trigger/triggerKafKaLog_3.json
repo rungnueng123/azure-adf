@@ -2,7 +2,7 @@
 	"name": "triggerKafKaLog_3",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Stopped",
+		"runtimeState": "Started",
 		"pipelines": [
 			{
 				"pipelineReference": {
@@ -20,10 +20,10 @@
 				"timeZone": "SE Asia Standard Time",
 				"schedule": {
 					"minutes": [
-						0
+						45
 					],
 					"hours": [
-						5
+						13
 					]
 				}
 			}
