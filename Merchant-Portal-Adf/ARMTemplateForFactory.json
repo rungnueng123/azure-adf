@@ -7267,7 +7267,11 @@
 				"type": "AzureBlobStorage",
 				"typeProperties": {
 					"serviceEndpoint": "[parameters('B2Kblob_properties_typeProperties_serviceEndpoint')]",
-					"accountKind": "StorageV2"
+					"accountKind": "StorageV2",
+					"credential": {
+						"referenceName": "AzureManageIdentity",
+						"type": "CredentialReference"
+					}
 				},
 				"connectVia": {
 					"referenceName": "AzureIR-ManagedVNet",
@@ -7275,7 +7279,8 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]",
+				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
 			]
 		},
 		{
