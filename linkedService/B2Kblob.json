@@ -12,7 +12,7 @@
 			}
 		},
 		"connectVia": {
-			"referenceName": "AzureIR-ManagedVNet",
+			"referenceName": "integrationRuntime1",
 			"type": "IntegrationRuntimeReference"
 		}
 	},
