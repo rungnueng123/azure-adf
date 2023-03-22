@@ -339,6 +339,14 @@
 											"type": "DateTime",
 											"physicalType": "datetime"
 										}
+									},
+									{
+										"source": {
+											"name": "ACTIVE_STATUS"
+										},
+										"sink": {
+											"name": "ACTIVE_STATUS"
+										}
 									}
 								],
 								"typeConversion": true,
@@ -5546,6 +5554,10 @@
 					},
 					{
 						"name": "UPDATE_DATE",
+						"type": "String"
+					},
+					{
+						"name": "ACTIVE_STATUS",
 						"type": "String"
 					}
 				]
