@@ -45,6 +45,10 @@
 			{
 				"name": "UPDATE_DATE",
 				"type": "String"
+			},
+			{
+				"name": "ACTIVE_STATUS",
+				"type": "String"
 			}
 		]
 	},
