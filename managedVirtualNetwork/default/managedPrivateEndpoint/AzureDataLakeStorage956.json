@@ -1,7 +1,0 @@
-{
-	"name": "AzureDataLakeStorage956",
-	"properties": {
-		"privateLinkResourceId": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Storage/storageAccounts/merchantportalblob",
-		"groupId": "dfs"
-	}
-}
