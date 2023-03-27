@@ -12,7 +12,8 @@
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
-				"type": "FtpServerLocation"
+				"type": "FtpServerLocation",
+				"folderPath": "perftest"
 			},
 			"columnDelimiter": ",",
 			"encodingName": "WINDOWS-874",
