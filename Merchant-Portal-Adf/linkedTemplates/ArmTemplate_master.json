@@ -52,6 +52,14 @@
 			"type": "string",
 			"defaultValue": "blob"
 		},
+		"az_blob_datalake_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Storage/storageAccounts/merchantportalblob"
+		},
+		"az_blob_datalake_properties_groupId": {
+			"type": "string",
+			"defaultValue": "dfs"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -93,6 +101,12 @@
 					},
 					"az_blob_b2k_properties_groupId": {
 						"value": "[parameters('az_blob_b2k_properties_groupId')]"
+					},
+					"az_blob_datalake_properties_privateLinkResourceId": {
+						"value": "[parameters('az_blob_datalake_properties_privateLinkResourceId')]"
+					},
+					"az_blob_datalake_properties_groupId": {
+						"value": "[parameters('az_blob_datalake_properties_groupId')]"
 					},
 					"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 						"value": "[parameters('AzureFunctionKafKa_properties_typeProperties_functionAppUrl')]"
