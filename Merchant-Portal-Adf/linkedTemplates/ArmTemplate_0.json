@@ -36,19 +36,19 @@
 			"type": "string",
 			"defaultValue": "dfs"
 		},
-		"az_function_piilog_properties_privateLinkResourceId": {
-			"type": "string",
-			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit"
-		},
-		"az_function_piilog_properties_groupId": {
-			"type": "string",
-			"defaultValue": "sites"
-		},
 		"az_function_pii_properties_privateLinkResourceId": {
 			"type": "string",
 			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit2"
 		},
 		"az_function_pii_properties_groupId": {
+			"type": "string",
+			"defaultValue": "sites"
+		},
+		"az_function_piilog_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit"
+		},
+		"az_function_piilog_properties_groupId": {
 			"type": "string",
 			"defaultValue": "sites"
 		},
@@ -248,24 +248,24 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/default/az_function_piilog')]",
-			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"privateLinkResourceId": "[parameters('az_function_piilog_properties_privateLinkResourceId')]",
-				"groupId": "[parameters('az_function_piilog_properties_groupId')]"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/default/az_function_pii')]",
 			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"privateLinkResourceId": "[parameters('az_function_pii_properties_privateLinkResourceId')]",
 				"groupId": "[parameters('az_function_pii_properties_groupId')]"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/default/az_function_piilog')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"privateLinkResourceId": "[parameters('az_function_piilog_properties_privateLinkResourceId')]",
+				"groupId": "[parameters('az_function_piilog_properties_groupId')]"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
@@ -806,7 +806,7 @@
 						"value": "[parameters('AzureFunctionKafKa_functionKey')]"
 					},
 					"authentication": "MSI",
-					"resourceId": ""
+					"resourceId": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/hfy-merchant-portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit2"
 				},
 				"connectVia": {
 					"referenceName": "AzureIR-ManagedVNet",
