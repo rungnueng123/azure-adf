@@ -13,6 +13,33 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/LOG_ERROR_SEND_MAIL')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Log/ERROR_LOG"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "log"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/LOG_ERROR_SEND_MAIL_TEMP')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1092,170 +1119,6 @@
 				"annotations": []
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Set File Name",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set Date End",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "fileNameMerchant",
-							"value": {
-								"value": "@concat(\n    'merchant_activity_log_',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyyMMdd')\n)",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Backup Merchant Log",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Set File Name",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": {
-									"value": "@concat(\n\t'SELECT * FROM MERCHANT_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateMerchant'),\n\t''' AND ''',\n\tvariables('endDateMerchant'),\n\t''''\n)",
-									"type": "Expression"
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "MERCHANT_ACTIVITY_LOG",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "MERCHANT_ACTIVITY_LOG_OUTPUT",
-								"type": "DatasetReference",
-								"parameters": {
-									"fileName": {
-										"value": "@variables('fileNameMerchant')",
-										"type": "Expression"
-									},
-									"folderName": {
-										"value": "@concat(\n    'merchant_activity_log/',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyy/MM')\n)",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "Set Date Start",
-						"type": "SetVariable",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "startDateMerchant",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyy-MM-dd 00:00:00.000')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set Date End",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set Date Start",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "endDateMerchant",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyy-MM-dd 23:59:59.999')",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"parameters": {
-					"jobDate": {
-						"type": "string"
-					}
-				},
-				"variables": {
-					"fileNameMerchant": {
-						"type": "String"
-					},
-					"startDateMerchant": {
-						"type": "String"
-					},
-					"endDateMerchant": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "SMC_ArchiveLog"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-12-16T03:36:51Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/MERCHANT_ACTIVITY_LOG_OUTPUT')]"
-			]
 		}
 	]
 }
