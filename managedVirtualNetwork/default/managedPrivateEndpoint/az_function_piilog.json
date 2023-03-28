@@ -1,7 +1,0 @@
-{
-	"name": "az_function_piilog",
-	"properties": {
-		"privateLinkResourceId": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit",
-		"groupId": "sites"
-	}
-}
