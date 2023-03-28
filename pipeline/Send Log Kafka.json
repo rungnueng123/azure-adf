@@ -102,7 +102,7 @@
 				"typeProperties": {
 					"variableName": "pipelineError",
 					"value": {
-						"value": "@activity('Azure Function1').error.Message",
+						"value": "@activity('Azure Function').error.Message",
 						"type": "Expression"
 					}
 				}
@@ -112,7 +112,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Azure Function Test",
+						"activity": "Azure Function",
 						"dependencyConditions": [
 							"Failed"
 						]
@@ -128,7 +128,7 @@
 				}
 			},
 			{
-				"name": "Azure Function Test",
+				"name": "Azure Function",
 				"type": "WebActivity",
 				"dependsOn": [],
 				"policy": {
