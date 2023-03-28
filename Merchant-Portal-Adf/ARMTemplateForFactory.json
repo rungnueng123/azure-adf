@@ -18,7 +18,7 @@
 		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 			"type": "string",
-			"defaultValue": "https://scbsmcseafunc001streamit.azurewebsites.net"
+			"defaultValue": "https://scbsmcseafunc001streamit2.azurewebsites.net"
 		},
 		"B2Kblob_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
@@ -65,6 +65,14 @@
 			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit"
 		},
 		"az_function_piilog_properties_groupId": {
+			"type": "string",
+			"defaultValue": "sites"
+		},
+		"az_function_pii_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit2"
+		},
+		"az_function_pii_properties_groupId": {
 			"type": "string",
 			"defaultValue": "sites"
 		}
@@ -7252,7 +7260,8 @@
 						"type": "SecureString",
 						"value": "[parameters('AzureFunctionKafKa_functionKey')]"
 					},
-					"authentication": "Anonymous"
+					"authentication": "MSI",
+					"resourceId": ""
 				},
 				"connectVia": {
 					"referenceName": "AzureIR-ManagedVNet",
@@ -8687,6 +8696,18 @@
 			"properties": {
 				"privateLinkResourceId": "[parameters('az_function_piilog_properties_privateLinkResourceId')]",
 				"groupId": "[parameters('az_function_piilog_properties_groupId')]"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/default/az_function_pii')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"privateLinkResourceId": "[parameters('az_function_pii_properties_privateLinkResourceId')]",
+				"groupId": "[parameters('az_function_pii_properties_groupId')]"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"

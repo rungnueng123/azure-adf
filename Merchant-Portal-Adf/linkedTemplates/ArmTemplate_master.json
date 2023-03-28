@@ -18,7 +18,7 @@
 		},
 		"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 			"type": "string",
-			"defaultValue": "https://scbsmcseafunc001streamit.azurewebsites.net"
+			"defaultValue": "https://scbsmcseafunc001streamit2.azurewebsites.net"
 		},
 		"B2Kblob_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
@@ -65,6 +65,14 @@
 			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit"
 		},
 		"az_function_piilog_properties_groupId": {
+			"type": "string",
+			"defaultValue": "sites"
+		},
+		"az_function_pii_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/fc603cd3-a62b-4072-9917-973c6cc4e0bf/resourceGroups/HFY-Merchant-Portal/providers/Microsoft.Web/sites/scbsmcseafunc001streamit2"
+		},
+		"az_function_pii_properties_groupId": {
 			"type": "string",
 			"defaultValue": "sites"
 		},
@@ -122,17 +130,17 @@
 					"az_function_piilog_properties_groupId": {
 						"value": "[parameters('az_function_piilog_properties_groupId')]"
 					},
+					"az_function_pii_properties_privateLinkResourceId": {
+						"value": "[parameters('az_function_pii_properties_privateLinkResourceId')]"
+					},
+					"az_function_pii_properties_groupId": {
+						"value": "[parameters('az_function_pii_properties_groupId')]"
+					},
 					"AzureFunctionKafKa_properties_typeProperties_functionAppUrl": {
 						"value": "[parameters('AzureFunctionKafKa_properties_typeProperties_functionAppUrl')]"
 					},
 					"B2Kblob_properties_typeProperties_serviceEndpoint": {
 						"value": "[parameters('B2Kblob_properties_typeProperties_serviceEndpoint')]"
-					},
-					"SmcFtpB2k_properties_typeProperties_host": {
-						"value": "[parameters('SmcFtpB2k_properties_typeProperties_host')]"
-					},
-					"SmcFtpB2k_properties_typeProperties_userName": {
-						"value": "[parameters('SmcFtpB2k_properties_typeProperties_userName')]"
 					}
 				}
 			},
@@ -151,6 +159,12 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"SmcFtpB2k_properties_typeProperties_host": {
+						"value": "[parameters('SmcFtpB2k_properties_typeProperties_host')]"
+					},
+					"SmcFtpB2k_properties_typeProperties_userName": {
+						"value": "[parameters('SmcFtpB2k_properties_typeProperties_userName')]"
 					},
 					"SmcFtpMps_properties_typeProperties_host": {
 						"value": "[parameters('SmcFtpMps_properties_typeProperties_host')]"
