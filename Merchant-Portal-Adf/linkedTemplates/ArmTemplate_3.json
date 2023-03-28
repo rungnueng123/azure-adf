@@ -2023,7 +2023,7 @@
 						"typeProperties": {
 							"variableName": "pipelineError",
 							"value": {
-								"value": "@activity('Azure Function1').error.Message",
+								"value": "@activity('Azure Function').error.Message",
 								"type": "Expression"
 							}
 						}
@@ -2033,7 +2033,7 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Azure Function1",
+								"activity": "Azure Function",
 								"dependencyConditions": [
 									"Failed"
 								]
@@ -2044,6 +2044,35 @@
 							"variableName": "pipelineSubjectDate",
 							"value": {
 								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Azure Function",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@concat(\n    variables('hostFunctionUrl'),\n    variables('hostFunctionName')\n)",
+								"type": "Expression"
+							},
+							"connectVia": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
+							},
+							"method": "POST",
+							"headers": {},
+							"body": {
+								"value": "@concat(\n    '{\"jobUpdateDate\":\"',\n    formatDateTime(convertTimeZone(pipeline().TriggerTime, 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'yyyy-MM-dd HH:mm'),\n    '\"}'\n)",
 								"type": "Expression"
 							}
 						}
@@ -2066,6 +2095,14 @@
 					},
 					"pipelineSubjectDate": {
 						"type": "String"
+					},
+					"hostFunctionUrl": {
+						"type": "String",
+						"defaultValue": "https://scbsmcseafunc001streamit2.azurewebsites.net"
+					},
+					"hostFunctionName": {
+						"type": "String",
+						"defaultValue": "/api/piilog"
 					}
 				},
 				"folder": {
