@@ -6,88 +6,12 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "Merchant-Portal-Adf"
-		},
-		"SmcFtpB2k_properties_typeProperties_host": {
-			"type": "string",
-			"defaultValue": "benseni.se.scb.co.th"
-		},
-		"SmcFtpB2k_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "smcadfusr"
-		},
-		"SmcFtpMps_properties_typeProperties_host": {
-			"type": "string",
-			"defaultValue": "GreenOak.se.scb.co.th"
-		},
-		"SmcFtpMps_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "se\\SMCUsrSit"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/SmcFtpB2k')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "FtpServer",
-				"typeProperties": {
-					"host": "[parameters('SmcFtpB2k_properties_typeProperties_host')]",
-					"port": "991",
-					"enableSsl": true,
-					"enableServerCertificateValidation": false,
-					"authenticationType": "Basic",
-					"userName": "[parameters('SmcFtpB2k_properties_typeProperties_userName')]",
-					"password": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "KeyVaultADF",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "smc-b2k-sftp-password"
-					}
-				},
-				"connectVia": {
-					"referenceName": "shir",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SmcFtpMps')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "FtpServer",
-				"typeProperties": {
-					"host": "[parameters('SmcFtpMps_properties_typeProperties_host')]",
-					"port": "991",
-					"enableSsl": true,
-					"enableServerCertificateValidation": false,
-					"authenticationType": "Basic",
-					"userName": "[parameters('SmcFtpMps_properties_typeProperties_userName')]",
-					"password": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "KeyVaultADF",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "smc-msp-sftp-password"
-					}
-				},
-				"connectVia": {
-					"referenceName": "shir",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": []
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Send Email')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
@@ -1050,9 +974,62 @@
 				},
 				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SmcFtpB2k')]"
-			]
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FTPMPSOnPrem')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SmcFtpMps",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/SFTP/MPS"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "FtpServerLocation",
+						"folderPath": "perftest"
+					},
+					"columnDelimiter": ",",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LOG_ERROR_SEND_MAIL')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Log/ERROR_LOG"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "log"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
 		}
 	]
 }
