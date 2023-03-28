@@ -66,63 +66,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/Test_Connection')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Azure Function Test",
-						"type": "WebActivity",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"url": {
-								"value": "@concat(\n    variables('hostFunctionUrl'),\n    variables('hostFunctionName'),\n    variables('hostFunctionParam')\n)",
-								"type": "Expression"
-							},
-							"method": "POST",
-							"headers": {},
-							"body": {
-								"value": "{\"jobUpdateDate\":\"\"}",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"hostFunctionUrl": {
-						"type": "String",
-						"defaultValue": "https://scbsmcseafunc001dev.azurewebsites.net"
-					},
-					"hostFunctionName": {
-						"type": "String",
-						"defaultValue": "/api/piilog"
-					},
-					"hostFunctionParam": {
-						"type": "String",
-						"defaultValue": "?testingdeploy=testingdeploy"
-					}
-				},
-				"folder": {
-					"name": "SMC_Test_Connection"
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/shir')]",
 			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
 			"apiVersion": "2018-06-01",
@@ -269,6 +212,69 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Test_Connection')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Azure Function Test",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@concat(\n    variables('hostFunctionUrl'),\n    variables('hostFunctionName'),\n    variables('hostFunctionParam')\n)",
+								"type": "Expression"
+							},
+							"connectVia": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
+							},
+							"method": "POST",
+							"headers": {},
+							"body": {
+								"value": "{\"jobUpdateDate\":\"\"}",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"hostFunctionUrl": {
+						"type": "String",
+						"defaultValue": "https://scbsmcseafunc001streamit2.azurewebsites.net"
+					},
+					"hostFunctionName": {
+						"type": "String",
+						"defaultValue": "/api/piilog"
+					},
+					"hostFunctionParam": {
+						"type": "String",
+						"defaultValue": "?testingdeploy=testingdeploy"
+					}
+				},
+				"folder": {
+					"name": "SMC_Test_Connection"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]"
 			]
 		},
 		{
