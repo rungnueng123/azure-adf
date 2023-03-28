@@ -19,6 +19,10 @@
 						"value": "@concat(\n    variables('hostFunctionUrl'),\n    variables('hostFunctionName'),\n    variables('hostFunctionParam')\n)",
 						"type": "Expression"
 					},
+					"connectVia": {
+						"referenceName": "AzureIR-ManagedVNet",
+						"type": "IntegrationRuntimeReference"
+					},
 					"method": "POST",
 					"body": {
 						"value": "{\"jobUpdateDate\":\"\"}",
@@ -30,7 +34,7 @@
 		"variables": {
 			"hostFunctionUrl": {
 				"type": "String",
-				"defaultValue": "https://scbsmcseafunc001dev.azurewebsites.net"
+				"defaultValue": "https://scbsmcseafunc001streamit2.azurewebsites.net"
 			},
 			"hostFunctionName": {
 				"type": "String",
