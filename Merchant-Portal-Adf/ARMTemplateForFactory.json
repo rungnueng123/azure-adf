@@ -4763,7 +4763,7 @@
 						"type": "WebActivity",
 						"dependsOn": [
 							{
-								"activity": "Get Email Body",
+								"activity": "Set Sig Variable",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -4904,6 +4904,66 @@
 								"type": "Expression"
 							}
 						}
+					},
+					{
+						"name": "Get Sig Value",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Get Email Body",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@concat(\n    variables('keyvault_host'),\n    '/',\n    variables('keyvault_sig_key'),\n    variables('keyvault_sig_version')\n)",
+								"type": "Expression"
+							},
+							"connectVia": {
+								"referenceName": "shir",
+								"type": "IntegrationRuntimeReference"
+							},
+							"method": "GET",
+							"headers": {},
+							"authentication": {
+								"resource": "https://vault.azure.net",
+								"credential": {
+									"referenceName": "AzureManageIdentity",
+									"type": "CredentialReference"
+								},
+								"type": "UserAssignedManagedIdentity"
+							}
+						}
+					},
+					{
+						"name": "Set Sig Variable",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get Sig Value",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "sig",
+							"value": {
+								"value": "@activity('Get Sig Value').output.value",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -4984,6 +5044,18 @@
 					},
 					"subjectEmail": {
 						"type": "String"
+					},
+					"keyvault_host": {
+						"type": "String",
+						"defaultValue": "https://hfy-smc.vault.azure.net/secrets/"
+					},
+					"keyvault_sig_key": {
+						"type": "String",
+						"defaultValue": "smc-azure-lga-sig"
+					},
+					"keyvault_sig_version": {
+						"type": "String",
+						"defaultValue": "?api-version=7.0"
 					}
 				},
 				"folder": {
@@ -4994,7 +5066,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]",
-				"[concat(variables('factoryId'), '/datasets/EmailBodySql')]"
+				"[concat(variables('factoryId'), '/datasets/EmailBodySql')]",
+				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
 			]
 		},
 		{
