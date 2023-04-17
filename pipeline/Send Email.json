@@ -83,7 +83,7 @@
 				"typeProperties": {
 					"variableName": "errorMessage",
 					"value": {
-						"value": "@concat(\n\t'<html><body>',\n\t'Mail message from ADF',\n\t'<br><br>Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'<br>Service Name : ',\n\tvariables('ResourceService'),\n\t'<br>Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'<br>Date : ',\n\tpipeline().parameters.pipelineSubjectDate,\n\t'<br><br>Error : <br>',\n\treplace(pipeline().parameters.pipelineError, '\"', '\\\"'),\n\t'</html></body>'\n)",
+						"value": "@concat(\n\t'<html><body>',\n\t'Mail message from ADF',\n\t'<br><br>Resource Group : ',\n\tvariables('ResourceGroup'),\n\t'<br>Service Name : ',\n\tvariables('ResourceService'),\n\t'<br>Fail Pipeline : ',\n\tpipeline().parameters.pipelineName,\n\t'<br>Date : ',\n\tpipeline().parameters.pipelineSubjectDate,\n\t'<br>Rerun Pipeline : ',\n\tpipeline().parameters.pipelineNameRerun,\n\t'<br><br>Error : <br>',\n\treplace(pipeline().parameters.pipelineError, '\"', '\\\"'),\n\t'</html></body>'\n)",
 						"type": "Expression"
 					}
 				}
@@ -143,7 +143,7 @@
 				"typeProperties": {
 					"variableName": "subjectEmail",
 					"value": {
-						"value": "@concat(\n\t'ADF Fail : ',\n\tvariables('ResourceGroup'),\n\t'/',\n\tvariables('ResourceService'),\n\t'/',\n\tpipeline().parameters.pipelineName,\n\t' ** ',\n\tpipeline().parameters.pipelineSubjectDate,\n\t' **'\n)",
+						"value": "@concat(\n\t'ADF Fail : ',\n\tvariables('ResourceGroup'),\n\t'/',\n\tvariables('ResourceService'),\n\t'/',\n\tpipeline().parameters.pipelineNameRerun,\n\t' ** ',\n\tpipeline().parameters.pipelineSubjectDate,\n\t' **'\n)",
 						"type": "Expression"
 					}
 				}
@@ -228,6 +228,10 @@
 			"pipelineSubjectDate": {
 				"type": "string",
 				"defaultValue": "pipelineSubjectDate"
+			},
+			"pipelineNameRerun": {
+				"type": "string",
+				"defaultValue": "pipelineNameRerun"
 			}
 		},
 		"variables": {

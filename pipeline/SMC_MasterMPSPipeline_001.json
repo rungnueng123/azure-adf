@@ -1,5 +1,5 @@
 {
-	"name": "MasterMPSPipeline_001",
+	"name": "SMC_MasterMPSPipeline_001",
 	"properties": {
 		"activities": [
 			{
@@ -62,7 +62,7 @@
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
 						},
-						"pipelineName": "MasterMPSPipeline_001",
+						"pipelineName": "SMC_MasterMPSPipeline_001",
 						"pipelineError": {
 							"value": "@variables('pipelineError')",
 							"type": "Expression"
@@ -70,7 +70,8 @@
 						"pipelineSubjectDate": {
 							"value": "@variables('pipelineSubjectDate')",
 							"type": "Expression"
-						}
+						},
+						"pipelineNameRerun": "SMC_MasterMPSPipeline_001"
 					}
 				}
 			},
@@ -175,7 +176,7 @@
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
 						},
-						"pipelineName": "MasterMPSPipeline_002",
+						"pipelineName": "SMC_MasterMPSPipeline_002",
 						"pipelineError": {
 							"value": "@variables('pipelineError')",
 							"type": "Expression"
@@ -183,7 +184,8 @@
 						"pipelineSubjectDate": {
 							"value": "@variables('pipelineSubjectDate')",
 							"type": "Expression"
-						}
+						},
+						"pipelineNameRerun": "SMC_MasterMPSPipeline_001"
 					}
 				}
 			},
@@ -214,7 +216,7 @@
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
 						},
-						"pipelineName": "MasterMPSPipeline_003",
+						"pipelineName": "SMC_MasterMPSPipeline_003",
 						"pipelineError": {
 							"value": "@variables('pipelineError')",
 							"type": "Expression"
@@ -222,7 +224,8 @@
 						"pipelineSubjectDate": {
 							"value": "@variables('pipelineSubjectDate')",
 							"type": "Expression"
-						}
+						},
+						"pipelineNameRerun": "SMC_MasterMPSPipeline_001"
 					}
 				}
 			},
@@ -461,7 +464,7 @@
 										"value": "@variables('pipelineMstKey')",
 										"type": "Expression"
 									},
-									"pipelineName": "MasterMPSPipeline_003",
+									"pipelineName": "SMC_MasterMPSPipeline_003",
 									"pipelineError": {
 										"value": "@variables('pipelineError')",
 										"type": "Expression"
@@ -469,7 +472,8 @@
 									"pipelineSubjectDate": {
 										"value": "@variables('pipelineSubjectDate')",
 										"type": "Expression"
-									}
+									},
+									"pipelineNameRerun": "SMC_MasterMPSPipeline_001"
 								}
 							}
 						}

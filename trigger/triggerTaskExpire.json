@@ -6,7 +6,7 @@
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "MasterTaskExpirePipeline",
+					"referenceName": "SMC_MasterTaskExpirePipeline",
 					"type": "PipelineReference"
 				}
 			}

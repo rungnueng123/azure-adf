@@ -1,5 +1,5 @@
 {
-	"name": "MasterActivityPipeline",
+	"name": "SMC_MasterActivityPipeline",
 	"properties": {
 		"activities": [
 			{
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "MERCHANT_ACTIVITY_LOG",
+						"referenceName": "SMC_MERCHANT_ACTIVITY_LOG",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true,
@@ -42,7 +42,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "SCB_ACTIVITY_LOG",
+						"referenceName": "SMC_SCB_ACTIVITY_LOG",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true,
@@ -81,7 +81,7 @@
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
 						},
-						"pipelineName": "MasterActivityPipeline",
+						"pipelineName": "SMC_MasterActivityPipeline",
 						"pipelineError": {
 							"value": "@variables('pipelineError')",
 							"type": "Expression"
@@ -89,7 +89,8 @@
 						"pipelineSubjectDate": {
 							"value": "@variables('pipelineSubjectDate')",
 							"type": "Expression"
-						}
+						},
+						"pipelineNameRerun": "SMC_MasterActivityPipeline"
 					}
 				}
 			},
@@ -156,7 +157,7 @@
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
 						},
-						"pipelineName": "MasterActivityPipeline",
+						"pipelineName": "SMC_MasterActivityPipeline",
 						"pipelineError": {
 							"value": "@variables('pipelineError')",
 							"type": "Expression"
@@ -164,7 +165,8 @@
 						"pipelineSubjectDate": {
 							"value": "@variables('pipelineSubjectDate')",
 							"type": "Expression"
-						}
+						},
+						"pipelineNameRerun": "SMC_MasterActivityPipeline"
 					}
 				}
 			},

@@ -6,7 +6,7 @@
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "MasterMPSPipeline_001",
+					"referenceName": "SMC_MasterMPSPipeline_001",
 					"type": "PipelineReference"
 				}
 			}

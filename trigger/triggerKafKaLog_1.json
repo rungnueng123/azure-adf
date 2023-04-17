@@ -6,7 +6,7 @@
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "Send Log Kafka",
+					"referenceName": "SMC_SendLogKafka",
 					"type": "PipelineReference"
 				}
 			}

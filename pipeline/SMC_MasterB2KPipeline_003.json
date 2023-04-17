@@ -1,5 +1,5 @@
 {
-	"name": "MasterB2KPipeline_003",
+	"name": "SMC_MasterB2KPipeline_003",
 	"properties": {
 		"activities": [
 			{
@@ -60,7 +60,7 @@
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
 						},
-						"pipelineName": "MasterB2KPipeline_003",
+						"pipelineName": "SMC_MasterB2KPipeline_003",
 						"pipelineError": {
 							"value": "@variables('pipelineError')",
 							"type": "Expression"
@@ -68,7 +68,8 @@
 						"pipelineSubjectDate": {
 							"value": "@variables('pipelineSubjectDate')",
 							"type": "Expression"
-						}
+						},
+						"pipelineNameRerun": "SMC_MasterB2KPipeline_003"
 					}
 				}
 			},
@@ -227,7 +228,7 @@
 										"value": "@variables('pipelineMstKey')",
 										"type": "Expression"
 									},
-									"pipelineName": "MasterB2KPipeline_003",
+									"pipelineName": "SMC_MasterB2KPipeline_003",
 									"pipelineError": {
 										"value": "@variables('pipelineError')",
 										"type": "Expression"
@@ -235,7 +236,8 @@
 									"pipelineSubjectDate": {
 										"value": "@variables('pipelineSubjectDate')",
 										"type": "Expression"
-									}
+									},
+									"pipelineNameRerun": "SMC_MasterB2KPipeline_003"
 								}
 							}
 						}

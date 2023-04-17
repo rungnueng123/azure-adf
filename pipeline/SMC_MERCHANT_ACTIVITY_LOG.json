@@ -1,5 +1,5 @@
 {
-	"name": "MERCHANT_ACTIVITY_LOG",
+	"name": "SMC_MERCHANT_ACTIVITY_LOG",
 	"properties": {
 		"activities": [
 			{

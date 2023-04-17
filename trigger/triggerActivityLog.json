@@ -6,7 +6,7 @@
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "MasterActivityPipeline",
+					"referenceName": "SMC_MasterActivityPipeline",
 					"type": "PipelineReference"
 				}
 			}

@@ -1,5 +1,5 @@
 {
-	"name": "Send Log Kafka",
+	"name": "SMC_SendLogKafka",
 	"properties": {
 		"activities": [
 			{
@@ -29,7 +29,7 @@
 							"value": "@variables('pipelineMstKey')",
 							"type": "Expression"
 						},
-						"pipelineName": "Send Log Kafka",
+						"pipelineName": "SMC_SendLogKafka",
 						"pipelineError": {
 							"value": "@variables('pipelineError')",
 							"type": "Expression"
@@ -37,7 +37,8 @@
 						"pipelineSubjectDate": {
 							"value": "@variables('pipelineSubjectDate')",
 							"type": "Expression"
-						}
+						},
+						"pipelineNameRerun": "SMC_SendLogKafka"
 					}
 				}
 			},
