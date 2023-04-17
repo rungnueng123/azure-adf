@@ -13,78 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/MPS_PP_DebitAdvice to SQL')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "MPS_PP_DebitAdvice to SQL",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "MPS_PP_DEBITADVICE_TEMP",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "MerchantEmailTempSQL",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "SMC_MPS"
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/MPS_PP_MerchantFile to SQL')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -153,1000 +81,6 @@
 					"name": "SMC_MPS"
 				},
 				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MasterB2KPipeline_003')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Set PipelineStep 2",
-						"description": "Error key message",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineError 3",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "B2K_INTEGRATE_FAILED"
-						}
-					},
-					{
-						"name": "Update Merchant Profile",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Update Merchant Profile",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Send Email Error 3",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineStep 2",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Send Email",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"pipelineStep": {
-									"value": "@variables('pipelineStep')",
-									"type": "Expression"
-								},
-								"pipelineMstKey": {
-									"value": "@variables('pipelineMstKey')",
-									"type": "Expression"
-								},
-								"pipelineName": "MasterB2KPipeline_003",
-								"pipelineError": {
-									"value": "@variables('pipelineError')",
-									"type": "Expression"
-								},
-								"pipelineSubjectDate": {
-									"value": "@variables('pipelineSubjectDate')",
-									"type": "Expression"
-								}
-							}
-						}
-					},
-					{
-						"name": "Set PipelineError 3",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineSubjectDate 3",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineError",
-							"value": {
-								"value": "@activity('Update Merchant Profile').error.Message",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set PipelineSubjectDate 3",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Update Merchant Profile",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineSubjectDate",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set Result Store",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Update Merchant Profile",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "resultCode",
-							"value": {
-								"value": "@if(equals(activity('Update Merchant Profile').output.pipelineReturnValue.result.CODE, '000'), true, false)",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "If Condition resultCode",
-						"type": "IfCondition",
-						"dependsOn": [
-							{
-								"activity": "Set Result Store",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@variables('resultCode')",
-								"type": "Expression"
-							},
-							"ifFalseActivities": [
-								{
-									"name": "Set PipelineSubjectDate 4",
-									"type": "SetVariable",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "pipelineSubjectDate",
-										"value": {
-											"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "Set PipelineError 4",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "Set PipelineSubjectDate 4",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "pipelineError",
-										"value": {
-											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    '<br>ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    '<br>ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "Set PipelineStep 4",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "Set PipelineError 4",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "pipelineStep",
-										"value": "B2K_INTEGRATE_FAILED"
-									}
-								},
-								{
-									"name": "Send Email Error 4",
-									"type": "ExecutePipeline",
-									"dependsOn": [
-										{
-											"activity": "Set PipelineStep 4",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"pipeline": {
-											"referenceName": "Send Email",
-											"type": "PipelineReference"
-										},
-										"waitOnCompletion": true,
-										"parameters": {
-											"pipelineStep": {
-												"value": "@variables('pipelineStep')",
-												"type": "Expression"
-											},
-											"pipelineMstKey": {
-												"value": "@variables('pipelineMstKey')",
-												"type": "Expression"
-											},
-											"pipelineName": "MasterB2KPipeline_003",
-											"pipelineError": {
-												"value": "@variables('pipelineError')",
-												"type": "Expression"
-											},
-											"pipelineSubjectDate": {
-												"value": "@variables('pipelineSubjectDate')",
-												"type": "Expression"
-											}
-										}
-									}
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"pipelineStep": {
-						"type": "String"
-					},
-					"pipelineMstKey": {
-						"type": "String",
-						"defaultValue": "777c4388223e47e2a975478a043947dc"
-					},
-					"pipelineError": {
-						"type": "String"
-					},
-					"pipelineSubjectDate": {
-						"type": "String"
-					},
-					"resultCode": {
-						"type": "Boolean"
-					}
-				},
-				"folder": {
-					"name": "SMC_B2K"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-12-13T09:46:48Z"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MasterMPSPipeline_003')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Set PipelineStep 3",
-						"description": "Error key message",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineError 3",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "MPS_INTEGRATE_FAILED"
-						}
-					},
-					{
-						"name": "Update Merchant Profile",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Update Merchant Profile",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Send Email Error 3",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineStep 3",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Send Email",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"pipelineStep": {
-									"value": "@variables('pipelineStep')",
-									"type": "Expression"
-								},
-								"pipelineMstKey": {
-									"value": "@variables('pipelineMstKey')",
-									"type": "Expression"
-								},
-								"pipelineName": "MasterMPSPipeline_003",
-								"pipelineError": {
-									"value": "@variables('pipelineError')",
-									"type": "Expression"
-								},
-								"pipelineSubjectDate": {
-									"value": "@variables('pipelineSubjectDate')",
-									"type": "Expression"
-								}
-							}
-						}
-					},
-					{
-						"name": "Set PipelineError 3",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineSubjectDate 3",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineError",
-							"value": {
-								"value": "@activity('Update Merchant Profile').error.Message",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set PipelineSubjectDate 3",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Update Merchant Profile",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineSubjectDate",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set Result Store",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Update Merchant Profile",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "resultCode",
-							"value": {
-								"value": "@if(equals(activity('Update Merchant Profile').output.pipelineReturnValue.result.CODE, '000'), true, false)",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "If Condition resultCode",
-						"type": "IfCondition",
-						"dependsOn": [
-							{
-								"activity": "Set Result Store",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@variables('resultCode')",
-								"type": "Expression"
-							},
-							"ifFalseActivities": [
-								{
-									"name": "Set PipelineSubjectDate 4",
-									"type": "SetVariable",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "pipelineSubjectDate",
-										"value": {
-											"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "Set PipelineError 4",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "Set PipelineSubjectDate 4",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "pipelineError",
-										"value": {
-											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    '<br>ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    '<br>ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "Set PipelineStep 4",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "Set PipelineError 4",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "pipelineStep",
-										"value": "MPS_INTEGRATE_FAILED"
-									}
-								},
-								{
-									"name": "Send Email Error 4",
-									"type": "ExecutePipeline",
-									"dependsOn": [
-										{
-											"activity": "Set PipelineStep 4",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"pipeline": {
-											"referenceName": "Send Email",
-											"type": "PipelineReference"
-										},
-										"waitOnCompletion": true,
-										"parameters": {
-											"pipelineStep": {
-												"value": "@variables('pipelineStep')",
-												"type": "Expression"
-											},
-											"pipelineMstKey": {
-												"value": "@variables('pipelineMstKey')",
-												"type": "Expression"
-											},
-											"pipelineName": "MasterMPSPipeline_003",
-											"pipelineError": {
-												"value": "@variables('pipelineError')",
-												"type": "Expression"
-											},
-											"pipelineSubjectDate": {
-												"value": "@variables('pipelineSubjectDate')",
-												"type": "Expression"
-											}
-										}
-									}
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"pipelineStep": {
-						"type": "String"
-					},
-					"pipelineMstKey": {
-						"type": "String",
-						"defaultValue": "6f215d46e6c64b58bea218b89094b01c"
-					},
-					"pipelineError": {
-						"type": "String"
-					},
-					"pipelineSubjectDate": {
-						"type": "String"
-					},
-					"resultCode": {
-						"type": "Boolean"
-					}
-				},
-				"folder": {
-					"name": "SMC_MPS"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-12-13T09:46:48Z"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MasterTaskExpirePipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Update Task Expire",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Update All Task Expire",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Set PipelineStep 1",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineError 1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineStep",
-							"value": "EXPIRE_JOBS_FAILED"
-						}
-					},
-					{
-						"name": "Send Email Error 1",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineStep 1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Send Email",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"pipelineStep": {
-									"value": "@variables('pipelineStep')",
-									"type": "Expression"
-								},
-								"pipelineMstKey": {
-									"value": "@variables('pipelineMstKey')",
-									"type": "Expression"
-								},
-								"pipelineName": "MasterTaskExpirePipeline",
-								"pipelineError": {
-									"value": "@variables('pipelineError')",
-									"type": "Expression"
-								},
-								"pipelineSubjectDate": {
-									"value": "@variables('pipelineSubjectDate')",
-									"type": "Expression"
-								}
-							}
-						}
-					},
-					{
-						"name": "Set PipelineError 1",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set PipelineSubjectDate 1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineError",
-							"value": {
-								"value": "@activity('Update Task Expire').error.Message",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set PipelineSubjectDate 1",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Update Task Expire",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pipelineSubjectDate",
-							"value": {
-								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set Result Store",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Update Task Expire",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "resultCode",
-							"value": {
-								"value": "@if(equals(activity('Update Task Expire').output.pipelineReturnValue.result.CODE, '200'), true, false)",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "If Condition resultCode",
-						"type": "IfCondition",
-						"dependsOn": [
-							{
-								"activity": "Set Result Store",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@variables('resultCode')",
-								"type": "Expression"
-							},
-							"ifFalseActivities": [
-								{
-									"name": "Set PipelineSubjectDate 2",
-									"type": "SetVariable",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "pipelineSubjectDate",
-										"value": {
-											"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "Set PipelineError 2",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "Set PipelineSubjectDate 2",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "pipelineError",
-										"value": {
-											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorProcedure,\n    '<br>ERROR_LINE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorLine,\n    '<br>ERROR_MESSAGE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorMessage\n)",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "Set PipelineStep 2",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "Set PipelineError 2",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "pipelineStep",
-										"value": "EXPIRE_JOBS_FAILED"
-									}
-								},
-								{
-									"name": "Send Email Error 2",
-									"type": "ExecutePipeline",
-									"dependsOn": [
-										{
-											"activity": "Set PipelineStep 2",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"pipeline": {
-											"referenceName": "Send Email",
-											"type": "PipelineReference"
-										},
-										"waitOnCompletion": true,
-										"parameters": {
-											"pipelineStep": {
-												"value": "@variables('pipelineStep')",
-												"type": "Expression"
-											},
-											"pipelineMstKey": {
-												"value": "@variables('pipelineMstKey')",
-												"type": "Expression"
-											},
-											"pipelineName": "MasterTaskExpirePipeline",
-											"pipelineError": {
-												"value": "@variables('pipelineError')",
-												"type": "Expression"
-											},
-											"pipelineSubjectDate": {
-												"value": "@variables('pipelineSubjectDate')",
-												"type": "Expression"
-											}
-										}
-									}
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"pipelineStep": {
-						"type": "String"
-					},
-					"pipelineMstKey": {
-						"type": "String",
-						"defaultValue": "70cd180d2eb6480b9553262b321c781b"
-					},
-					"pipelineError": {
-						"type": "String"
-					},
-					"pipelineSubjectDate": {
-						"type": "String"
-					},
-					"resultCode": {
-						"type": "Boolean"
-					}
-				},
-				"folder": {
-					"name": "SMC_Task_Expire"
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Set Date Start",
-						"type": "SetVariable",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "startDateSCB",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,365,'Day'),'yyyy-MM-dd 00:00:00.000')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set Date End",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set Date Start",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "endDateSCB",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,365,'Day'),'yyyy-MM-dd 23:59:59.999')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set File Name",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set Date End",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "fileNameSCB",
-							"value": {
-								"value": "@concat(\n    'scbstaff_activity_log_',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,365,'Day'),'yyyyMMdd')\n)",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Backup SCB Log",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Set File Name",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": {
-									"value": "@concat(\n\t'SELECT * FROM SCB_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateSCB'),\n\t''' AND ''',\n\tvariables('endDateSCB'),\n\t''''\n)",
-									"type": "Expression"
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "SCB_ACTIVITY_LOG",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "SCB_ACTIVITY_LOG_OUTPUT",
-								"type": "DatasetReference",
-								"parameters": {
-									"fileName": {
-										"value": "@variables('fileNameSCB')",
-										"type": "Expression"
-									},
-									"folderName": {
-										"value": "@concat(\n    'scbstaff_activity_log/',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,365,'Day'),'yyyy/MM')\n)",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"parameters": {
-					"jobDate": {
-						"type": "string"
-					}
-				},
-				"variables": {
-					"startDateSCB": {
-						"type": "String"
-					},
-					"endDateSCB": {
-						"type": "String"
-					},
-					"fileNameSCB": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "SMC_ArchiveLog"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-12-16T03:36:51Z"
 			},
 			"dependsOn": []
 		},
@@ -1585,7 +519,1169 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Send Log Kafka')]",
+			"name": "[concat(parameters('factoryName'), '/SMC_MERCHANT_ACTIVITY_LOG')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set File Name",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date End",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "fileNameMerchant",
+							"value": {
+								"value": "@concat(\n    'merchant_activity_log_',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyyMMdd')\n)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Backup Merchant Log",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Set File Name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat(\n\t'SELECT * FROM MERCHANT_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateMerchant'),\n\t''' AND ''',\n\tvariables('endDateMerchant'),\n\t''''\n)",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "MERCHANT_ACTIVITY_LOG",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "MERCHANT_ACTIVITY_LOG_OUTPUT",
+								"type": "DatasetReference",
+								"parameters": {
+									"fileName": {
+										"value": "@variables('fileNameMerchant')",
+										"type": "Expression"
+									},
+									"folderName": {
+										"value": "@concat(\n    'merchant_activity_log/',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyy/MM')\n)",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "Set Date Start",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "startDateMerchant",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyy-MM-dd 00:00:00.000')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Date End",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date Start",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "endDateMerchant",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyy-MM-dd 23:59:59.999')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"jobDate": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"fileNameMerchant": {
+						"type": "String"
+					},
+					"startDateMerchant": {
+						"type": "String"
+					},
+					"endDateMerchant": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_ArchiveLog"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-16T03:36:51Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SMC_MasterB2KPipeline_003')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set PipelineStep 2",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineError 3",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "B2K_INTEGRATE_FAILED"
+						}
+					},
+					{
+						"name": "Update Merchant Profile",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Update Merchant Profile",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Send Email Error 3",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 2",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								},
+								"pipelineMstKey": {
+									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
+								},
+								"pipelineName": "SMC_MasterB2KPipeline_003",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
+									"type": "Expression"
+								},
+								"pipelineNameRerun": "SMC_MasterB2KPipeline_003"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineError 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineSubjectDate 3",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update Merchant Profile').error.Message",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Result Store",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "resultCode",
+							"value": {
+								"value": "@if(equals(activity('Update Merchant Profile').output.pipelineReturnValue.result.CODE, '000'), true, false)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "If Condition resultCode",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Set Result Store",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@variables('resultCode')",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Set PipelineSubjectDate 4",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineSubjectDate",
+										"value": {
+											"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set PipelineError 4",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineSubjectDate 4",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineError",
+										"value": {
+											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    '<br>ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    '<br>ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set PipelineStep 4",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineError 4",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineStep",
+										"value": "B2K_INTEGRATE_FAILED"
+									}
+								},
+								{
+									"name": "Send Email Error 4",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineStep 4",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Send Email",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"pipelineStep": {
+												"value": "@variables('pipelineStep')",
+												"type": "Expression"
+											},
+											"pipelineMstKey": {
+												"value": "@variables('pipelineMstKey')",
+												"type": "Expression"
+											},
+											"pipelineName": "SMC_MasterB2KPipeline_003",
+											"pipelineError": {
+												"value": "@variables('pipelineError')",
+												"type": "Expression"
+											},
+											"pipelineSubjectDate": {
+												"value": "@variables('pipelineSubjectDate')",
+												"type": "Expression"
+											},
+											"pipelineNameRerun": "SMC_MasterB2KPipeline_003"
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					},
+					"pipelineMstKey": {
+						"type": "String",
+						"defaultValue": "777c4388223e47e2a975478a043947dc"
+					},
+					"pipelineError": {
+						"type": "String"
+					},
+					"pipelineSubjectDate": {
+						"type": "String"
+					},
+					"resultCode": {
+						"type": "Boolean"
+					}
+				},
+				"folder": {
+					"name": "SMC_B2K"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SMC_MasterMPSPipeline_003')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set PipelineStep 3",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineError 3",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "MPS_INTEGRATE_FAILED"
+						}
+					},
+					{
+						"name": "Update Merchant Profile",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Update Merchant Profile",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Send Email Error 3",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 3",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								},
+								"pipelineMstKey": {
+									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
+								},
+								"pipelineName": "SMC_MasterMPSPipeline_003",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
+									"type": "Expression"
+								},
+								"pipelineNameRerun": "SMC_MasterMPSPipeline_003"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineError 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineSubjectDate 3",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update Merchant Profile').error.Message",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Result Store",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "resultCode",
+							"value": {
+								"value": "@if(equals(activity('Update Merchant Profile').output.pipelineReturnValue.result.CODE, '000'), true, false)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "If Condition resultCode",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Set Result Store",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@variables('resultCode')",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Set PipelineSubjectDate 4",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineSubjectDate",
+										"value": {
+											"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set PipelineError 4",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineSubjectDate 4",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineError",
+										"value": {
+											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    '<br>ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    '<br>ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set PipelineStep 4",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineError 4",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineStep",
+										"value": "MPS_INTEGRATE_FAILED"
+									}
+								},
+								{
+									"name": "Send Email Error 4",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineStep 4",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Send Email",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"pipelineStep": {
+												"value": "@variables('pipelineStep')",
+												"type": "Expression"
+											},
+											"pipelineMstKey": {
+												"value": "@variables('pipelineMstKey')",
+												"type": "Expression"
+											},
+											"pipelineName": "SMC_MasterMPSPipeline_003",
+											"pipelineError": {
+												"value": "@variables('pipelineError')",
+												"type": "Expression"
+											},
+											"pipelineSubjectDate": {
+												"value": "@variables('pipelineSubjectDate')",
+												"type": "Expression"
+											},
+											"pipelineNameRerun": "SMC_MasterMPSPipeline_003"
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					},
+					"pipelineMstKey": {
+						"type": "String",
+						"defaultValue": "6f215d46e6c64b58bea218b89094b01c"
+					},
+					"pipelineError": {
+						"type": "String"
+					},
+					"pipelineSubjectDate": {
+						"type": "String"
+					},
+					"resultCode": {
+						"type": "Boolean"
+					}
+				},
+				"folder": {
+					"name": "SMC_MPS"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SMC_MasterTaskExpirePipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Update Task Expire",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Update All Task Expire",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineError 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "EXPIRE_JOBS_FAILED"
+						}
+					},
+					{
+						"name": "Send Email Error 1",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								},
+								"pipelineMstKey": {
+									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
+								},
+								"pipelineName": "SMC_MasterTaskExpirePipeline",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
+									"type": "Expression"
+								},
+								"pipelineNameRerun": "SMC_MasterTaskExpirePipeline"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineError 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineSubjectDate 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update Task Expire').error.Message",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Task Expire",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Result Store",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Task Expire",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "resultCode",
+							"value": {
+								"value": "@if(equals(activity('Update Task Expire').output.pipelineReturnValue.result.CODE, '200'), true, false)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "If Condition resultCode",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Set Result Store",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@variables('resultCode')",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Set PipelineSubjectDate 2",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineSubjectDate",
+										"value": {
+											"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set PipelineError 2",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineSubjectDate 2",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineError",
+										"value": {
+											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorProcedure,\n    '<br>ERROR_LINE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorLine,\n    '<br>ERROR_MESSAGE : ',\n    activity('Update Task Expire').output.pipelineReturnValue.result.ErrorMessage\n)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set PipelineStep 2",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineError 2",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineStep",
+										"value": "EXPIRE_JOBS_FAILED"
+									}
+								},
+								{
+									"name": "Send Email Error 2",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineStep 2",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Send Email",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"pipelineStep": {
+												"value": "@variables('pipelineStep')",
+												"type": "Expression"
+											},
+											"pipelineMstKey": {
+												"value": "@variables('pipelineMstKey')",
+												"type": "Expression"
+											},
+											"pipelineName": "SMC_MasterTaskExpirePipeline",
+											"pipelineError": {
+												"value": "@variables('pipelineError')",
+												"type": "Expression"
+											},
+											"pipelineSubjectDate": {
+												"value": "@variables('pipelineSubjectDate')",
+												"type": "Expression"
+											},
+											"pipelineNameRerun": "SMC_MasterTaskExpirePipeline"
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					},
+					"pipelineMstKey": {
+						"type": "String",
+						"defaultValue": "70cd180d2eb6480b9553262b321c781b"
+					},
+					"pipelineError": {
+						"type": "String"
+					},
+					"pipelineSubjectDate": {
+						"type": "String"
+					},
+					"resultCode": {
+						"type": "Boolean"
+					}
+				},
+				"folder": {
+					"name": "SMC_Task_Expire"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SMC_SCB_ACTIVITY_LOG')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set Date Start",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "startDateSCB",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,365,'Day'),'yyyy-MM-dd 00:00:00.000')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Date End",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date Start",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "endDateSCB",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,365,'Day'),'yyyy-MM-dd 23:59:59.999')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set File Name",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date End",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "fileNameSCB",
+							"value": {
+								"value": "@concat(\n    'scbstaff_activity_log_',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,365,'Day'),'yyyyMMdd')\n)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Backup SCB Log",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Set File Name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat(\n\t'SELECT * FROM SCB_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateSCB'),\n\t''' AND ''',\n\tvariables('endDateSCB'),\n\t''''\n)",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SCB_ACTIVITY_LOG",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SCB_ACTIVITY_LOG_OUTPUT",
+								"type": "DatasetReference",
+								"parameters": {
+									"fileName": {
+										"value": "@variables('fileNameSCB')",
+										"type": "Expression"
+									},
+									"folderName": {
+										"value": "@concat(\n    'scbstaff_activity_log/',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,365,'Day'),'yyyy/MM')\n)",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"jobDate": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"startDateSCB": {
+						"type": "String"
+					},
+					"endDateSCB": {
+						"type": "String"
+					},
+					"fileNameSCB": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_ArchiveLog"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-16T03:36:51Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SMC_SendLogKafka')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1617,7 +1713,7 @@
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
 								},
-								"pipelineName": "Send Log Kafka",
+								"pipelineName": "SMC_SendLogKafka",
 								"pipelineError": {
 									"value": "@variables('pipelineError')",
 									"type": "Expression"
@@ -1625,7 +1721,8 @@
 								"pipelineSubjectDate": {
 									"value": "@variables('pipelineSubjectDate')",
 									"type": "Expression"
-								}
+								},
+								"pipelineNameRerun": "SMC_SendLogKafka"
 							}
 						}
 					},
@@ -2993,12 +3090,11 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/MPS_FixLenghtProcessDataFlow')]",
-				"[concat(variables('factoryId'), '/pipelines/MPS_PP_MerchantFile to SQL')]",
-				"[concat(variables('factoryId'), '/pipelines/MPS_PP_DebitAdvice to SQL')]"
+				"[concat(variables('factoryId'), '/pipelines/MPS_PP_MerchantFile to SQL')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/MasterActivityPipeline')]",
+			"name": "[concat(parameters('factoryName'), '/SMC_MasterActivityPipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -3017,7 +3113,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "MERCHANT_ACTIVITY_LOG",
+								"referenceName": "SMC_MERCHANT_ACTIVITY_LOG",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -3043,7 +3139,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "SCB_ACTIVITY_LOG",
+								"referenceName": "SMC_SCB_ACTIVITY_LOG",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -3082,7 +3178,7 @@
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
 								},
-								"pipelineName": "MasterActivityPipeline",
+								"pipelineName": "SMC_MasterActivityPipeline",
 								"pipelineError": {
 									"value": "@variables('pipelineError')",
 									"type": "Expression"
@@ -3090,7 +3186,8 @@
 								"pipelineSubjectDate": {
 									"value": "@variables('pipelineSubjectDate')",
 									"type": "Expression"
-								}
+								},
+								"pipelineNameRerun": "SMC_MasterActivityPipeline"
 							}
 						}
 					},
@@ -3157,7 +3254,7 @@
 									"value": "@variables('pipelineMstKey')",
 									"type": "Expression"
 								},
-								"pipelineName": "MasterActivityPipeline",
+								"pipelineName": "SMC_MasterActivityPipeline",
 								"pipelineError": {
 									"value": "@variables('pipelineError')",
 									"type": "Expression"
@@ -3165,7 +3262,8 @@
 								"pipelineSubjectDate": {
 									"value": "@variables('pipelineSubjectDate')",
 									"type": "Expression"
-								}
+								},
+								"pipelineNameRerun": "SMC_MasterActivityPipeline"
 							}
 						}
 					},
@@ -3291,7 +3389,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/SCB_ACTIVITY_LOG')]"
+				"[concat(variables('factoryId'), '/pipelines/SMC_MERCHANT_ACTIVITY_LOG')]",
+				"[concat(variables('factoryId'), '/pipelines/SMC_SCB_ACTIVITY_LOG')]"
 			]
 		},
 		{
@@ -3304,7 +3403,7 @@
 				"pipelines": [
 					{
 						"pipelineReference": {
-							"referenceName": "Send Log Kafka",
+							"referenceName": "SMC_SendLogKafka",
 							"type": "PipelineReference"
 						},
 						"parameters": {}
@@ -3329,7 +3428,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Send Log Kafka')]"
+				"[concat(variables('factoryId'), '/pipelines/SMC_SendLogKafka')]"
 			]
 		},
 		{
@@ -3342,7 +3441,7 @@
 				"pipelines": [
 					{
 						"pipelineReference": {
-							"referenceName": "Send Log Kafka",
+							"referenceName": "SMC_SendLogKafka",
 							"type": "PipelineReference"
 						},
 						"parameters": {}
@@ -3367,7 +3466,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Send Log Kafka')]"
+				"[concat(variables('factoryId'), '/pipelines/SMC_SendLogKafka')]"
 			]
 		},
 		{
@@ -3380,7 +3479,7 @@
 				"pipelines": [
 					{
 						"pipelineReference": {
-							"referenceName": "Send Log Kafka",
+							"referenceName": "SMC_SendLogKafka",
 							"type": "PipelineReference"
 						},
 						"parameters": {}
@@ -3405,7 +3504,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Send Log Kafka')]"
+				"[concat(variables('factoryId'), '/pipelines/SMC_SendLogKafka')]"
 			]
 		},
 		{
@@ -3418,7 +3517,7 @@
 				"pipelines": [
 					{
 						"pipelineReference": {
-							"referenceName": "MasterTaskExpirePipeline",
+							"referenceName": "SMC_MasterTaskExpirePipeline",
 							"type": "PipelineReference"
 						},
 						"parameters": {}
@@ -3443,7 +3542,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/MasterTaskExpirePipeline')]"
+				"[concat(variables('factoryId'), '/pipelines/SMC_MasterTaskExpirePipeline')]"
 			]
 		}
 	]
