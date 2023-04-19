@@ -1,5 +1,5 @@
 {
-	"name": "SMCSql",
+	"name": "ImportMerchantProfileSql",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureSqlDB",

@@ -7,7 +7,7 @@
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
-						"activity": "Set UPDATE_DATE",
+						"activity": "Copy Import Merc Prof",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -135,6 +135,66 @@
 						"type": "Expression"
 					}
 				}
+			},
+			{
+				"name": "Copy Import Merc Prof",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Set UPDATE_DATE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT MID_L11 FROM SMC_IMPORT_MERCHANT_PROFILE",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ImportMerchantProfileSql",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "B2K_IMPORT_MERCHANT_PROFILE",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"variables": {

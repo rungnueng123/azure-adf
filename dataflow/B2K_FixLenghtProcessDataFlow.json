@@ -27,6 +27,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "emsmrmstFixedLength"
+				},
+				{
+					"dataset": {
+						"referenceName": "B2K_IMPORT_MERCHANT_PROFILE",
+						"type": "DatasetReference"
+					},
+					"name": "importMerchantProfile"
 				}
 			],
 			"sinks": [
@@ -126,6 +133,15 @@
 				},
 				{
 					"name": "edctermFilterCheck"
+				},
+				{
+					"name": "joinImpMercProf1"
+				},
+				{
+					"name": "joinImpMercProf2"
+				},
+				{
+					"name": "joinImpMercProf3"
 				}
 			],
 			"scriptLines": [
@@ -151,6 +167,12 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> emsmrmstFixedLength",
+				"source(output(",
+				"          MID_L11 as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> importMerchantProfile",
 				"mcrmrchDataCheck@mcrmrchDataPass derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
 				"          ACCOUNT_ID = trim(substring(data, 310, 10)),",
 				"          TAX_ID = trim(substring(data, 988, 13)),",
@@ -158,7 +180,8 @@
 				"          NAME_EN = trim(substring(data, 23, 30)),",
 				"          ACTIVE_STATUS = case(or(substring(data, 210, 1) == '2', substring(data, 210, 1) == '5'), 'A', 'I'),",
 				"          UPDATE_DATE = $UPDATE_DATE,",
-				"          SOURCE = \"B2K\") ~> mcrmrchDerivedFixedLength",
+				"          SOURCE = \"B2K\",",
+				"          MID_L11 = trim(substring(data, 3, 11))) ~> mcrmrchDerivedFixedLength",
 				"mcrmrchDerivedFixedLength select(mapColumn(",
 				"          data,",
 				"          BILLER_MERCHANT_ID,",
@@ -168,7 +191,8 @@
 				"          NAME_EN,",
 				"          ACTIVE_STATUS,",
 				"          UPDATE_DATE,",
-				"          SOURCE",
+				"          SOURCE,",
+				"          MID_L11",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> mcrmrchOutputFixedLength",
@@ -177,7 +201,8 @@
 				"          Terminal_Name_EN = trim(substring(data, 30, 30)),",
 				"          Terminal_Name_TH = trim(substring(data, 30, 30)),",
 				"          UPDATE_DATE = $UPDATE_DATE,",
-				"          ACTIVE_STATUS = 'A') ~> edctermDerivedFixedLength",
+				"          ACTIVE_STATUS = 'A',",
+				"          MID_L11 = trim(substring(data, 11, 11))) ~> edctermDerivedFixedLength",
 				"edctermDerivedFixedLength select(mapColumn(",
 				"          data,",
 				"          MERCHANT_ID,",
@@ -185,20 +210,23 @@
 				"          Terminal_Name_EN,",
 				"          Terminal_Name_TH,",
 				"          UPDATE_DATE,",
-				"          ACTIVE_STATUS",
+				"          ACTIVE_STATUS,",
+				"          MID_L11",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> edctermOutputFixedLength",
 				"emsmrmstDataCheck@emsmrmstDataPass derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
 				"          EMAIL_1 = trim(substring(data, 24, 70)),",
 				"          EMAIL_2 = trim(substring(data, 94, 70)),",
-				"          EMAIL_3 = trim(substring(data, 164, 70))) ~> emsmrmstColumn1",
+				"          EMAIL_3 = trim(substring(data, 164, 70)),",
+				"          MID_L11 = trim(substring(data, 3, 11))) ~> emsmrmstColumn1",
 				"emsmrmstColumn1 select(mapColumn(",
 				"          data,",
 				"          BILLER_MERCHANT_ID,",
 				"          EMAIL_1,",
 				"          EMAIL_2,",
-				"          EMAIL_3",
+				"          EMAIL_3,",
+				"          MID_L11",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> emsmrmstOutputFixedLength",
@@ -214,7 +242,22 @@
 				"     disjoint: false) ~> emsmrmstDataCheck@(emsmrmstDataPass, emsmrmstDatafail)",
 				"edctermOutputFixedLength split(length(MERCHANT_ID) > 0 && length(Terminal_ID) > 0 && length(Terminal_Name_EN) > 0 && length(Terminal_Name_TH) > 0,",
 				"     disjoint: false) ~> edctermFilterCheck@(edctermFilterPass, edctermFilterFail)",
-				"filterSequenceKey sink(allowSchemaDrift: true,",
+				"filterSequenceKey, importMerchantProfile join(mcrmrchFilterCheck@mcrmrchFilterPass@MID_L11 == importMerchantProfile@MID_L11,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinImpMercProf1",
+				"filterSequence, importMerchantProfile join(edctermFilterCheck@edctermFilterPass@MID_L11 == importMerchantProfile@MID_L11,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinImpMercProf2",
+				"emsmrmstOutputFixedLength, importMerchantProfile join(emsmrmstOutputFixedLength@MID_L11 == importMerchantProfile@MID_L11,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinImpMercProf3",
+				"joinImpMercProf1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['B2K_MCRMRCH_TEMP.txt'],",
 				"     skipDuplicateMapInputs: true,",
@@ -230,7 +273,7 @@
 				"          SOURCE",
 				"     ),",
 				"     partitionBy('hash', 1)) ~> mcrmrchSink",
-				"filterSequence sink(allowSchemaDrift: true,",
+				"joinImpMercProf2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['B2K_EDCTERM_TEMP.txt'],",
 				"     skipDuplicateMapInputs: true,",
@@ -244,7 +287,7 @@
 				"          ACTIVE_STATUS",
 				"     ),",
 				"     partitionBy('hash', 1)) ~> edctermSink",
-				"emsmrmstOutputFixedLength sink(allowSchemaDrift: true,",
+				"joinImpMercProf3 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['B2K_EMSMRMST_TEMP.txt'],",
 				"     skipDuplicateMapInputs: true,",

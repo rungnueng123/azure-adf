@@ -22,7 +22,7 @@
 						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "SMCSql",
+						"referenceName": "ImportMerchantProfileSql",
 						"type": "DatasetReference"
 					}
 				}
