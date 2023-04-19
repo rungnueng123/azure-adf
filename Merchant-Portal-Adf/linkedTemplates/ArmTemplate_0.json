@@ -311,6 +311,49 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ImportMerchantProfileSql')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/SMC_IMPORT_MERCHANT_PROFILE"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "MID_L11",
+						"type": "varchar"
+					},
+					{
+						"name": "MID_L11_DESC",
+						"type": "varchar"
+					},
+					{
+						"name": "REMARK",
+						"type": "varchar"
+					},
+					{
+						"name": "UPDATE_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "SMC_IMPORT_MERCHANT_PROFILE"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -686,49 +729,6 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "SCB_ACTIVITY_LOG"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SMCSql')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDB",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/B2K/SMC_IMPORT_MERCHANT_PROFILE"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "MID_L11",
-						"type": "varchar"
-					},
-					{
-						"name": "MID_L11_DESC",
-						"type": "varchar"
-					},
-					{
-						"name": "REMARK",
-						"type": "varchar"
-					},
-					{
-						"name": "UPDATE_DATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "SMC_IMPORT_MERCHANT_PROFILE"
 				}
 			},
 			"dependsOn": [

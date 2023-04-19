@@ -356,7 +356,7 @@
 								"partitionOption": "None"
 							},
 							"dataset": {
-								"referenceName": "SMCSql",
+								"referenceName": "ImportMerchantProfileSql",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -426,7 +426,7 @@
 								"partitionOption": "None"
 							},
 							"dataset": {
-								"referenceName": "SMCSql",
+								"referenceName": "ImportMerchantProfileSql",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -813,6 +813,43 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/B2K_IMPORT_MERCHANT_PROFILE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/B2K/SMC_IMPORT_MERCHANT_PROFILE"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "B2K_IMPORT_MERCHANT_PROFILE.txt",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@concat(\n    'b2k/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd')\n)",
+							"type": "Expression"
+						},
+						"container": "file-upload"
+					},
+					"columnDelimiter": "|",
+					"encodingName": "WINDOWS-874",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/B2K_MCRMRCH')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1072,33 +1109,6 @@
 					},
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LOG_ERROR_SEND_MAIL')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "B2Kblob",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Log/ERROR_LOG"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "log"
-					},
-					"columnDelimiter": "|",
 					"escapeChar": "\\",
 					"quoteChar": "\""
 				},
