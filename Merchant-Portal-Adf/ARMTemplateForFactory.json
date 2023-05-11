@@ -5423,7 +5423,7 @@
 								"value": "@concat(\n    '{\"jobUpdateDate\":\"',\n    formatDateTime(convertTimeZone(pipeline().TriggerTime, 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'yyyy-MM-dd HH:mm'),\n    '\"}'\n)",
 								"type": "Expression"
 							},
-							"httpRequestTimeout": "00:10:00"
+							"httpRequestTimeout": "00:03:00"
 						}
 					}
 				],
