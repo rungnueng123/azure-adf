@@ -56,8 +56,8 @@
 				}
 			},
 			{
-				"name": "Backup SCB Log",
-				"type": "Copy",
+				"name": "countSCBActivityLog",
+				"type": "Lookup",
 				"dependsOn": [
 					{
 						"activity": "Set File Name",
@@ -78,55 +78,104 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "@concat(\n\t'SELECT * FROM SCB_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateSCB'),\n\t''' AND ''',\n\tvariables('endDateSCB'),\n\t''''\n)",
+							"value": "@concat(\n\t'SELECT CAST(count(ID) as VARCHAR(10)) as COUNT FROM SCB_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateSCB'),\n\t''' AND ''',\n\tvariables('endDateSCB'),\n\t''''\n)",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
+					"dataset": {
 						"referenceName": "SCB_ACTIVITY_LOG",
 						"type": "DatasetReference"
 					}
-				],
-				"outputs": [
+				}
+			},
+			{
+				"name": "If Condition1",
+				"type": "IfCondition",
+				"dependsOn": [
 					{
-						"referenceName": "SCB_ACTIVITY_LOG_OUTPUT",
-						"type": "DatasetReference",
-						"parameters": {
-							"fileName": {
-								"value": "@variables('fileNameSCB')",
-								"type": "Expression"
-							},
-							"folderName": {
-								"value": "@concat(\n    'scbstaff_activity_log/',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,365,'Day'),'yyyy/MM')\n)",
-								"type": "Expression"
-							}
-						}
+						"activity": "countSCBActivityLog",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
-				]
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@if(equals(activity('countSCBActivityLog').output.firstRow.COUNT, '0'), false, true)",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Backup SCB Log",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": {
+										"value": "@concat(\n\t'SELECT * FROM SCB_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateSCB'),\n\t''' AND ''',\n\tvariables('endDateSCB'),\n\t''''\n)",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "SCB_ACTIVITY_LOG",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "SCB_ACTIVITY_LOG_OUTPUT",
+									"type": "DatasetReference",
+									"parameters": {
+										"fileName": {
+											"value": "@variables('fileNameSCB')",
+											"type": "Expression"
+										},
+										"folderName": {
+											"value": "@concat(\n    'scbstaff_activity_log/',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,365,'Day'),'yyyy/MM')\n)",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
 			}
 		],
 		"parameters": {

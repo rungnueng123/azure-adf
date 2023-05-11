@@ -262,6 +262,148 @@
 						"type": "Expression"
 					}
 				}
+			},
+			{
+				"name": "purgeActivityLog",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute Merchant",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Purge Activity Log",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"END_DATE": {
+							"value": "@concat(\n    variables('jobDate'),\n    ' 23:59:59:999'\n)",
+							"type": "Expression"
+						},
+						"START_DATE": {
+							"value": "@concat(\n    variables('jobDate'),\n    ' 00:00:00:000'\n)",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "If ConditionSCB",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "purgeActivityLog",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@if(equals(activity('purgeActivityLog').output.pipelineReturnValue.result.CODE, '200'), true, false)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Send Email Error 3",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "Set PipelineStep 3",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "Send Email",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"pipelineStep": {
+										"value": "@variables('pipelineStep')",
+										"type": "Expression"
+									},
+									"pipelineMstKey": {
+										"value": "@variables('pipelineMstKey')",
+										"type": "Expression"
+									},
+									"pipelineName": "SMC_MasterActivityPipeline",
+									"pipelineError": {
+										"value": "@variables('pipelineError')",
+										"type": "Expression"
+									},
+									"pipelineSubjectDate": {
+										"value": "@variables('pipelineSubjectDate')",
+										"type": "Expression"
+									},
+									"pipelineNameRerun": "SMC_MasterActivityPipeline"
+								}
+							}
+						},
+						{
+							"name": "Set PipelineStep 3",
+							"description": "Error key message",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Set PipelineError 3",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "pipelineStep",
+								"value": "ACHRIVELOG_DATA_FAILED"
+							}
+						},
+						{
+							"name": "Set PipelineError 3",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Set PipelineSubjectDate 3",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "pipelineError",
+								"value": {
+									"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('purgeActivityLog').output.pipelineReturnValue.result.ErrorProcedure,\n    '<br>ERROR_LINE : ',\n    activity('purgeActivityLog').output.pipelineReturnValue.result.ErrorLine,\n    '<br>ERROR_MESSAGE : ',\n    activity('purgeActivityLog').output.pipelineReturnValue.result.ErrorMessage\n)",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Set PipelineSubjectDate 3",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "pipelineSubjectDate",
+								"value": {
+									"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
 			}
 		],
 		"variables": {

@@ -23,79 +23,6 @@
 				}
 			},
 			{
-				"name": "Backup Merchant Log",
-				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Set File Name",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "AzureSqlSource",
-						"sqlReaderQuery": {
-							"value": "@concat(\n\t'SELECT * FROM MERCHANT_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateMerchant'),\n\t''' AND ''',\n\tvariables('endDateMerchant'),\n\t''''\n)",
-							"type": "Expression"
-						},
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "MERCHANT_ACTIVITY_LOG",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "MERCHANT_ACTIVITY_LOG_OUTPUT",
-						"type": "DatasetReference",
-						"parameters": {
-							"fileName": {
-								"value": "@variables('fileNameMerchant')",
-								"type": "Expression"
-							},
-							"folderName": {
-								"value": "@concat(\n    'merchant_activity_log/',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyy/MM')\n)",
-								"type": "Expression"
-							}
-						}
-					}
-				]
-			},
-			{
 				"name": "Set Date Start",
 				"type": "SetVariable",
 				"dependsOn": [],
@@ -126,6 +53,128 @@
 						"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyy-MM-dd 23:59:59.999')",
 						"type": "Expression"
 					}
+				}
+			},
+			{
+				"name": "countMerchantActivityLog",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Set File Name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "@concat(\n\t'SELECT CAST(count(ID) as VARCHAR(10)) as COUNT FROM MERCHANT_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateMerchant'),\n\t''' AND ''',\n\tvariables('endDateMerchant'),\n\t''''\n)",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "SCB_ACTIVITY_LOG",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "If Condition1",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "countMerchantActivityLog",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@if(equals(activity('countMerchantActivityLog').output.firstRow.COUNT, '0'), false, true)",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Backup Merchant Log",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": {
+										"value": "@concat(\n\t'SELECT * FROM MERCHANT_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateMerchant'),\n\t''' AND ''',\n\tvariables('endDateMerchant'),\n\t''''\n)",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "MERCHANT_ACTIVITY_LOG",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "MERCHANT_ACTIVITY_LOG_OUTPUT",
+									"type": "DatasetReference",
+									"parameters": {
+										"fileName": {
+											"value": "@variables('fileNameMerchant')",
+											"type": "Expression"
+										},
+										"folderName": {
+											"value": "@concat(\n    'merchant_activity_log/',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyy/MM')\n)",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
 				}
 			}
 		],
