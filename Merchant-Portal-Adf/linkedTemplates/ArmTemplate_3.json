@@ -13,6 +13,176 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/B2K_MCRMRCH to SQL')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "B2K_MCRMRCH to SQL",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "BILLER_MERCHANT_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BILLER_MERCHANT_ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ACCOUNT_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ACCOUNT_ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "TAX_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "TAX_ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "NAME_TH",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "NAME_TH",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "NAME_EN",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "NAME_EN",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ACTIVE_STATUS",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ACTIVE_STATUS",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "UPDATE_DATE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "UPDATE_DATE",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										}
+									},
+									{
+										"source": {
+											"name": "SOURCE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SOURCE",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "B2K_MCRMRCH_TEMP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "MerchantProfileTempSQL",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "SMC_B2K"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/MPS_PP_DebitAdvice to SQL')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -617,80 +787,6 @@
 						}
 					},
 					{
-						"name": "Backup Merchant Log",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Set File Name",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": {
-									"value": "@concat(\n\t'SELECT * FROM MERCHANT_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateMerchant'),\n\t''' AND ''',\n\tvariables('endDateMerchant'),\n\t''''\n)",
-									"type": "Expression"
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "MERCHANT_ACTIVITY_LOG",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "MERCHANT_ACTIVITY_LOG_OUTPUT",
-								"type": "DatasetReference",
-								"parameters": {
-									"fileName": {
-										"value": "@variables('fileNameMerchant')",
-										"type": "Expression"
-									},
-									"folderName": {
-										"value": "@concat(\n    'merchant_activity_log/',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyy/MM')\n)",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
 						"name": "Set Date Start",
 						"type": "SetVariable",
 						"dependsOn": [],
@@ -721,6 +817,130 @@
 								"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyy-MM-dd 23:59:59.999')",
 								"type": "Expression"
 							}
+						}
+					},
+					{
+						"name": "countMerchantActivityLog",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Set File Name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat(\n\t'SELECT CAST(count(ID) as VARCHAR(10)) as COUNT FROM MERCHANT_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateMerchant'),\n\t''' AND ''',\n\tvariables('endDateMerchant'),\n\t''''\n)",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "SCB_ACTIVITY_LOG",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "If Condition1",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "countMerchantActivityLog",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@if(equals(activity('countMerchantActivityLog').output.firstRow.COUNT, '0'), false, true)",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Backup Merchant Log",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderQuery": {
+												"value": "@concat(\n\t'SELECT * FROM MERCHANT_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateMerchant'),\n\t''' AND ''',\n\tvariables('endDateMerchant'),\n\t''''\n)",
+												"type": "Expression"
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "MERCHANT_ACTIVITY_LOG",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "MERCHANT_ACTIVITY_LOG_OUTPUT",
+											"type": "DatasetReference",
+											"parameters": {
+												"fileName": {
+													"value": "@variables('fileNameMerchant')",
+													"type": "Expression"
+												},
+												"folderName": {
+													"value": "@concat(\n    'merchant_activity_log/',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyy/MM')\n)",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
 						}
 					}
 				],
@@ -1650,8 +1870,8 @@
 						}
 					},
 					{
-						"name": "Backup SCB Log",
-						"type": "Copy",
+						"name": "countSCBActivityLog",
+						"type": "Lookup",
 						"dependsOn": [
 							{
 								"activity": "Set File Name",
@@ -1672,56 +1892,106 @@
 							"source": {
 								"type": "AzureSqlSource",
 								"sqlReaderQuery": {
-									"value": "@concat(\n\t'SELECT * FROM SCB_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateSCB'),\n\t''' AND ''',\n\tvariables('endDateSCB'),\n\t''''\n)",
+									"value": "@concat(\n\t'SELECT CAST(count(ID) as VARCHAR(10)) as COUNT FROM SCB_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateSCB'),\n\t''' AND ''',\n\tvariables('endDateSCB'),\n\t''''\n)",
 									"type": "Expression"
 								},
 								"queryTimeout": "02:00:00",
 								"partitionOption": "None"
 							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
+							"dataset": {
 								"referenceName": "SCB_ACTIVITY_LOG",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
-						],
-						"outputs": [
+						}
+					},
+					{
+						"name": "If Condition1",
+						"type": "IfCondition",
+						"dependsOn": [
 							{
-								"referenceName": "SCB_ACTIVITY_LOG_OUTPUT",
-								"type": "DatasetReference",
-								"parameters": {
-									"fileName": {
-										"value": "@variables('fileNameSCB')",
-										"type": "Expression"
-									},
-									"folderName": {
-										"value": "@concat(\n    'scbstaff_activity_log/',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,365,'Day'),'yyyy/MM')\n)",
-										"type": "Expression"
-									}
-								}
+								"activity": "countSCBActivityLog",
+								"dependencyConditions": [
+									"Succeeded"
+								]
 							}
-						]
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@if(equals(activity('countSCBActivityLog').output.firstRow.COUNT, '0'), false, true)",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Backup SCB Log",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderQuery": {
+												"value": "@concat(\n\t'SELECT * FROM SCB_ACTIVITY_LOG ',\n\t'WHERE TRANSACTION_DATE BETWEEN ''',\n\tvariables('startDateSCB'),\n\t''' AND ''',\n\tvariables('endDateSCB'),\n\t''''\n)",
+												"type": "Expression"
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "SCB_ACTIVITY_LOG",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "SCB_ACTIVITY_LOG_OUTPUT",
+											"type": "DatasetReference",
+											"parameters": {
+												"fileName": {
+													"value": "@variables('fileNameSCB')",
+													"type": "Expression"
+												},
+												"folderName": {
+													"value": "@concat(\n    'scbstaff_activity_log/',\n    formatDateTime(subtractFromTime(pipeline().parameters.jobDate,365,'Day'),'yyyy/MM')\n)",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
 					}
 				],
 				"policy": {
@@ -3111,7 +3381,8 @@
 				"lastPublishTime": "2022-12-15T07:06:00Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/B2K_FixLenghtProcessDataFlow')]"
+				"[concat(variables('factoryId'), '/dataflows/B2K_FixLenghtProcessDataFlow')]",
+				"[concat(variables('factoryId'), '/pipelines/B2K_MCRMRCH to SQL')]"
 			]
 		},
 		{
@@ -3539,6 +3810,148 @@
 								"type": "Expression"
 							}
 						}
+					},
+					{
+						"name": "purgeActivityLog",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Merchant",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Purge Activity Log",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"END_DATE": {
+									"value": "@concat(\n    variables('jobDate'),\n    ' 23:59:59:999'\n)",
+									"type": "Expression"
+								},
+								"START_DATE": {
+									"value": "@concat(\n    variables('jobDate'),\n    ' 00:00:00:000'\n)",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "If ConditionSCB",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "purgeActivityLog",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@if(equals(activity('purgeActivityLog').output.pipelineReturnValue.result.CODE, '200'), true, false)",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Send Email Error 3",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineStep 3",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Send Email",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"pipelineStep": {
+												"value": "@variables('pipelineStep')",
+												"type": "Expression"
+											},
+											"pipelineMstKey": {
+												"value": "@variables('pipelineMstKey')",
+												"type": "Expression"
+											},
+											"pipelineName": "SMC_MasterActivityPipeline",
+											"pipelineError": {
+												"value": "@variables('pipelineError')",
+												"type": "Expression"
+											},
+											"pipelineSubjectDate": {
+												"value": "@variables('pipelineSubjectDate')",
+												"type": "Expression"
+											},
+											"pipelineNameRerun": "SMC_MasterActivityPipeline"
+										}
+									}
+								},
+								{
+									"name": "Set PipelineStep 3",
+									"description": "Error key message",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineError 3",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineStep",
+										"value": "ACHRIVELOG_DATA_FAILED"
+									}
+								},
+								{
+									"name": "Set PipelineError 3",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineSubjectDate 3",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineError",
+										"value": {
+											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('purgeActivityLog').output.pipelineReturnValue.result.ErrorProcedure,\n    '<br>ERROR_LINE : ',\n    activity('purgeActivityLog').output.pipelineReturnValue.result.ErrorLine,\n    '<br>ERROR_MESSAGE : ',\n    activity('purgeActivityLog').output.pipelineReturnValue.result.ErrorMessage\n)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set PipelineSubjectDate 3",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineSubjectDate",
+										"value": {
+											"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
 					}
 				],
 				"policy": {
@@ -3640,44 +4053,6 @@
 							],
 							"hours": [
 								21
-							]
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/SMC_SendLogKafka')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/triggerKafKaLog_3')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "SMC_SendLogKafka",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2023-01-09T12:00:00",
-						"timeZone": "SE Asia Standard Time",
-						"schedule": {
-							"minutes": [
-								0
-							],
-							"hours": [
-								5
 							]
 						}
 					}

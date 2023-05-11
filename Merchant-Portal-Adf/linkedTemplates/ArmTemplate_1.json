@@ -13,6 +13,212 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/Purge Activity Log')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "purgeSCBActivityLog",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[purgeSCBActivityLog]",
+								"storedProcedureParameters": {
+									"END_DATE": {
+										"type": "String",
+										"value": {
+											"value": "@pipeline().parameters.END_DATE",
+											"type": "Expression"
+										}
+									},
+									"START_DATE": {
+										"type": "String",
+										"value": {
+											"value": "@pipeline().parameters.START_DATE",
+											"type": "Expression"
+										}
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "SCB_ACTIVITY_LOG",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Set resultSCB",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "purgeSCBActivityLog",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "resultSCB",
+							"value": {
+								"value": "@if(equals(activity('purgeSCBActivityLog').output.firstRow.CODE, '200'), true, false)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "If Condition1",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Set resultSCB",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@variables('resultSCB')",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Return Result SCB",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineReturnValue",
+										"value": [
+											{
+												"key": "result",
+												"value": {
+													"type": "Expression",
+													"content": "@activity('purgeSCBActivityLog').output.firstRow"
+												}
+											}
+										],
+										"setSystemVariable": true
+									}
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "purgeMerchantActivityLog",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderStoredProcedureName": "[[dbo].[purgeMerchantActivityLog]",
+											"storedProcedureParameters": {
+												"END_DATE": {
+													"type": "String",
+													"value": {
+														"value": "@pipeline().parameters.END_DATE",
+														"type": "Expression"
+													}
+												},
+												"START_DATE": {
+													"type": "String",
+													"value": {
+														"value": "@pipeline().parameters.START_DATE",
+														"type": "Expression"
+													}
+												}
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "MERCHANT_ACTIVITY_LOG",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									}
+								},
+								{
+									"name": "Return Result Merchant",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "purgeMerchantActivityLog",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineReturnValue",
+										"value": [
+											{
+												"key": "result",
+												"value": {
+													"type": "Expression",
+													"content": "@activity('purgeMerchantActivityLog').output.firstRow"
+												}
+											}
+										],
+										"setSystemVariable": true
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"END_DATE": {
+						"type": "string"
+					},
+					"START_DATE": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"resultSCB": {
+						"type": "Boolean"
+					},
+					"resultMerchant": {
+						"type": "Boolean"
+					}
+				},
+				"folder": {
+					"name": "SMC_Store_Procedure"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Send Email')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1079,33 +1285,6 @@
 					"location": {
 						"type": "FtpServerLocation",
 						"folderPath": "SIT"
-					},
-					"columnDelimiter": ",",
-					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/FTPMPSOnPrem')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SmcFtpMps",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/SFTP/MPS"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "FtpServerLocation"
 					},
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
