@@ -3806,7 +3806,7 @@
 						"typeProperties": {
 							"variableName": "jobDate",
 							"value": {
-								"value": "@convertTimeZone(utcnow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-dd')",
+								"value": "2023-01-01",
 								"type": "Expression"
 							}
 						}
@@ -3830,12 +3830,8 @@
 							},
 							"waitOnCompletion": true,
 							"parameters": {
-								"END_DATE": {
-									"value": "@concat(\n    variables('jobDate'),\n    ' 23:59:59:999'\n)",
-									"type": "Expression"
-								},
-								"START_DATE": {
-									"value": "@concat(\n    variables('jobDate'),\n    ' 00:00:00:000'\n)",
+								"jobDate": {
+									"value": "@variables('jobDate')",
 									"type": "Expression"
 								}
 							}

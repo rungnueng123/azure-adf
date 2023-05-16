@@ -21,7 +21,14 @@
 					{
 						"name": "purgeSCBActivityLog",
 						"type": "Lookup",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Set Date End",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -38,14 +45,14 @@
 									"END_DATE": {
 										"type": "String",
 										"value": {
-											"value": "@pipeline().parameters.END_DATE",
+											"value": "@variables('END_DATE')",
 											"type": "Expression"
 										}
 									},
 									"START_DATE": {
 										"type": "String",
 										"value": {
-											"value": "@pipeline().parameters.START_DATE",
+											"value": "@variables('START_DATE')",
 											"type": "Expression"
 										}
 									}
@@ -122,7 +129,14 @@
 								{
 									"name": "purgeMerchantActivityLog",
 									"type": "Lookup",
-									"dependsOn": [],
+									"dependsOn": [
+										{
+											"activity": "Set Date End 2",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
 									"policy": {
 										"timeout": "0.12:00:00",
 										"retry": 0,
@@ -139,14 +153,14 @@
 												"END_DATE": {
 													"type": "String",
 													"value": {
-														"value": "@pipeline().parameters.END_DATE",
+														"value": "@variables('END_DATE')",
 														"type": "Expression"
 													}
 												},
 												"START_DATE": {
 													"type": "String",
 													"value": {
-														"value": "@pipeline().parameters.START_DATE",
+														"value": "@variables('START_DATE')",
 														"type": "Expression"
 													}
 												}
@@ -186,8 +200,74 @@
 										],
 										"setSystemVariable": true
 									}
+								},
+								{
+									"name": "Set Date Start 2",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "START_DATE",
+										"value": {
+											"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyy-MM-dd 00:00:00.000')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set Date End 2",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set Date Start 2",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "END_DATE",
+										"value": {
+											"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,180,'Day'),'yyyy-MM-dd 23:59:59.999')",
+											"type": "Expression"
+										}
+									}
 								}
 							]
+						}
+					},
+					{
+						"name": "Set Date Start",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "START_DATE",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,365,'Day'),'yyyy-MM-dd 00:00:00.000')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Date End",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Date Start",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "END_DATE",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,365,'Day'),'yyyy-MM-dd 23:59:59.999')",
+								"type": "Expression"
+							}
 						}
 					}
 				],
@@ -196,10 +276,7 @@
 					"cancelAfter": {}
 				},
 				"parameters": {
-					"END_DATE": {
-						"type": "string"
-					},
-					"START_DATE": {
+					"jobDate": {
 						"type": "string"
 					}
 				},
@@ -209,6 +286,12 @@
 					},
 					"resultMerchant": {
 						"type": "Boolean"
+					},
+					"START_DATE": {
+						"type": "String"
+					},
+					"END_DATE": {
+						"type": "String"
 					}
 				},
 				"folder": {
