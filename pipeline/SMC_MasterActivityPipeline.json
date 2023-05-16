@@ -258,7 +258,7 @@
 				"typeProperties": {
 					"variableName": "jobDate",
 					"value": {
-						"value": "2023-01-01",
+						"value": "@convertTimeZone(utcnow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-dd')",
 						"type": "Expression"
 					}
 				}
