@@ -1,5 +1,5 @@
 {
-	"name": "MerchantProfileTempSQL",
+	"name": "MerchantProfileB2KTempSQL",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureSqlDB",
@@ -80,7 +80,7 @@
 		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "MERCHANT_PROFILE_TEMP"
+			"table": "MERCHANT_PROFILE_B2K_TEMP"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"

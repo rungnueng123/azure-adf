@@ -147,7 +147,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "MerchantProfileTempSQL",
+						"referenceName": "MerchantProfileB2KTempSQL",
 						"type": "DatasetReference"
 					}
 				]

@@ -1,0 +1,19 @@
+{
+	"name": "MerchantEmailMPSTempSQL",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDB",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "B2KMPS/Database"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "MERCHANT_EMAIL_MPS_TEMP"
+		}
+	}
+}

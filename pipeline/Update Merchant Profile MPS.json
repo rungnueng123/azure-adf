@@ -1,9 +1,9 @@
 {
-	"name": "Update Merchant Profile B2K",
+	"name": "Update Merchant Profile MPS",
 	"properties": {
 		"activities": [
 			{
-				"name": "updateMerchantProfileB2K",
+				"name": "updateMerchantProfileMPS",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[dbo].[updateMerchantProfileB2K]",
+						"sqlReaderStoredProcedureName": "[dbo].[updateMerchantProfileMPS]",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -32,7 +32,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "updateMerchantProfileB2K",
+						"activity": "updateMerchantProfileMPS",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -46,7 +46,7 @@
 							"key": "result",
 							"value": {
 								"type": "Expression",
-								"content": "@activity('updateMerchantProfileB2K').output.firstRow"
+								"content": "@activity('updateMerchantProfileMPS').output.firstRow"
 							}
 						}
 					],

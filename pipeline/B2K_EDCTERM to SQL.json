@@ -119,7 +119,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "TerminalProfileTempSql",
+						"referenceName": "TerminalProfileB2KTempSql",
 						"type": "DatasetReference"
 					}
 				]

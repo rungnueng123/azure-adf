@@ -27,7 +27,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "Update Merchant Profile",
+						"referenceName": "Update Merchant Profile B2K",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true

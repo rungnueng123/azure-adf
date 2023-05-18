@@ -1,5 +1,5 @@
 {
-	"name": "TerminalProfileTempSql",
+	"name": "TerminalProfileB2KTempSql",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureSqlDB",
@@ -40,7 +40,7 @@
 		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "TERMINAL_PROFILE_TEMP"
+			"table": "TERMINAL_PROFILE_B2K_TEMP"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"

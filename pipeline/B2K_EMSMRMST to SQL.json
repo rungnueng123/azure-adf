@@ -99,7 +99,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "MerchantEmailTempSQL",
+						"referenceName": "MerchantEmailB2KTempSQL",
 						"type": "DatasetReference"
 					}
 				]

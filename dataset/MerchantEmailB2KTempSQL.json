@@ -1,5 +1,5 @@
 {
-	"name": "MerchantEmailTempSQL",
+	"name": "MerchantEmailB2KTempSQL",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureSqlDB",
@@ -30,7 +30,7 @@
 		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "MERCHANT_EMAIL_TEMP"
+			"table": "MERCHANT_EMAIL_B2K_TEMP"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
