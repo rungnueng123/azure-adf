@@ -113,18 +113,6 @@
 					},
 					"B2Kblob_properties_typeProperties_serviceEndpoint": {
 						"value": "[parameters('B2Kblob_properties_typeProperties_serviceEndpoint')]"
-					},
-					"SmcFtpB2k_properties_typeProperties_host": {
-						"value": "[parameters('SmcFtpB2k_properties_typeProperties_host')]"
-					},
-					"SmcFtpB2k_properties_typeProperties_userName": {
-						"value": "[parameters('SmcFtpB2k_properties_typeProperties_userName')]"
-					},
-					"SmcFtpMps_properties_typeProperties_host": {
-						"value": "[parameters('SmcFtpMps_properties_typeProperties_host')]"
-					},
-					"SmcFtpMps_properties_typeProperties_userName": {
-						"value": "[parameters('SmcFtpMps_properties_typeProperties_userName')]"
 					}
 				}
 			},
@@ -143,6 +131,18 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"SmcFtpB2k_properties_typeProperties_host": {
+						"value": "[parameters('SmcFtpB2k_properties_typeProperties_host')]"
+					},
+					"SmcFtpB2k_properties_typeProperties_userName": {
+						"value": "[parameters('SmcFtpB2k_properties_typeProperties_userName')]"
+					},
+					"SmcFtpMps_properties_typeProperties_host": {
+						"value": "[parameters('SmcFtpMps_properties_typeProperties_host')]"
+					},
+					"SmcFtpMps_properties_typeProperties_userName": {
+						"value": "[parameters('SmcFtpMps_properties_typeProperties_userName')]"
 					}
 				}
 			},

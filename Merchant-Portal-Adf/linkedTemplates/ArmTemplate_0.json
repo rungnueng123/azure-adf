@@ -43,22 +43,6 @@
 		"B2Kblob_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
 			"defaultValue": "https://merchantportalblob.blob.core.windows.net/"
-		},
-		"SmcFtpB2k_properties_typeProperties_host": {
-			"type": "string",
-			"defaultValue": "benseni.se.scb.co.th"
-		},
-		"SmcFtpB2k_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "smcadfusr"
-		},
-		"SmcFtpMps_properties_typeProperties_host": {
-			"type": "string",
-			"defaultValue": "GreenOak.se.scb.co.th"
-		},
-		"SmcFtpMps_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "se\\SMCUsrSit"
 		}
 	},
 	"variables": {
@@ -474,7 +458,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/MerchantEmailTempSQL')]",
+			"name": "[concat(parameters('factoryName'), '/MerchantEmailB2KTempSQL')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -507,7 +491,7 @@
 				],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "MERCHANT_EMAIL_TEMP"
+					"table": "MERCHANT_EMAIL_B2K_TEMP"
 				}
 			},
 			"dependsOn": [
@@ -515,7 +499,31 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/MerchantProfileTempSQL')]",
+			"name": "[concat(parameters('factoryName'), '/MerchantEmailMPSTempSQL')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "MERCHANT_EMAIL_MPS_TEMP"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MerchantProfileB2KTempSQL')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -598,7 +606,31 @@
 				],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "MERCHANT_PROFILE_TEMP"
+					"table": "MERCHANT_PROFILE_B2K_TEMP"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MerchantProfileMPSTempSQL')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "MERCHANT_PROFILE_MPS_TEMP"
 				}
 			},
 			"dependsOn": [
@@ -736,7 +768,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/TerminalProfileTempSql')]",
+			"name": "[concat(parameters('factoryName'), '/TerminalProfileB2KTempSql')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -779,7 +811,7 @@
 				],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "TERMINAL_PROFILE_TEMP"
+					"table": "TERMINAL_PROFILE_B2K_TEMP"
 				}
 			},
 			"dependsOn": [
@@ -809,72 +841,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]",
 				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SmcFtpB2k')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "FtpServer",
-				"typeProperties": {
-					"host": "[parameters('SmcFtpB2k_properties_typeProperties_host')]",
-					"port": "991",
-					"enableSsl": true,
-					"enableServerCertificateValidation": false,
-					"authenticationType": "Basic",
-					"userName": "[parameters('SmcFtpB2k_properties_typeProperties_userName')]",
-					"password": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "KeyVaultADF",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "smc-b2k-sftp-password"
-					}
-				},
-				"connectVia": {
-					"referenceName": "shir",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]",
-				"[concat(variables('factoryId'), '/linkedServices/KeyVaultADF')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SmcFtpMps')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "FtpServer",
-				"typeProperties": {
-					"host": "[parameters('SmcFtpMps_properties_typeProperties_host')]",
-					"port": "991",
-					"enableSsl": true,
-					"enableServerCertificateValidation": false,
-					"authenticationType": "Basic",
-					"userName": "[parameters('SmcFtpMps_properties_typeProperties_userName')]",
-					"password": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "KeyVaultADF",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "smc-msp-sftp-password"
-					}
-				},
-				"connectVia": {
-					"referenceName": "shir",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]",
-				"[concat(variables('factoryId'), '/linkedServices/KeyVaultADF')]"
 			]
 		}
 	]

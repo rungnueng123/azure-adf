@@ -438,7 +438,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "TerminalProfileTempSql",
+								"referenceName": "TerminalProfileB2KTempSql",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -456,7 +456,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/B2K_EDCTERM_TEMP')]",
-				"[concat(variables('factoryId'), '/datasets/TerminalProfileTempSql')]"
+				"[concat(variables('factoryId'), '/datasets/TerminalProfileB2KTempSql')]"
 			]
 		},
 		{
@@ -563,7 +563,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "MerchantEmailTempSQL",
+								"referenceName": "MerchantEmailB2KTempSQL",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -581,7 +581,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/B2K_EMSMRMST_TEMP')]",
-				"[concat(variables('factoryId'), '/datasets/MerchantEmailTempSQL')]"
+				"[concat(variables('factoryId'), '/datasets/MerchantEmailB2KTempSQL')]"
 			]
 		},
 		{
@@ -736,7 +736,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "MerchantProfileTempSQL",
+								"referenceName": "MerchantProfileB2KTempSQL",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -754,7 +754,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH_TEMP')]",
-				"[concat(variables('factoryId'), '/datasets/MerchantProfileTempSQL')]"
+				"[concat(variables('factoryId'), '/datasets/MerchantProfileB2KTempSQL')]"
 			]
 		},
 		{
@@ -971,7 +971,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "MerchantEmailTempSQL",
+								"referenceName": "MerchantEmailMPSTempSQL",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -989,7 +989,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/MPS_PP_DEBITADVICE_TEMP')]",
-				"[concat(variables('factoryId'), '/datasets/MerchantEmailTempSQL')]"
+				"[concat(variables('factoryId'), '/datasets/MerchantEmailMPSTempSQL')]"
 			]
 		},
 		{
@@ -1046,7 +1046,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "MerchantProfileTempSQL",
+								"referenceName": "MerchantProfileMPSTempSQL",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -1064,7 +1064,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/MPS_PP_MERCHANTFILE_TEMP')]",
-				"[concat(variables('factoryId'), '/datasets/MerchantProfileTempSQL')]"
+				"[concat(variables('factoryId'), '/datasets/MerchantProfileMPSTempSQL')]"
 			]
 		},
 		{
@@ -2604,7 +2604,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "Update Merchant Profile",
+								"referenceName": "Update Merchant Profile B2K",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -2975,7 +2975,7 @@
 				"[concat(variables('factoryId'), '/pipelines/SFTP B2K to Blob')]",
 				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]",
 				"[concat(variables('factoryId'), '/pipelines/Send Email')]",
-				"[concat(variables('factoryId'), '/pipelines/Update Merchant Profile')]"
+				"[concat(variables('factoryId'), '/pipelines/Update Merchant Profile B2K')]"
 			]
 		},
 		{
@@ -3089,7 +3089,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "Update Merchant Profile",
+								"referenceName": "Update Merchant Profile B2K",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -3379,7 +3379,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]",
 				"[concat(variables('factoryId'), '/pipelines/Send Email')]",
-				"[concat(variables('factoryId'), '/pipelines/Update Merchant Profile')]"
+				"[concat(variables('factoryId'), '/pipelines/Update Merchant Profile B2K')]"
 			]
 		},
 		{
@@ -3413,7 +3413,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "Update Merchant Profile",
+								"referenceName": "Update Merchant Profile B2K",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -3661,7 +3661,7 @@
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Update Merchant Profile')]",
+				"[concat(variables('factoryId'), '/pipelines/Update Merchant Profile B2K')]",
 				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
 			]
 		},
@@ -3814,7 +3814,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "Update Merchant Profile",
+								"referenceName": "Update Merchant Profile B2K",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -4185,7 +4185,7 @@
 				"[concat(variables('factoryId'), '/pipelines/SFTP MPS to Blob')]",
 				"[concat(variables('factoryId'), '/pipelines/MPS Blob to DB')]",
 				"[concat(variables('factoryId'), '/pipelines/Send Email')]",
-				"[concat(variables('factoryId'), '/pipelines/Update Merchant Profile')]"
+				"[concat(variables('factoryId'), '/pipelines/Update Merchant Profile B2K')]"
 			]
 		},
 		{
@@ -4299,7 +4299,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "Update Merchant Profile",
+								"referenceName": "Update Merchant Profile B2K",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -4589,7 +4589,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/MPS Blob to DB')]",
 				"[concat(variables('factoryId'), '/pipelines/Send Email')]",
-				"[concat(variables('factoryId'), '/pipelines/Update Merchant Profile')]"
+				"[concat(variables('factoryId'), '/pipelines/Update Merchant Profile B2K')]"
 			]
 		},
 		{
@@ -4623,7 +4623,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "Update Merchant Profile",
+								"referenceName": "Update Merchant Profile B2K",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -4871,7 +4871,7 @@
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Update Merchant Profile')]",
+				"[concat(variables('factoryId'), '/pipelines/Update Merchant Profile B2K')]",
 				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
 			]
 		},
@@ -6001,13 +6001,13 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Update Merchant Profile')]",
+			"name": "[concat(parameters('factoryName'), '/Update Merchant Profile B2K')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "updateMerchantProfile",
+						"name": "updateMerchantProfileB2K",
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
@@ -6021,7 +6021,7 @@
 						"typeProperties": {
 							"source": {
 								"type": "AzureSqlSource",
-								"sqlReaderStoredProcedureName": "[[dbo].[updateMerchantProfile]",
+								"sqlReaderStoredProcedureName": "[[dbo].[updateMerchantProfileB2K]",
 								"queryTimeout": "02:00:00",
 								"partitionOption": "None"
 							},
@@ -6037,7 +6037,7 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "updateMerchantProfile",
+								"activity": "updateMerchantProfileB2K",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -6051,7 +6051,79 @@
 									"key": "result",
 									"value": {
 										"type": "Expression",
-										"content": "@activity('updateMerchantProfile').output.firstRow"
+										"content": "@activity('updateMerchantProfileB2K').output.firstRow"
+									}
+								}
+							],
+							"setSystemVariable": true
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "SMC_Store_Procedure"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ImportMerchantProfileSql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Update Merchant Profile MPS')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "updateMerchantProfileMPS",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[updateMerchantProfileMPS]",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "ImportMerchantProfileSql",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Return Result",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "updateMerchantProfileMPS",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineReturnValue",
+							"value": [
+								{
+									"key": "result",
+									"value": {
+										"type": "Expression",
+										"content": "@activity('updateMerchantProfileMPS').output.firstRow"
 									}
 								}
 							],
@@ -7555,7 +7627,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/MerchantEmailTempSQL')]",
+			"name": "[concat(parameters('factoryName'), '/MerchantEmailB2KTempSQL')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -7588,7 +7660,7 @@
 				],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "MERCHANT_EMAIL_TEMP"
+					"table": "MERCHANT_EMAIL_B2K_TEMP"
 				}
 			},
 			"dependsOn": [
@@ -7596,7 +7668,31 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/MerchantProfileTempSQL')]",
+			"name": "[concat(parameters('factoryName'), '/MerchantEmailMPSTempSQL')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "MERCHANT_EMAIL_MPS_TEMP"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MerchantProfileB2KTempSQL')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -7679,7 +7775,31 @@
 				],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "MERCHANT_PROFILE_TEMP"
+					"table": "MERCHANT_PROFILE_B2K_TEMP"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MerchantProfileMPSTempSQL')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "MERCHANT_PROFILE_MPS_TEMP"
 				}
 			},
 			"dependsOn": [
@@ -7931,7 +8051,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/TerminalProfileTempSql')]",
+			"name": "[concat(parameters('factoryName'), '/TerminalProfileB2KTempSql')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -7974,7 +8094,7 @@
 				],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "TERMINAL_PROFILE_TEMP"
+					"table": "TERMINAL_PROFILE_B2K_TEMP"
 				}
 			},
 			"dependsOn": [
