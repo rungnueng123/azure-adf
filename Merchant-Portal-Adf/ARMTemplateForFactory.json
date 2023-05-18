@@ -3814,7 +3814,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "Update Merchant Profile B2K",
+								"referenceName": "Update Merchant Profile MPS",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -4185,7 +4185,7 @@
 				"[concat(variables('factoryId'), '/pipelines/SFTP MPS to Blob')]",
 				"[concat(variables('factoryId'), '/pipelines/MPS Blob to DB')]",
 				"[concat(variables('factoryId'), '/pipelines/Send Email')]",
-				"[concat(variables('factoryId'), '/pipelines/Update Merchant Profile B2K')]"
+				"[concat(variables('factoryId'), '/pipelines/Update Merchant Profile MPS')]"
 			]
 		},
 		{
@@ -4299,7 +4299,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "Update Merchant Profile B2K",
+								"referenceName": "Update Merchant Profile MPS",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -4589,7 +4589,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/MPS Blob to DB')]",
 				"[concat(variables('factoryId'), '/pipelines/Send Email')]",
-				"[concat(variables('factoryId'), '/pipelines/Update Merchant Profile B2K')]"
+				"[concat(variables('factoryId'), '/pipelines/Update Merchant Profile MPS')]"
 			]
 		},
 		{
@@ -4623,7 +4623,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "Update Merchant Profile B2K",
+								"referenceName": "Update Merchant Profile MPS",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -4871,7 +4871,7 @@
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Update Merchant Profile B2K')]",
+				"[concat(variables('factoryId'), '/pipelines/Update Merchant Profile MPS')]",
 				"[concat(variables('factoryId'), '/pipelines/Send Email')]"
 			]
 		},

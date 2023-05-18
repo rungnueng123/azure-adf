@@ -1658,7 +1658,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "Update Merchant Profile B2K",
+								"referenceName": "Update Merchant Profile MPS",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -2138,7 +2138,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "Update Merchant Profile B2K",
+								"referenceName": "Update Merchant Profile MPS",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
