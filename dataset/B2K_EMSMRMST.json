@@ -23,7 +23,7 @@
 				},
 				"container": "file-upload"
 			},
-			"columnDelimiter": "|",
+			"columnDelimiter": "\u0001",
 			"encodingName": "WINDOWS-874",
 			"escapeChar": "\\",
 			"quoteChar": "\""
