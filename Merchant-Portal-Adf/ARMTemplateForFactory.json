@@ -6145,6 +6145,118 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup1",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "B2K_MCRMRCH_DATA_ERROR",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup1').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Append variable1",
+									"type": "AppendVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "dataArray",
+										"value": {
+											"value": "@item()",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "ForEach1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "dataString",
+							"value": {
+								"value": "@join(variables('dataArray'), '')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"dataArray": {
+						"type": "Array"
+					},
+					"dataString": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH_DATA_ERROR')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/B2K_EDCTERM')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -6171,7 +6283,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"quoteChar": "\""
@@ -6213,7 +6325,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"quoteChar": "\""
@@ -6251,7 +6363,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": ",",
+					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
@@ -6287,7 +6399,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
@@ -6322,7 +6434,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
@@ -6385,7 +6497,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"quoteChar": "\""
@@ -6423,7 +6535,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"quoteChar": "\""
@@ -6458,7 +6570,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
@@ -6493,7 +6605,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
@@ -6570,7 +6682,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"quoteChar": "\""
@@ -6603,7 +6715,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": {
-							"value": "@concat(\n    'B2K_MCRMRCH_DATA_ERROR_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.csv'\n)",
+							"value": "@concat(\n    'B2K_MCRMRCH_DATA_ERROR_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
 							"type": "Expression"
 						},
 						"folderPath": {
@@ -6612,7 +6724,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"quoteChar": "\""
@@ -6650,7 +6762,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": ",",
+					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
@@ -6686,7 +6798,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
@@ -6721,7 +6833,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""

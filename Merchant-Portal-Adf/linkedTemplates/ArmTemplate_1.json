@@ -932,7 +932,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"quoteChar": "\""
@@ -972,7 +972,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"quoteChar": "\""
@@ -1008,7 +1008,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": ",",
+					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
@@ -1042,7 +1042,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
@@ -1075,7 +1075,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
@@ -1136,7 +1136,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"quoteChar": "\""
@@ -1172,7 +1172,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"quoteChar": "\""
@@ -1205,7 +1205,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
@@ -1238,7 +1238,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
@@ -1311,7 +1311,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"quoteChar": "\""
@@ -1342,7 +1342,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": {
-							"value": "@concat(\n    'B2K_MCRMRCH_DATA_ERROR_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.csv'\n)",
+							"value": "@concat(\n    'B2K_MCRMRCH_DATA_ERROR_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
 							"type": "Expression"
 						},
 						"folderPath": {
@@ -1351,7 +1351,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": "|",
+					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"quoteChar": "\""
@@ -1387,7 +1387,7 @@
 						},
 						"container": "file-upload"
 					},
-					"columnDelimiter": ",",
+					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,

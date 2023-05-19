@@ -13,6 +13,161 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/MPS Blob to DB')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "FixLenghtProcessFlow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Set UPDATE_DATE",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "MPS_FixLenghtProcessDataFlow",
+								"type": "DataFlowReference",
+								"parameters": {
+									"UPDATE_DATE": {
+										"value": "'@{variables('UPDATE_DATE')}'",
+										"type": "Expression"
+									},
+									"FileErrorDate": {
+										"value": "'@{variables('FileErrorDate')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"ppmerchantFixedLength": {},
+									"ODSPP": {},
+									"ppdebitadviceFixedLength": {},
+									"ppmerchantSink": {},
+									"ppdebitadviceSink": {},
+									"ppmerchantFailSink": {},
+									"ppmerchantFilterFailDataSink": {},
+									"ppmerchantFilterFailKeySink": {},
+									"odsppFailSink": {}
+								}
+							},
+							"staging": {},
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Set UPDATE_DATE",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set FileErrorDate",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "UPDATE_DATE",
+							"value": {
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'yyyy-MM-dd HH:mm:ss')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Insert MPS_PP_MerchantFile to SQL",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "FixLenghtProcessFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "MPS_PP_MerchantFile to SQL",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Insert MPS_PP_DebitAdvice to SQL",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "FixLenghtProcessFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "MPS_PP_DebitAdvice to SQL",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Set FileErrorDate",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "FileErrorDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"UPDATE_DATE": {
+						"type": "String"
+					},
+					"FileErrorDate": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_MPS"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SMC_MasterActivityPipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -2025,7 +2180,9 @@
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/MPS Blob to DB')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/SMC_MasterMPSPipeline_002')]",
@@ -2425,7 +2582,9 @@
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/MPS Blob to DB')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/triggerActivityLog')]",

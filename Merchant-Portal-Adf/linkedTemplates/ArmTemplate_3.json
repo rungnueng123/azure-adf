@@ -2490,6 +2490,116 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup1",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "B2K_MCRMRCH_DATA_ERROR",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup1').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Append variable1",
+									"type": "AppendVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "dataArray",
+										"value": {
+											"value": "@item()",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "ForEach1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "dataString",
+							"value": {
+								"value": "@join(variables('dataArray'), '')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"dataArray": {
+						"type": "Array"
+					},
+					"dataString": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/B2K_FixLenghtProcessDataFlow')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -3683,165 +3793,6 @@
 				"[concat(variables('factoryId'), '/pipelines/B2K_MCRMRCH to SQL')]",
 				"[concat(variables('factoryId'), '/pipelines/B2K_EDCTERM to SQL')]",
 				"[concat(variables('factoryId'), '/pipelines/B2K_EMSMRMST to SQL')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MPS Blob to DB')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "FixLenghtProcessFlow",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "Set UPDATE_DATE",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "MPS_FixLenghtProcessDataFlow",
-								"type": "DataFlowReference",
-								"parameters": {
-									"UPDATE_DATE": {
-										"value": "'@{variables('UPDATE_DATE')}'",
-										"type": "Expression"
-									},
-									"FileErrorDate": {
-										"value": "'@{variables('FileErrorDate')}'",
-										"type": "Expression"
-									}
-								},
-								"datasetParameters": {
-									"ppmerchantFixedLength": {},
-									"ODSPP": {},
-									"ppdebitadviceFixedLength": {},
-									"ppmerchantSink": {},
-									"ppdebitadviceSink": {},
-									"ppmerchantFailSink": {},
-									"ppmerchantFilterFailDataSink": {},
-									"ppmerchantFilterFailKeySink": {},
-									"odsppFailSink": {}
-								}
-							},
-							"staging": {},
-							"integrationRuntime": {
-								"referenceName": "AzureIR-ManagedVNet",
-								"type": "IntegrationRuntimeReference"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "Set UPDATE_DATE",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set FileErrorDate",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "UPDATE_DATE",
-							"value": {
-								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'yyyy-MM-dd HH:mm:ss')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Insert MPS_PP_MerchantFile to SQL",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "FixLenghtProcessFlow",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "MPS_PP_MerchantFile to SQL",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Insert MPS_PP_DebitAdvice to SQL",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "FixLenghtProcessFlow",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "MPS_PP_DebitAdvice to SQL",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Set FileErrorDate",
-						"type": "SetVariable",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "FileErrorDate",
-							"value": {
-								"value": "@formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd')",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"UPDATE_DATE": {
-						"type": "String"
-					},
-					"FileErrorDate": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "SMC_MPS"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-12-13T09:46:48Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/MPS_FixLenghtProcessDataFlow')]",
-				"[concat(variables('factoryId'), '/pipelines/MPS_PP_MerchantFile to SQL')]",
-				"[concat(variables('factoryId'), '/pipelines/MPS_PP_DebitAdvice to SQL')]"
 			]
 		}
 	]
