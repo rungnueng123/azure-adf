@@ -9,7 +9,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "B2K_MCRMRCH",
+						"referenceName": "B2K_MCRMRCH_OUTPUT_TEMP",
 						"type": "DatasetReference"
 					},
 					"name": "mcrmrchFixedLength"
@@ -34,6 +34,14 @@
 						"type": "DatasetReference"
 					},
 					"name": "importMerchantProfile"
+				},
+				{
+					"dataset": {
+						"referenceName": "B2K_MCRMRCH_DATA_ERROR_TEMP",
+						"type": "DatasetReference"
+					},
+					"name": "mcrmrchError",
+					"description": "Import data from B2K_MCRMRCH_DATA_ERROR_TEMP"
 				}
 			],
 			"sinks": [
@@ -57,13 +65,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "emsmrmstSink"
-				},
-				{
-					"dataset": {
-						"referenceName": "B2K_MCRMRCH_DATA_ERROR",
-						"type": "DatasetReference"
-					},
-					"name": "mcrmrchFailSink"
 				},
 				{
 					"dataset": {
@@ -96,12 +97,6 @@
 			],
 			"transformations": [
 				{
-					"name": "mcrmrchDerivedFixedLength"
-				},
-				{
-					"name": "mcrmrchOutputFixedLength"
-				},
-				{
 					"name": "edctermDerivedFixedLength"
 				},
 				{
@@ -118,9 +113,6 @@
 				},
 				{
 					"name": "filterSequence"
-				},
-				{
-					"name": "mcrmrchDataCheck"
 				},
 				{
 					"name": "mcrmrchFilterCheck"
@@ -142,6 +134,15 @@
 				},
 				{
 					"name": "joinImpMercProf3"
+				},
+				{
+					"name": "mcrmrchErrorDerived"
+				},
+				{
+					"name": "mcrmrchErrorAggregate"
+				},
+				{
+					"name": "mcrmrchErrorFlatten"
 				}
 			],
 			"scriptLines": [
@@ -149,10 +150,7 @@
 				"     UPDATE_DATE as string (toString(currentTimestamp())),",
 				"     FileErrorDate as string ('')",
 				"}",
-				"source(output(",
-				"          data as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
+				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> mcrmrchFixedLength",
 				"source(output(",
@@ -173,29 +171,13 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> importMerchantProfile",
-				"mcrmrchDataCheck@mcrmrchDataPass derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
-				"          ACCOUNT_ID = trim(substring(data, 310, 10)),",
-				"          TAX_ID = trim(substring(data, 988, 13)),",
-				"          NAME_TH = trim(substring(data, 1029, 40)),",
-				"          NAME_EN = trim(substring(data, 23, 30)),",
-				"          ACTIVE_STATUS = case(or(substring(data, 210, 1) == '2', substring(data, 210, 1) == '5'), 'A', 'I'),",
-				"          UPDATE_DATE = $UPDATE_DATE,",
-				"          SOURCE = \"B2K\",",
-				"          MID_L11 = trim(substring(data, 3, 11))) ~> mcrmrchDerivedFixedLength",
-				"mcrmrchDerivedFixedLength select(mapColumn(",
-				"          data,",
-				"          BILLER_MERCHANT_ID,",
-				"          ACCOUNT_ID,",
-				"          TAX_ID,",
-				"          NAME_TH,",
-				"          NAME_EN,",
-				"          ACTIVE_STATUS,",
-				"          UPDATE_DATE,",
-				"          SOURCE,",
-				"          MID_L11",
+				"source(output(",
+				"          data as string",
 				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> mcrmrchOutputFixedLength",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     partitionBy('hash', 1)) ~> mcrmrchError",
 				"edctermDataCheck@edctermDataPass derive(MERCHANT_ID = trim(substring(data, 11, 16)),",
 				"          Terminal_ID = trim(substring(data, 1, 8)),",
 				"          Terminal_Name_EN = trim(substring(data, 30, 30)),",
@@ -232,9 +214,7 @@
 				"     skipDuplicateMapOutputs: true) ~> emsmrmstOutputFixedLength",
 				"mcrmrchFilterCheck@mcrmrchFilterPass filter(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '') ~> filterSequenceKey",
 				"edctermFilterCheck@edctermFilterPass filter(MERCHANT_ID != '' && Terminal_ID != '' && Terminal_Name_EN != '' && Terminal_Name_TH != '') ~> filterSequence",
-				"mcrmrchFixedLength split(length(data) == 1200,",
-				"     disjoint: false) ~> mcrmrchDataCheck@(mcrmrchDataPass, mcrmrchDataFail)",
-				"mcrmrchOutputFixedLength split(length(BILLER_MERCHANT_ID) > 0 && length(ACCOUNT_ID) > 0 && length(TAX_ID) > 0 && length(NAME_TH) > 0 && length(NAME_EN) > 0,",
+				"mcrmrchFixedLength split(length(BILLER_MERCHANT_ID) > 0 && length(ACCOUNT_ID) > 0 && length(TAX_ID) > 0 && length(NAME_TH) > 0 && length(NAME_EN) > 0,",
 				"     disjoint: false) ~> mcrmrchFilterCheck@(mcrmrchFilterPass, mcrmrchFilterFail)",
 				"edctermFixedLength split(length(data) == 450,",
 				"     disjoint: false) ~> edctermDataCheck@(edctermDataPass, edctermDataFail)",
@@ -257,6 +237,17 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> joinImpMercProf3",
+				"mcrmrchError derive(Key = toLong(1),",
+				"          data = split(data, ',')) ~> mcrmrchErrorDerived",
+				"mcrmrchErrorDerived aggregate(groupBy(Key),",
+				"     data = topN(data,Key,1)) ~> mcrmrchErrorAggregate",
+				"mcrmrchErrorAggregate foldDown(unroll(data.value),",
+				"     mapColumn(",
+				"          Key,",
+				"          data",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> mcrmrchErrorFlatten",
 				"joinImpMercProf1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['B2K_MCRMRCH_TEMP.txt'],",
@@ -299,16 +290,6 @@
 				"          EMAIL_3",
 				"     ),",
 				"     partitionBy('hash', 1)) ~> emsmrmstSink",
-				"mcrmrchDataCheck@mcrmrchDataFail sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     partitionFileNames:[(concat(\r",
-				"    'B2K_MCRMRCH_DATA_ERROR_',\r",
-				"    $FileErrorDate,\r",
-				"    '.txt'\r",
-				"))],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> mcrmrchFailSink",
 				"mcrmrchFilterCheck@mcrmrchFilterFail sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:[(concat(\r",

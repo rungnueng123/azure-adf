@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "B2K_ValidateData",
 	"properties": {
 		"activities": [
 			{
@@ -53,16 +53,45 @@
 					"isSequential": true,
 					"activities": [
 						{
-							"name": "Append variable1",
-							"type": "AppendVariable",
+							"name": "If Condition1",
+							"type": "IfCondition",
 							"dependsOn": [],
 							"userProperties": [],
 							"typeProperties": {
-								"variableName": "dataArray",
-								"value": {
-									"value": "@item()",
+								"expression": {
+									"value": "@if(equals(substring(string(item().prop_0),0,2), '01'),true,false)",
 									"type": "Expression"
-								}
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Append variable1_copy2",
+										"type": "AppendVariable",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "dataArray",
+											"value": {
+												"value": "@item().prop_0",
+												"type": "Expression"
+											}
+										}
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "Append variable1_copy1",
+										"type": "AppendVariable",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "dataArray",
+											"value": {
+												"value": "@concat(\n    ',',\n    item().prop_0\n)",
+												"type": "Expression"
+											}
+										}
+									}
+								]
 							}
 						}
 					]
@@ -81,9 +110,116 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
+					"variableName": "dataStringTemp",
+					"value": {
+						"value": "@join(variables('dataArray'),'')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Set variable2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "data",
+								"value": {
+									"value": "@variables('dataString')",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "data",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"physicalType": "String",
+									"ordinal": 1
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "B2K_MCRMRCH_DATA_ERROR",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "B2K_MCRMRCH_DATA_ERROR",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Set variable2",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
 					"variableName": "dataString",
 					"value": {
-						"value": "@join(variables('dataArray'), '')",
+						"value": "@substring(variables('dataStringTemp'),1,sub(length(variables('dataStringTemp')),1))",
 						"type": "Expression"
 					}
 				}
@@ -95,7 +231,13 @@
 			},
 			"dataString": {
 				"type": "String"
+			},
+			"dataStringTemp": {
+				"type": "String"
 			}
+		},
+		"folder": {
+			"name": "SMC_B2K"
 		},
 		"annotations": []
 	}
