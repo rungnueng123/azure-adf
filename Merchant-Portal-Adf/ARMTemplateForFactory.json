@@ -1025,14 +1025,14 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "B2K_MCRMRCH_DATA_ERROR",
+								"referenceName": "B2K_MCRMRCH_DATA_ERROR_TEMP",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
 						],
 						"outputs": [
 							{
-								"referenceName": "B2K_MCRMRCH_DATA_ERROR",
+								"referenceName": "B2K_MCRMRCH_DATA_ERROR_TEMP",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -1080,7 +1080,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH_DATA_ERROR')]"
+				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH_DATA_ERROR')]",
+				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH_DATA_ERROR_TEMP')]"
 			]
 		},
 		{
@@ -6967,7 +6968,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": {
-							"value": "@concat(\n    'B2K_MCRMRCH_DATA_ERROR_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
+							"value": "@concat(\n    'B2K_MCRMRCH_DATA_ERROR_TEMP_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
 							"type": "Expression"
 						},
 						"folderPath": {
