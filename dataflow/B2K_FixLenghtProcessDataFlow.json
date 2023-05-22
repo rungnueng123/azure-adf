@@ -37,7 +37,7 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "B2K_MCRMRCH_DATA_ERROR_TEMP",
+						"referenceName": "B2K_MCRMRCH_DATA_ERROR",
 						"type": "DatasetReference"
 					},
 					"name": "mcrmrchError",
