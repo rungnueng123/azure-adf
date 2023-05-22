@@ -13,6 +13,39 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/MPS_PP_MERCHANTFILE_TEMP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "B2Kblob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "B2KMPS/MPS/TSBP1VNP"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "MPS_PP_MERCHANTFILE_TEMP.txt",
+						"folderPath": {
+							"value": "@concat(\n    'mps/',\n    getFutureTime(7, 'Hour', 'yyyy'),\n    '/',\n    getFutureTime(7, 'Hour', 'MM'),\n    '/',\n\tformatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'dd'),\n\t'/output'\n)",
+							"type": "Expression"
+						},
+						"container": "file-upload"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG_OUTPUT')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -759,7 +792,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "B2K_MCRMRCH_DATA_ERROR_TEMP",
+								"referenceName": "B2K_MCRMRCH_DATA_ERROR",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -950,7 +983,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/MPS_PP_MERCHANTFILE_TEMP')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/SFTP B2K to Blob')]",
@@ -2864,7 +2899,7 @@
 						},
 						{
 							"dataset": {
-								"referenceName": "B2K_MCRMRCH_DATA_ERROR_TEMP",
+								"referenceName": "B2K_MCRMRCH_DATA_ERROR",
 								"type": "DatasetReference"
 							},
 							"name": "mcrmrchError",
@@ -3257,6 +3292,13 @@
 								"type": "DatasetReference"
 							},
 							"name": "mcrmrchEmptySource"
+						},
+						{
+							"dataset": {
+								"referenceName": "B2K_MCRMRCH",
+								"type": "DatasetReference"
+							},
+							"name": "mcrmrchMappingSource"
 						}
 					],
 					"sinks": [
@@ -3281,6 +3323,13 @@
 								"type": "DatasetReference"
 							},
 							"name": "mcrmrchEmptySink"
+						},
+						{
+							"dataset": {
+								"referenceName": "B2K_MCRMRCH_DATA_ERROR_MAPPING_TEMP",
+								"type": "DatasetReference"
+							},
+							"name": "mcrmrchMappingSink1"
 						}
 					],
 					"transformations": [
@@ -3295,6 +3344,9 @@
 						},
 						{
 							"name": "mcrmrchEmptyDerived"
+						},
+						{
+							"name": "mcrmrchMappingDerived"
 						}
 					],
 					"scriptLines": [
@@ -3315,6 +3367,13 @@
 						"     validateSchema: false,",
 						"     limit: 1,",
 						"     ignoreNoFilesFound: false) ~> mcrmrchEmptySource",
+						"source(output(",
+						"          data as string",
+						"     ),",
+						"     allowSchemaDrift: false,",
+						"     validateSchema: false,",
+						"     limit: 1,",
+						"     ignoreNoFilesFound: false) ~> mcrmrchMappingSource",
 						"mcrmrchDataCheck@mcrmrchDataPass derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
 						"          ACCOUNT_ID = trim(substring(data, 310, 10)),",
 						"          TAX_ID = trim(substring(data, 988, 13)),",
@@ -3340,7 +3399,8 @@
 						"     skipDuplicateMapOutputs: true) ~> mcrmrchOutputFixedLength",
 						"mcrmrchFixedLength split(length(data) == 1200,",
 						"     disjoint: false) ~> mcrmrchDataCheck@(mcrmrchDataPass, mcrmrchDataFail)",
-						"mcrmrchEmptySource derive(data = 'emptyFile') ~> mcrmrchEmptyDerived",
+						"mcrmrchEmptySource derive(data = data) ~> mcrmrchEmptyDerived",
+						"mcrmrchMappingSource derive(data = data) ~> mcrmrchMappingDerived",
 						"mcrmrchDataCheck@mcrmrchDataFail sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     partitionFileNames:[(concat(\r",
@@ -3377,116 +3437,17 @@
 						"))],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> mcrmrchEmptySink"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG_FLOW')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "Log"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "B2K_EDCTERM",
-								"type": "DatasetReference"
-							},
-							"name": "queryMERCHANTACTIVITYLOG"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "MERCHANT_ACTIVITY_LOG_OUTPUT",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "select1"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     schemaName as string ('dbo'),",
-						"     tableName as string ('MERCHANT_ACTIVITY_LOG'),",
-						"     startDate as string ('2021-12-15 00:00:00.000'),",
-						"     endDate as string ('2021-12-16 00:00:00.000'),",
-						"     columnName as string ('TRANSACTION_DATE'),",
-						"     fileName as string ('temp')",
-						"}",
-						"source(output(",
-						"          ID as integer,",
-						"          TRANSACTION_DATE as timestamp,",
-						"          FUNCTION_CODE as string,",
-						"          LOG as string,",
-						"          LOG_TYPE as string,",
-						"          APPLICATION_NAME as string,",
-						"          EVENT as string,",
-						"          EVENT_TYPE as string,",
-						"          URL as string,",
-						"          MERCHANT_CENTER_ID as string,",
-						"          SOURCE_ADDRESS as string,",
-						"          SOURCE_HOSTNAME as string,",
-						"          SOURCE_USERNAME as string,",
-						"          SOURCE_OBJECT as string,",
-						"          DESTINATION_ADDRESS as string,",
-						"          DESTINATION_HOSTNAME as string,",
-						"          DESTINATION_USERNAME as string,",
-						"          DESTINATION_OBJECT as string,",
-						"          CHANGE_FROM as string,",
-						"          CHANGE_TO as string,",
-						"          SEARCH_CRITERIA as string,",
-						"          RESULT_STATUS as string,",
-						"          MESSAGE as string,",
-						"          UPDATE_PII_LOG_STATUS as string,",
-						"          UPDATE_PII_LOG_DATE as timestamp",
-						"     ),",
-						"     allowSchemaDrift: true,",
+						"     partitionBy('hash', 1)) ~> mcrmrchEmptySink",
+						"mcrmrchMappingDerived sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> queryMERCHANTACTIVITYLOG",
-						"queryMERCHANTACTIVITYLOG select(mapColumn(",
-						"          TRANSACTION_DATE,",
-						"          FUNCTION_CODE,",
-						"          LOG,",
-						"          LOG_TYPE,",
-						"          APPLICATION_NAME,",
-						"          EVENT,",
-						"          EVENT_TYPE,",
-						"          URL,",
-						"          MERCHANT_CENTER_ID,",
-						"          SOURCE_ADDRESS,",
-						"          SOURCE_HOSTNAME,",
-						"          SOURCE_USERNAME,",
-						"          SOURCE_OBJECT,",
-						"          DESTINATION_ADDRESS,",
-						"          DESTINATION_HOSTNAME,",
-						"          DESTINATION_USERNAME,",
-						"          DESTINATION_OBJECT,",
-						"          CHANGE_FROM,",
-						"          CHANGE_TO,",
-						"          SEARCH_CRITERIA,",
-						"          RESULT_STATUS,",
-						"          MESSAGE",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select1",
-						"select1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:['\"{$fileName}\" + \".log\"'],",
+						"     partitionFileNames:[(concat(\r",
+						"    'B2K_MCRMRCH_DATA_ERROR_MAPPING_TEMP_',\r",
+						"    $FileErrorDate,\r",
+						"    '.txt'\r",
+						"))],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> sink1"
+						"     partitionBy('hash', 1)) ~> mcrmrchMappingSink1"
 					]
 				}
 			},
