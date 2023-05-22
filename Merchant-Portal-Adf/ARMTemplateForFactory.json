@@ -320,8 +320,10 @@
 								},
 								"datasetParameters": {
 									"mcrmrchFixedLength": {},
+									"mcrmrchEmptySource": {},
 									"mcrmrchFailSink": {},
-									"mcrmrchSink": {}
+									"mcrmrchSink": {},
+									"mcrmrchEmptySink": {}
 								}
 							},
 							"staging": {},
@@ -9383,6 +9385,13 @@
 								"type": "DatasetReference"
 							},
 							"name": "mcrmrchFixedLength"
+						},
+						{
+							"dataset": {
+								"referenceName": "B2K_MCRMRCH",
+								"type": "DatasetReference"
+							},
+							"name": "mcrmrchEmptySource"
 						}
 					],
 					"sinks": [
@@ -9400,6 +9409,13 @@
 							},
 							"name": "mcrmrchSink",
 							"description": "Export data to B2K_MCRMRCH_OUTPUT"
+						},
+						{
+							"dataset": {
+								"referenceName": "B2K_MCRMRCH_DATA_ERROR_TEMP",
+								"type": "DatasetReference"
+							},
+							"name": "mcrmrchEmptySink"
 						}
 					],
 					"transformations": [
@@ -9411,6 +9427,9 @@
 						},
 						{
 							"name": "mcrmrchDataCheck"
+						},
+						{
+							"name": "mcrmrchEmptyDerived"
 						}
 					],
 					"scriptLines": [
@@ -9424,6 +9443,13 @@
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false) ~> mcrmrchFixedLength",
+						"source(output(",
+						"          data as string",
+						"     ),",
+						"     allowSchemaDrift: false,",
+						"     validateSchema: false,",
+						"     limit: 1,",
+						"     ignoreNoFilesFound: false) ~> mcrmrchEmptySource",
 						"mcrmrchDataCheck@mcrmrchDataPass derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
 						"          ACCOUNT_ID = trim(substring(data, 310, 10)),",
 						"          TAX_ID = trim(substring(data, 988, 13)),",
@@ -9449,6 +9475,7 @@
 						"     skipDuplicateMapOutputs: true) ~> mcrmrchOutputFixedLength",
 						"mcrmrchFixedLength split(length(data) == 1200,",
 						"     disjoint: false) ~> mcrmrchDataCheck@(mcrmrchDataPass, mcrmrchDataFail)",
+						"mcrmrchEmptySource derive(data = 'emptyFile') ~> mcrmrchEmptyDerived",
 						"mcrmrchDataCheck@mcrmrchDataFail sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     partitionFileNames:[(concat(\r",
@@ -9475,14 +9502,25 @@
 						"          SOURCE,",
 						"          MID_L11",
 						"     ),",
-						"     partitionBy('hash', 1)) ~> mcrmrchSink"
+						"     partitionBy('hash', 1)) ~> mcrmrchSink",
+						"mcrmrchEmptyDerived sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(concat(\r",
+						"    'B2K_MCRMRCH_DATA_ERROR_TEMP_',\r",
+						"    $FileErrorDate,\r",
+						"    '.txt'\r",
+						"))],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> mcrmrchEmptySink"
 					]
 				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH')]",
 				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH_DATA_ERROR')]",
-				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH_OUTPUT_TEMP')]"
+				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH_OUTPUT_TEMP')]",
+				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH_DATA_ERROR_TEMP')]"
 			]
 		},
 		{

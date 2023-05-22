@@ -732,8 +732,10 @@
 								},
 								"datasetParameters": {
 									"mcrmrchFixedLength": {},
+									"mcrmrchEmptySource": {},
 									"mcrmrchFailSink": {},
-									"mcrmrchSink": {}
+									"mcrmrchSink": {},
+									"mcrmrchEmptySink": {}
 								}
 							},
 							"staging": {},
