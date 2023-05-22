@@ -13,6 +13,780 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/MPS_FixLenghtProcessDataFlow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "B2KMPS"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "MPS_PP_MERCHANTFILE",
+								"type": "DatasetReference"
+							},
+							"name": "ppmerchantFixedLength"
+						},
+						{
+							"dataset": {
+								"referenceName": "MPS_ODSPP",
+								"type": "DatasetReference"
+							},
+							"name": "ODSPP"
+						},
+						{
+							"dataset": {
+								"referenceName": "MPS_PP_DEBITADVICE",
+								"type": "DatasetReference"
+							},
+							"name": "ppdebitadviceFixedLength"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "MPS_PP_MERCHANTFILE_OUTPUT",
+								"type": "DatasetReference"
+							},
+							"name": "ppmerchantSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "MPS_PP_DEBITADVICE_OUTPUT",
+								"type": "DatasetReference"
+							},
+							"name": "ppdebitadviceSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "MPS_PP_MERCHANTFILE_DATA_ERROR",
+								"type": "DatasetReference"
+							},
+							"name": "ppmerchantFailSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "MPS_PP_MERCHANTFILE_FILTER_DATA_ERROR",
+								"type": "DatasetReference"
+							},
+							"name": "ppmerchantFilterFailDataSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "MPS_PP_MERCHANTFILE_FILTER_KEY_ERROR",
+								"type": "DatasetReference"
+							},
+							"name": "ppmerchantFilterFailKeySink"
+						},
+						{
+							"dataset": {
+								"referenceName": "MPS_ODSPP_DATA_ERROR",
+								"type": "DatasetReference"
+							},
+							"name": "odsppFailSink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "ppmerchantDerivedFixedLength"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "ppmerchantOutputFixedLength"
+						},
+						{
+							"name": "ppdebitadviceOutputFixedLength"
+						},
+						{
+							"name": "filterODSPP"
+						},
+						{
+							"name": "filterSequenceKey"
+						},
+						{
+							"name": "filterType"
+						},
+						{
+							"name": "ppmerchantDataCheck"
+						},
+						{
+							"name": "ppmerchantFilterDataCheck"
+						},
+						{
+							"name": "ppmerchantFilterKeyCheck"
+						},
+						{
+							"name": "odsppDataCheck"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     UPDATE_DATE as string (toString(currentTimestamp())),",
+						"     FileErrorDate as string ('')",
+						"}",
+						"source(output(",
+						"          data as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> ppmerchantFixedLength",
+						"source(output(",
+						"          Id as string,",
+						"          Biller_id as string,",
+						"          Englishname as string,",
+						"          Thainame as string,",
+						"          REF3 as string,",
+						"          Method_type as string,",
+						"          Method_value as string,",
+						"          MethodPrecedence as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> ODSPP",
+						"source(output(",
+						"          {Biller ID} as string,",
+						"          {Tax ID} as string,",
+						"          {Biller Name - EN} as string,",
+						"          {Biller Name - TH} as string,",
+						"          {Biller Address (1) -TH} as string,",
+						"          {Biller Address (2) -TH} as string,",
+						"          {Biller Address (3) -TH} as string,",
+						"          {Biller Address (4) -TH} as string,",
+						"          {Zip code} as string,",
+						"          {Biller E-Mail} as string,",
+						"          {Report - PDF} as string,",
+						"          {Report - Excel} as string,",
+						"          {Report - CSV} as string,",
+						"          {Branch ID} as string,",
+						"          {Delivery Address } as string,",
+						"          {Withholding Tax} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> ppdebitadviceFixedLength",
+						"ppmerchantDataCheck@ppmerchantDataPass derive(BILLER_MERCHANT_ID = trim(substring(data, 1, 15)),",
+						"          ACCOUNT_ID = trim(substring(data, 23, 10)),",
+						"          TAX_ID = trim(substring(data, 1, 13)),",
+						"          NAME_TH = trim(substring(data, 1445, 50)),",
+						"          NAME_EN = trim(substring(data, 1395, 50)),",
+						"          COMPANY_NAME_TH = trim(substring(data, 170, 50)),",
+						"          COMPANY_NAME_EN = trim(substring(data, 57, 50)),",
+						"          ACTIVE_STATUS = \"A\",",
+						"          UPDATE_DATE = $UPDATE_DATE,",
+						"          BUSINESS_TYPE = trim(substring(data, 107, 2)),",
+						"          REF1_TH = trim(substring(data, 14837, 50)),",
+						"          REF1_EN = trim(substring(data, 14787, 50)),",
+						"          REF2_TH = trim(substring(data, 14937, 50)),",
+						"          REF2_EN = trim(substring(data, 14887, 50)),",
+						"          SOURCE = \"MPS\",",
+						"          BILLER_TYPE = trim(substring(data,1526, 4)),",
+						"          BANK_TYPE = trim(substring(data,1495, 4))) ~> ppmerchantDerivedFixedLength",
+						"filterType, filterODSPP join(BILLER_MERCHANT_ID == Biller_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 select(mapColumn(",
+						"          data,",
+						"          BILLER_MERCHANT_ID,",
+						"          ACCOUNT_ID,",
+						"          TAX_ID,",
+						"          NAME_TH,",
+						"          NAME_EN,",
+						"          COMPANY_NAME_TH,",
+						"          COMPANY_NAME_EN,",
+						"          ACTIVE_STATUS,",
+						"          UPDATE_DATE,",
+						"          BUSINESS_TYPE,",
+						"          REF1_TH,",
+						"          REF1_EN,",
+						"          REF2_TH,",
+						"          REF2_EN,",
+						"          SOURCE,",
+						"          Id,",
+						"          Biller_id,",
+						"          Englishname,",
+						"          Thainame,",
+						"          REF3,",
+						"          Method_type,",
+						"          Method_value,",
+						"          MethodPrecedence",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> ppmerchantOutputFixedLength",
+						"ppdebitadviceFixedLength select(mapColumn(",
+						"          BILLER_MERCHANT_ID = {Biller ID},",
+						"          EMAIL_1 = {Biller E-Mail}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> ppdebitadviceOutputFixedLength",
+						"odsppDataCheck@odsppDataPass filter(REF3 == 'IFB') ~> filterODSPP",
+						"ppmerchantFilterKeyCheck@ppmerchantFilterKeyPass filter(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '' && REF1_TH != '' && REF1_EN != '') ~> filterSequenceKey",
+						"ppmerchantFilterDataCheck@ppmerchantFilterDataPass filter(BILLER_TYPE == 'TQRC' && BANK_TYPE == 'SCB') ~> filterType",
+						"ppmerchantFixedLength split(length(data) == 15086,",
+						"     disjoint: false) ~> ppmerchantDataCheck@(ppmerchantDataPass, ppmerchantDataFail)",
+						"ppmerchantDerivedFixedLength split(BILLER_TYPE == 'TQRC' && BANK_TYPE == 'SCB',",
+						"     disjoint: false) ~> ppmerchantFilterDataCheck@(ppmerchantFilterDataPass, ppmerchantFilterDataFail)",
+						"ppmerchantOutputFixedLength split(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '' && REF1_TH != '' && REF1_EN != '',",
+						"     disjoint: false) ~> ppmerchantFilterKeyCheck@(ppmerchantFilterKeyPass, ppmerchantFilterKeyFail)",
+						"ODSPP split(REF3 == 'IFB',",
+						"     disjoint: false) ~> odsppDataCheck@(odsppDataPass, odsppDataFail)",
+						"filterSequenceKey sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['MPS_PP_MERCHANTFILE_TEMP.txt'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          BILLER_MERCHANT_ID,",
+						"          ACCOUNT_ID,",
+						"          TAX_ID,",
+						"          NAME_TH,",
+						"          NAME_EN,",
+						"          COMPANY_NAME_TH,",
+						"          COMPANY_NAME_EN,",
+						"          ACTIVE_STATUS,",
+						"          UPDATE_DATE,",
+						"          BUSINESS_TYPE,",
+						"          REF1_TH,",
+						"          REF1_EN,",
+						"          REF2_TH,",
+						"          REF2_EN,",
+						"          SOURCE,",
+						"          REF3",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> ppmerchantSink",
+						"ppdebitadviceOutputFixedLength sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['MPS_PP_DEBITADVICE_TEMP.txt'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> ppdebitadviceSink",
+						"ppmerchantDataCheck@ppmerchantDataFail sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(concat(\r",
+						"    'MPS_PP_MERCHANT_DATA_ERROR_',\r",
+						"    $FileErrorDate,\r",
+						"    '.txt'\r",
+						"))],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> ppmerchantFailSink",
+						"ppmerchantFilterDataCheck@ppmerchantFilterDataFail sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(concat(\r",
+						"    'PP_MERCHANT_FILTER_DATA_ERROR_',\r",
+						"    $FileErrorDate,\r",
+						"    '.csv'\r",
+						"))],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          BILLER_MERCHANT_ID,",
+						"          ACCOUNT_ID,",
+						"          TAX_ID,",
+						"          NAME_TH,",
+						"          NAME_EN,",
+						"          COMPANY_NAME_TH,",
+						"          COMPANY_NAME_EN,",
+						"          ACTIVE_STATUS,",
+						"          UPDATE_DATE,",
+						"          BUSINESS_TYPE,",
+						"          REF1_TH,",
+						"          REF1_EN,",
+						"          REF2_TH,",
+						"          REF2_EN,",
+						"          SOURCE,",
+						"          BILLER_TYPE,",
+						"          BANK_TYPE",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> ppmerchantFilterFailDataSink",
+						"ppmerchantFilterKeyCheck@ppmerchantFilterKeyFail sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(concat(\r",
+						"    'PP_MERCHANT_FILTER_KEY_ERROR_',\r",
+						"    $FileErrorDate,\r",
+						"    '.csv'\r",
+						"))],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          BILLER_MERCHANT_ID,",
+						"          ACCOUNT_ID,",
+						"          TAX_ID,",
+						"          NAME_TH,",
+						"          NAME_EN,",
+						"          COMPANY_NAME_TH,",
+						"          COMPANY_NAME_EN,",
+						"          ACTIVE_STATUS,",
+						"          UPDATE_DATE,",
+						"          BUSINESS_TYPE,",
+						"          REF1_TH,",
+						"          REF1_EN,",
+						"          REF2_TH,",
+						"          REF2_EN,",
+						"          SOURCE,",
+						"          Id,",
+						"          Biller_id,",
+						"          Englishname,",
+						"          Thainame,",
+						"          REF3,",
+						"          Method_type,",
+						"          Method_value,",
+						"          MethodPrecedence",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> ppmerchantFilterFailKeySink",
+						"odsppDataCheck@odsppDataFail sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(concat(\r",
+						"    'MPS_ODSPP_DATA_ERROR_',\r",
+						"    $FileErrorDate,\r",
+						"    '.csv'\r",
+						"))],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          Id,",
+						"          Biller_id,",
+						"          Englishname,",
+						"          Thainame,",
+						"          REF3,",
+						"          Method_type,",
+						"          Method_value,",
+						"          MethodPrecedence",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> odsppFailSink"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG_FLOW')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Log"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "B2K_EDCTERM",
+								"type": "DatasetReference"
+							},
+							"name": "querySCBACTIVITYLOG"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "SCB_ACTIVITY_LOG_OUTPUT",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"description": "Export data to SCB_ACTIVITY_LOG_OUTPUT"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     schemaName as string ('dbo'),",
+						"     tableName as string ('SCB_ACTIVITY_LOG'),",
+						"     startDate as string ('2021-12-15 00:00:00.000'),",
+						"     endDate as string ('2021-12-16 00:00:00.000'),",
+						"     columnName as string ('TRANSACTION_DATE'),",
+						"     fileName as string ('temp')",
+						"}",
+						"source(output(",
+						"          ID as integer,",
+						"          TRANSACTION_DATE as timestamp,",
+						"          FUNCTION_CODE as string,",
+						"          LOG as string,",
+						"          LOG_TYPE as string,",
+						"          APPLICATION_NAME as string,",
+						"          EVENT as string,",
+						"          EVENT_TYPE as string,",
+						"          URL as string,",
+						"          MERCHANT_CENTER_ID as string,",
+						"          SOURCE_ADDRESS as string,",
+						"          SOURCE_HOSTNAME as string,",
+						"          SOURCE_USERNAME as string,",
+						"          SOURCE_OBJECT as string,",
+						"          DESTINATION_ADDRESS as string,",
+						"          DESTINATION_HOSTNAME as string,",
+						"          DESTINATION_USERNAME as string,",
+						"          DESTINATION_OBJECT as string,",
+						"          CHANGE_FROM as string,",
+						"          CHANGE_TO as string,",
+						"          SEARCH_CRITERIA as string,",
+						"          RESULT_STATUS as string,",
+						"          MESSAGE as string,",
+						"          UPDATE_PII_LOG_STATUS as string,",
+						"          UPDATE_PII_LOG_DATE as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> querySCBACTIVITYLOG",
+						"querySCBACTIVITYLOG select(mapColumn(",
+						"          TRANSACTION_DATE,",
+						"          FUNCTION_CODE,",
+						"          LOG,",
+						"          LOG_TYPE,",
+						"          APPLICATION_NAME,",
+						"          EVENT,",
+						"          EVENT_TYPE,",
+						"          URL,",
+						"          MERCHANT_CENTER_ID,",
+						"          SOURCE_ADDRESS,",
+						"          SOURCE_HOSTNAME,",
+						"          SOURCE_USERNAME,",
+						"          SOURCE_OBJECT,",
+						"          DESTINATION_ADDRESS,",
+						"          DESTINATION_HOSTNAME,",
+						"          DESTINATION_USERNAME,",
+						"          DESTINATION_OBJECT,",
+						"          CHANGE_FROM,",
+						"          CHANGE_TO,",
+						"          SEARCH_CRITERIA,",
+						"          RESULT_STATUS,",
+						"          MESSAGE,",
+						"          UPDATE_PII_LOG_STATUS,",
+						"          UPDATE_PII_LOG_DATE",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(\"{$fileName}\" + \".log\")],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/B2K Blob to DB')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "FixLenghtProcessFlow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "ValidateData",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "B2K_FixLenghtProcessDataFlow",
+								"type": "DataFlowReference",
+								"parameters": {
+									"UPDATE_DATE": {
+										"value": "'@{variables('UPDATE_DATE')}'",
+										"type": "Expression"
+									},
+									"FileErrorDate": {
+										"value": "'@{variables('FileErrorDate')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"mcrmrchFixedLength": {},
+									"edctermFixedLength": {},
+									"emsmrmstFixedLength": {},
+									"importMerchantProfile": {},
+									"mcrmrchError": {},
+									"mcrmrchSink": {},
+									"edctermSink": {},
+									"emsmrmstSink": {},
+									"mcrmrchFilterFailSink": {},
+									"edctermFailSink": {},
+									"emsmrmstFailSink": {},
+									"edctermFilterFailSink": {}
+								}
+							},
+							"staging": {},
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Set UPDATE_DATE",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set FileErrorDate",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "UPDATE_DATE",
+							"value": {
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'yyyy-MM-dd HH:mm:ss')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Insert B2K_MCRMRCH to SQL",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "FixLenghtProcessFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "B2K_MCRMRCH to SQL",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Insert B2K_EDCTERM to SQL",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "FixLenghtProcessFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "B2K_EDCTERM to SQL",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Insert B2K_EMSMRMST to SQL",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "FixLenghtProcessFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "B2K_EMSMRMST to SQL",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Set FileErrorDate",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "FileErrorDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Copy Import Merc Prof",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Set UPDATE_DATE",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "SELECT MID_L11 FROM SMC_IMPORT_MERCHANT_PROFILE",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ImportMerchantProfileSql",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "B2K_IMPORT_MERCHANT_PROFILE",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "ValidateDataFlow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Copy Import Merc Prof",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "B2K_ValidateDataFlow",
+								"type": "DataFlowReference",
+								"parameters": {
+									"UPDATE_DATE": {
+										"value": "'@{variables('UPDATE_DATE')}'",
+										"type": "Expression"
+									},
+									"FileErrorDate": {
+										"value": "'@{variables('FileErrorDate')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"mcrmrchFixedLength": {},
+									"mcrmrchFailSink": {},
+									"mcrmrchSink": {}
+								}
+							},
+							"staging": {},
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "ValidateData",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "ValidateDataFlow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "B2K_ValidateData",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"UPDATE_DATE": {
+						"type": "String"
+					},
+					"FileErrorDate": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_B2K"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-15T07:06:00Z"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/MPS Blob to DB')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -165,7 +939,9 @@
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/MPS_FixLenghtProcessDataFlow')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/SMC_MasterActivityPipeline')]",
@@ -1262,7 +2038,9 @@
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/SMC_MasterB2KPipeline_002')]",
@@ -1662,7 +2440,9 @@
 				"annotations": [],
 				"lastPublishTime": "2022-12-13T09:46:48Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/B2K Blob to DB')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/SMC_MasterMPSPipeline_001')]",

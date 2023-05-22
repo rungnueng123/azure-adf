@@ -1361,7 +1361,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/B2K_MCRMRCH_FILTER_ERROR')]",
+			"name": "[concat(parameters('factoryName'), '/B2K_MCRMRCH_DATA_ERROR_TEMP')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1378,7 +1378,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": {
-							"value": "@concat(\n    'B2K_MCRMRCH_FILTER_ERROR_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
+							"value": "@concat(\n    'B2K_MCRMRCH_DATA_ERROR_',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd'),\n    '.txt'\n)",
 							"type": "Expression"
 						},
 						"folderPath": {
@@ -1389,8 +1389,7 @@
 					},
 					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
+					"escapeChar": "\"",
 					"quoteChar": "\""
 				},
 				"schema": []
