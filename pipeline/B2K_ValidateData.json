@@ -193,13 +193,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "B2K_MCRMRCH_DATA_ERROR",
+						"referenceName": "B2K_MCRMRCH_DATA_ERROR_TEMP",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "B2K_MCRMRCH_DATA_ERROR",
+						"referenceName": "B2K_MCRMRCH_DATA_ERROR_TEMP",
 						"type": "DatasetReference"
 					}
 				]
