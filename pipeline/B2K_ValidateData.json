@@ -71,7 +71,7 @@
 										"typeProperties": {
 											"variableName": "dataArray",
 											"value": {
-												"value": "@item().prop_0",
+												"value": "@concat(\n    ' ',\n    item().prop_0\n)",
 												"type": "Expression"
 											}
 										}
