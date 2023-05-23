@@ -936,13 +936,20 @@
 									}
 								},
 								{
-									"name": "If Condition",
+									"name": "If Condition3",
 									"type": "IfCondition",
-									"dependsOn": [],
+									"dependsOn": [
+										{
+											"activity": "If Condition",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
 									"userProperties": [],
 									"typeProperties": {
 										"expression": {
-											"value": "@if(equals(trim(substring(string(item().prop_0),0,2)), ''),true,false)",
+											"value": "@if(equals(trim(substring(item().prop_0,11,1)), ''),false,true)",
 											"type": "Expression"
 										},
 										"ifFalseActivities": [
@@ -966,6 +973,48 @@
 												"typeProperties": {
 													"variableName": "emptyString",
 													"value": "  "
+												}
+											}
+										]
+									}
+								},
+								{
+									"name": "If Condition",
+									"type": "IfCondition",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@if(equals(string(length(item().prop_0)), '276'),true,false)",
+											"type": "Expression"
+										},
+										"ifFalseActivities": [
+											{
+												"name": "Append variable1_copy1_copy2",
+												"type": "AppendVariable",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"variableName": "dataArray",
+													"value": {
+														"value": "@concat(\n    item().prop_0,\n    '    '\n)",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"ifTrueActivities": [
+											{
+												"name": "Append variable1_copy1_copy1",
+												"type": "AppendVariable",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"variableName": "dataArray",
+													"value": {
+														"value": "@concat(\n    item().prop_0,\n    '   '\n)",
+														"type": "Expression"
+													}
 												}
 											}
 										]
@@ -999,7 +1048,7 @@
 						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "Set variable2",
+								"activity": "Set variable1",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1020,7 +1069,7 @@
 									{
 										"name": "data",
 										"value": {
-											"value": "@variables('dataString')",
+											"value": "@variables('dataStringTemp')",
 											"type": "Expression"
 										}
 									}
@@ -1091,7 +1140,7 @@
 							{
 								"activity": "Set variable1",
 								"dependencyConditions": [
-									"Succeeded"
+									"Failed"
 								]
 							}
 						],
@@ -9528,6 +9577,7 @@
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     limit: 200,",
 						"     ignoreNoFilesFound: false) ~> mcrmrchFixedLength",
 						"source(output(",
 						"          data as string",
