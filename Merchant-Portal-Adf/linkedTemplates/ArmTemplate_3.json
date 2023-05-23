@@ -647,7 +647,14 @@
 								{
 									"name": "If Condition1",
 									"type": "IfCondition",
-									"dependsOn": [],
+									"dependsOn": [
+										{
+											"activity": "If Condition",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
 									"userProperties": [],
 									"typeProperties": {
 										"expression": {
@@ -663,7 +670,7 @@
 												"typeProperties": {
 													"variableName": "dataArray",
 													"value": {
-														"value": "@concat(\n    ' ',\n    item().prop_0\n)",
+														"value": "@concat(\n    variables('emptyString'),\n    item().prop_0\n)",
 														"type": "Expression"
 													}
 												}
@@ -681,6 +688,42 @@
 														"value": "@concat(\n    ',',\n    item().prop_0\n)",
 														"type": "Expression"
 													}
+												}
+											}
+										]
+									}
+								},
+								{
+									"name": "If Condition",
+									"type": "IfCondition",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@if(equals(trim(substring(string(item().prop_0),0,2)), ''),true,false)",
+											"type": "Expression"
+										},
+										"ifFalseActivities": [
+											{
+												"name": "Set variable4",
+												"type": "SetVariable",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"variableName": "emptyString",
+													"value": " "
+												}
+											}
+										],
+										"ifTrueActivities": [
+											{
+												"name": "Set variable3",
+												"type": "SetVariable",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"variableName": "emptyString",
+													"value": "  "
 												}
 											}
 										]
@@ -832,6 +875,9 @@
 						"type": "String"
 					},
 					"dataStringTemp": {
+						"type": "String"
+					},
+					"emptyString": {
 						"type": "String"
 					}
 				},
