@@ -927,7 +927,7 @@
 												"typeProperties": {
 													"variableName": "dataArray",
 													"value": {
-														"value": "@concat(\n    ',',\n    item().prop_0\n)",
+														"value": "@concat(\n    '\u0001',\n    item().prop_0\n)",
 														"type": "Expression"
 													}
 												}
@@ -9296,7 +9296,7 @@
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> joinImpMercProf3",
 						"mcrmrchError derive(Key = toLong(1),",
-						"          data = split(data, ',')) ~> mcrmrchErrorDerived",
+						"          data = split(data, '\u0001')) ~> mcrmrchErrorDerived",
 						"mcrmrchErrorDerived aggregate(groupBy(Key),",
 						"     data = topN(data,Key,1)) ~> mcrmrchErrorAggregate",
 						"mcrmrchErrorAggregate foldDown(unroll(data),",
