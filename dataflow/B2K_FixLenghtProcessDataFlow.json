@@ -261,7 +261,7 @@
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> joinImpMercProf3",
 				"mcrmrchError derive(Key = toLong(1),",
-				"          data = split(data, ',')) ~> mcrmrchErrorDerived",
+				"          data = split(data, '\u0001')) ~> mcrmrchErrorDerived",
 				"mcrmrchErrorDerived aggregate(groupBy(Key),",
 				"     data = topN(data,Key,1)) ~> mcrmrchErrorAggregate",
 				"mcrmrchErrorAggregate foldDown(unroll(data),",
