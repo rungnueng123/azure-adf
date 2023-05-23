@@ -70,6 +70,7 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     limit: 200,",
 				"     ignoreNoFilesFound: false) ~> mcrmrchFixedLength",
 				"source(output(",
 				"          data as string",
