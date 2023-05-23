@@ -752,7 +752,8 @@
 							"sink": {
 								"type": "DelimitedTextSink",
 								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
+									"type": "AzureBlobStorageWriteSettings",
+									"copyBehavior": "MergeFiles"
 								},
 								"formatSettings": {
 									"type": "DelimitedTextWriteSettings",
@@ -792,7 +793,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "B2K_MCRMRCH_DATA_ERROR",
+								"referenceName": "B2K_MCRMRCH_DATA_ERROR_MAPPING_TEMP",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -2899,7 +2900,7 @@
 						},
 						{
 							"dataset": {
-								"referenceName": "B2K_MCRMRCH_DATA_ERROR",
+								"referenceName": "B2K_MCRMRCH_DATA_ERROR_MAPPING_TEMP",
 								"type": "DatasetReference"
 							},
 							"name": "mcrmrchError",
@@ -3292,13 +3293,6 @@
 								"type": "DatasetReference"
 							},
 							"name": "mcrmrchEmptySource"
-						},
-						{
-							"dataset": {
-								"referenceName": "B2K_MCRMRCH",
-								"type": "DatasetReference"
-							},
-							"name": "mcrmrchMappingSource"
 						}
 					],
 					"sinks": [
@@ -3323,13 +3317,6 @@
 								"type": "DatasetReference"
 							},
 							"name": "mcrmrchEmptySink"
-						},
-						{
-							"dataset": {
-								"referenceName": "B2K_MCRMRCH_DATA_ERROR_MAPPING_TEMP",
-								"type": "DatasetReference"
-							},
-							"name": "mcrmrchMappingSink1"
 						}
 					],
 					"transformations": [
@@ -3344,9 +3331,6 @@
 						},
 						{
 							"name": "mcrmrchEmptyDerived"
-						},
-						{
-							"name": "mcrmrchMappingDerived"
 						}
 					],
 					"scriptLines": [
@@ -3367,13 +3351,6 @@
 						"     validateSchema: false,",
 						"     limit: 1,",
 						"     ignoreNoFilesFound: false) ~> mcrmrchEmptySource",
-						"source(output(",
-						"          data as string",
-						"     ),",
-						"     allowSchemaDrift: false,",
-						"     validateSchema: false,",
-						"     limit: 1,",
-						"     ignoreNoFilesFound: false) ~> mcrmrchMappingSource",
 						"mcrmrchDataCheck@mcrmrchDataPass derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
 						"          ACCOUNT_ID = trim(substring(data, 310, 10)),",
 						"          TAX_ID = trim(substring(data, 988, 13)),",
@@ -3400,7 +3377,6 @@
 						"mcrmrchFixedLength split(length(data) == 1200,",
 						"     disjoint: false) ~> mcrmrchDataCheck@(mcrmrchDataPass, mcrmrchDataFail)",
 						"mcrmrchEmptySource derive(data = data) ~> mcrmrchEmptyDerived",
-						"mcrmrchMappingSource derive(data = data) ~> mcrmrchMappingDerived",
 						"mcrmrchDataCheck@mcrmrchDataFail sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     partitionFileNames:[(concat(\r",
@@ -3437,17 +3413,7 @@
 						"))],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> mcrmrchEmptySink",
-						"mcrmrchMappingDerived sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:[(concat(\r",
-						"    'B2K_MCRMRCH_DATA_ERROR_MAPPING_TEMP_',\r",
-						"    $FileErrorDate,\r",
-						"    '.txt'\r",
-						"))],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> mcrmrchMappingSink1"
+						"     partitionBy('hash', 1)) ~> mcrmrchEmptySink"
 					]
 				}
 			},

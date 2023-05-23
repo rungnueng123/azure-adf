@@ -842,11 +842,9 @@
 								"datasetParameters": {
 									"mcrmrchFixedLength": {},
 									"mcrmrchEmptySource": {},
-									"mcrmrchMappingSource": {},
 									"mcrmrchFailSink": {},
 									"mcrmrchSink": {},
-									"mcrmrchEmptySink": {},
-									"mcrmrchMappingSink1": {}
+									"mcrmrchEmptySink": {}
 								}
 							},
 							"staging": {},
