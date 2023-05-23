@@ -647,14 +647,7 @@
 								{
 									"name": "If Condition1",
 									"type": "IfCondition",
-									"dependsOn": [
-										{
-											"activity": "If Condition",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
+									"dependsOn": [],
 									"userProperties": [],
 									"typeProperties": {
 										"expression": {
@@ -670,7 +663,7 @@
 												"typeProperties": {
 													"variableName": "dataArray",
 													"value": {
-														"value": "@concat(\n    variables('emptyString'),\n    item().prop_0\n)",
+														"value": "@item().prop_0",
 														"type": "Expression"
 													}
 												}
@@ -685,49 +678,7 @@
 												"typeProperties": {
 													"variableName": "dataArray",
 													"value": {
-														"value": "@concat(\n    '\u0001',\n    item().prop_0\n)",
-														"type": "Expression"
-													}
-												}
-											}
-										]
-									}
-								},
-								{
-									"name": "If Condition",
-									"type": "IfCondition",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"expression": {
-											"value": "@if(equals(string(length(item().prop_0)), '276'),true,false)",
-											"type": "Expression"
-										},
-										"ifFalseActivities": [
-											{
-												"name": "Append variable1_copy1_copy2",
-												"type": "AppendVariable",
-												"dependsOn": [],
-												"userProperties": [],
-												"typeProperties": {
-													"variableName": "dataArray",
-													"value": {
-														"value": "@concat(\n    item().prop_0,\n    '     '\n)",
-														"type": "Expression"
-													}
-												}
-											}
-										],
-										"ifTrueActivities": [
-											{
-												"name": "Append variable1_copy1_copy1",
-												"type": "AppendVariable",
-												"dependsOn": [],
-												"userProperties": [],
-												"typeProperties": {
-													"variableName": "dataArray",
-													"value": {
-														"value": "@concat(\n    item().prop_0,\n    '    '\n)",
+														"value": "@concat(\n    '\u0001',\n    item().prop_0,\n    ' '\n)",
 														"type": "Expression"
 													}
 												}
@@ -763,7 +714,7 @@
 						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "Set variable1",
+								"activity": "Set variable2",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -784,7 +735,7 @@
 									{
 										"name": "data",
 										"value": {
-											"value": "@variables('dataStringTemp')",
+											"value": "@variables('dataString')",
 											"type": "Expression"
 										}
 									}
@@ -801,8 +752,7 @@
 							"sink": {
 								"type": "DelimitedTextSink",
 								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings",
-									"copyBehavior": "MergeFiles"
+									"type": "AzureBlobStorageWriteSettings"
 								},
 								"formatSettings": {
 									"type": "DelimitedTextWriteSettings",
@@ -855,7 +805,7 @@
 							{
 								"activity": "Set variable1",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
@@ -881,9 +831,6 @@
 						"type": "String"
 					},
 					"dataStringTemp": {
-						"type": "String"
-					},
-					"emptyString": {
 						"type": "String"
 					}
 				},
@@ -3395,7 +3342,6 @@
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     limit: 200,",
 						"     ignoreNoFilesFound: false) ~> mcrmrchFixedLength",
 						"source(output(",
 						"          data as string",
