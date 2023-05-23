@@ -160,7 +160,8 @@
 					"sink": {
 						"type": "DelimitedTextSink",
 						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
+							"type": "AzureBlobStorageWriteSettings",
+							"copyBehavior": "MergeFiles"
 						},
 						"formatSettings": {
 							"type": "DelimitedTextWriteSettings",
@@ -199,7 +200,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "B2K_MCRMRCH_DATA_ERROR",
+						"referenceName": "B2K_MCRMRCH_DATA_ERROR_MAPPING_TEMP",
 						"type": "DatasetReference"
 					}
 				]
