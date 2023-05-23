@@ -936,49 +936,6 @@
 									}
 								},
 								{
-									"name": "If Condition3",
-									"type": "IfCondition",
-									"dependsOn": [
-										{
-											"activity": "If Condition",
-											"dependencyConditions": [
-												"Failed"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"expression": {
-											"value": "@if(equals(trim(substring(item().prop_0,11,1)), ''),false,true)",
-											"type": "Expression"
-										},
-										"ifFalseActivities": [
-											{
-												"name": "Set variable4",
-												"type": "SetVariable",
-												"dependsOn": [],
-												"userProperties": [],
-												"typeProperties": {
-													"variableName": "emptyString",
-													"value": " "
-												}
-											}
-										],
-										"ifTrueActivities": [
-											{
-												"name": "Set variable3",
-												"type": "SetVariable",
-												"dependsOn": [],
-												"userProperties": [],
-												"typeProperties": {
-													"variableName": "emptyString",
-													"value": "  "
-												}
-											}
-										]
-									}
-								},
-								{
 									"name": "If Condition",
 									"type": "IfCondition",
 									"dependsOn": [],
@@ -997,7 +954,7 @@
 												"typeProperties": {
 													"variableName": "dataArray",
 													"value": {
-														"value": "@concat(\n    item().prop_0,\n    '    '\n)",
+														"value": "@concat(\n    item().prop_0,\n    '     '\n)",
 														"type": "Expression"
 													}
 												}
@@ -1012,7 +969,7 @@
 												"typeProperties": {
 													"variableName": "dataArray",
 													"value": {
-														"value": "@concat(\n    item().prop_0,\n    '   '\n)",
+														"value": "@concat(\n    item().prop_0,\n    '    '\n)",
 														"type": "Expression"
 													}
 												}
