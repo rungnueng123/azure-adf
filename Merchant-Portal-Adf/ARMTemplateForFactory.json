@@ -836,7 +836,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Lookup1",
+						"name": "Get MCRMRCH Data Fail",
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
@@ -872,7 +872,7 @@
 						"type": "ForEach",
 						"dependsOn": [
 							{
-								"activity": "Lookup1",
+								"activity": "Get MCRMRCH Data Fail",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -881,7 +881,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"items": {
-								"value": "@activity('Lookup1').output.value",
+								"value": "@activity('Get MCRMRCH Data Fail').output.value",
 								"type": "Expression"
 							},
 							"isSequential": true,
@@ -932,7 +932,7 @@
 						}
 					},
 					{
-						"name": "Set variable1",
+						"name": "Append Data",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -952,11 +952,11 @@
 						}
 					},
 					{
-						"name": "Copy data1",
+						"name": "MCRMRCH Data Mapping",
 						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "Set variable2",
+								"activity": "Replace Data",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1041,11 +1041,11 @@
 						]
 					},
 					{
-						"name": "Set variable2",
+						"name": "Replace Data",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Set variable1",
+								"activity": "Append Data",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -9208,9 +9208,9 @@
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> edctermOutputFixedLength",
 						"emsmrmstDataCheck@emsmrmstDataPass derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
-						"          EMAIL_1 = trim(substring(data, 24, 70)),",
-						"          EMAIL_2 = trim(substring(data, 94, 70)),",
-						"          EMAIL_3 = trim(substring(data, 164, 70)),",
+						"          EMAIL_1 = iif(equals(toString(length(trim(substring(data, 24, 70)))), '0'), ' ', trim(substring(data, 24, 70))),",
+						"          EMAIL_2 = iif(equals(toString(length(trim(substring(data, 94, 70)))), '0'), ' ', trim(substring(data, 94, 70))),",
+						"          EMAIL_3 = iif(equals(toString(length(trim(substring(data, 164, 70)))), '0'), ' ', trim(substring(data, 164, 70))),",
 						"          MID_L11 = trim(substring(data, 3, 11))) ~> emsmrmstColumn1",
 						"emsmrmstColumn1 select(mapColumn(",
 						"          data,",
