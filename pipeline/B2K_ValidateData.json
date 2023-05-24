@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Lookup1",
+				"name": "Get MCRMRCH Data Fail",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -38,7 +38,7 @@
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Lookup1",
+						"activity": "Get MCRMRCH Data Fail",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -98,7 +98,7 @@
 				}
 			},
 			{
-				"name": "Set variable1",
+				"name": "Append Data",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
@@ -118,11 +118,11 @@
 				}
 			},
 			{
-				"name": "Copy data1",
+				"name": "MCRMRCH Data Mapping",
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Set variable2",
+						"activity": "Replace Data",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -205,11 +205,11 @@
 				]
 			},
 			{
-				"name": "Set variable2",
+				"name": "Replace Data",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Set variable1",
+						"activity": "Append Data",
 						"dependencyConditions": [
 							"Succeeded"
 						]
