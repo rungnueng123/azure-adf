@@ -7,9 +7,10 @@
 				"location": "Southeast Asia",
 				"dataFlowProperties": {
 					"computeType": "General",
-					"coreCount": 8,
+					"coreCount": 16,
 					"timeToLive": 10,
-					"cleanup": false
+					"cleanup": false,
+					"customProperties": []
 				},
 				"pipelineExternalComputeScaleProperties": {
 					"timeToLive": 60
