@@ -22,20 +22,6 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataflow": {
-						"referenceName": "B2K_ValidateDataFlow_copy1",
-						"type": "DataFlowReference",
-						"parameters": {
-							"UPDATE_DATE": {
-								"value": "'@{variables('UPDATE_DATE')}'",
-								"type": "Expression"
-							},
-							"FileErrorDate": {
-								"value": "'@{variables('FileErrorDate')}'",
-								"type": "Expression"
-							}
-						}
-					},
 					"integrationRuntime": {
 						"referenceName": "AzureIR-ManagedVNet",
 						"type": "IntegrationRuntimeReference"
