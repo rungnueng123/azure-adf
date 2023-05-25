@@ -3287,150 +3287,109 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/B2K_ValidateDataFlow')]",
+			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG_FLOW')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "B2KMPS"
+					"name": "Log"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "B2K_MCRMRCH",
+								"referenceName": "B2K_EDCTERM",
 								"type": "DatasetReference"
 							},
-							"name": "mcrmrchFixedLength"
-						},
-						{
-							"dataset": {
-								"referenceName": "B2K_MCRMRCH",
-								"type": "DatasetReference"
-							},
-							"name": "mcrmrchEmptySource"
+							"name": "queryMERCHANTACTIVITYLOG"
 						}
 					],
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "B2K_MCRMRCH_DATA_ERROR",
+								"referenceName": "MERCHANT_ACTIVITY_LOG_OUTPUT",
 								"type": "DatasetReference"
 							},
-							"name": "mcrmrchFailSink"
-						},
-						{
-							"dataset": {
-								"referenceName": "B2K_MCRMRCH_OUTPUT_TEMP",
-								"type": "DatasetReference"
-							},
-							"name": "mcrmrchSink",
-							"description": "Export data to B2K_MCRMRCH_OUTPUT"
-						},
-						{
-							"dataset": {
-								"referenceName": "B2K_MCRMRCH_DATA_ERROR_TEMP",
-								"type": "DatasetReference"
-							},
-							"name": "mcrmrchEmptySink"
+							"name": "sink1"
 						}
 					],
 					"transformations": [
 						{
-							"name": "mcrmrchDerivedFixedLength"
-						},
-						{
-							"name": "mcrmrchOutputFixedLength"
-						},
-						{
-							"name": "mcrmrchDataCheck"
-						},
-						{
-							"name": "mcrmrchEmptyDerived"
+							"name": "select1"
 						}
 					],
 					"scriptLines": [
 						"parameters{",
-						"     UPDATE_DATE as string (toString(currentTimestamp())),",
-						"     FileErrorDate as string ('')",
+						"     schemaName as string ('dbo'),",
+						"     tableName as string ('MERCHANT_ACTIVITY_LOG'),",
+						"     startDate as string ('2021-12-15 00:00:00.000'),",
+						"     endDate as string ('2021-12-16 00:00:00.000'),",
+						"     columnName as string ('TRANSACTION_DATE'),",
+						"     fileName as string ('temp')",
 						"}",
 						"source(output(",
-						"          data as string",
+						"          ID as integer,",
+						"          TRANSACTION_DATE as timestamp,",
+						"          FUNCTION_CODE as string,",
+						"          LOG as string,",
+						"          LOG_TYPE as string,",
+						"          APPLICATION_NAME as string,",
+						"          EVENT as string,",
+						"          EVENT_TYPE as string,",
+						"          URL as string,",
+						"          MERCHANT_CENTER_ID as string,",
+						"          SOURCE_ADDRESS as string,",
+						"          SOURCE_HOSTNAME as string,",
+						"          SOURCE_USERNAME as string,",
+						"          SOURCE_OBJECT as string,",
+						"          DESTINATION_ADDRESS as string,",
+						"          DESTINATION_HOSTNAME as string,",
+						"          DESTINATION_USERNAME as string,",
+						"          DESTINATION_OBJECT as string,",
+						"          CHANGE_FROM as string,",
+						"          CHANGE_TO as string,",
+						"          SEARCH_CRITERIA as string,",
+						"          RESULT_STATUS as string,",
+						"          MESSAGE as string,",
+						"          UPDATE_PII_LOG_STATUS as string,",
+						"          UPDATE_PII_LOG_DATE as timestamp",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> mcrmrchFixedLength",
-						"source(output(",
-						"          data as string",
-						"     ),",
-						"     allowSchemaDrift: false,",
-						"     validateSchema: false,",
-						"     limit: 1,",
-						"     ignoreNoFilesFound: false) ~> mcrmrchEmptySource",
-						"mcrmrchDataCheck@mcrmrchDataPass derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
-						"          ACCOUNT_ID = trim(substring(data, 310, 10)),",
-						"          TAX_ID = trim(substring(data, 988, 13)),",
-						"          NAME_TH = trim(substring(data, 1029, 40)),",
-						"          NAME_EN = trim(substring(data, 23, 30)),",
-						"          ACTIVE_STATUS = case(or(substring(data, 210, 1) == '2', substring(data, 210, 1) == '5'), 'A', 'I'),",
-						"          UPDATE_DATE = $UPDATE_DATE,",
-						"          SOURCE = \"B2K\",",
-						"          MID_L11 = trim(substring(data, 3, 11))) ~> mcrmrchDerivedFixedLength",
-						"mcrmrchDerivedFixedLength select(mapColumn(",
-						"          data,",
-						"          BILLER_MERCHANT_ID,",
-						"          ACCOUNT_ID,",
-						"          TAX_ID,",
-						"          NAME_TH,",
-						"          NAME_EN,",
-						"          ACTIVE_STATUS,",
-						"          UPDATE_DATE,",
-						"          SOURCE,",
-						"          MID_L11",
+						"     ignoreNoFilesFound: false) ~> queryMERCHANTACTIVITYLOG",
+						"queryMERCHANTACTIVITYLOG select(mapColumn(",
+						"          TRANSACTION_DATE,",
+						"          FUNCTION_CODE,",
+						"          LOG,",
+						"          LOG_TYPE,",
+						"          APPLICATION_NAME,",
+						"          EVENT,",
+						"          EVENT_TYPE,",
+						"          URL,",
+						"          MERCHANT_CENTER_ID,",
+						"          SOURCE_ADDRESS,",
+						"          SOURCE_HOSTNAME,",
+						"          SOURCE_USERNAME,",
+						"          SOURCE_OBJECT,",
+						"          DESTINATION_ADDRESS,",
+						"          DESTINATION_HOSTNAME,",
+						"          DESTINATION_USERNAME,",
+						"          DESTINATION_OBJECT,",
+						"          CHANGE_FROM,",
+						"          CHANGE_TO,",
+						"          SEARCH_CRITERIA,",
+						"          RESULT_STATUS,",
+						"          MESSAGE",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> mcrmrchOutputFixedLength",
-						"mcrmrchFixedLength split(length(data) == 1200,",
-						"     disjoint: false) ~> mcrmrchDataCheck@(mcrmrchDataPass, mcrmrchDataFail)",
-						"mcrmrchEmptySource derive(data = data) ~> mcrmrchEmptyDerived",
-						"mcrmrchDataCheck@mcrmrchDataFail sink(allowSchemaDrift: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     partitionFileNames:[(concat(\r",
-						"    'B2K_MCRMRCH_DATA_ERROR_',\r",
-						"    $FileErrorDate,\r",
-						"    '.txt'\r",
-						"))],",
+						"     partitionFileNames:['\"{$fileName}\" + \".log\"'],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> mcrmrchFailSink",
-						"mcrmrchOutputFixedLength sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:['B2K_MCRMRCH_OUTPUT_TEMP.txt'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          BILLER_MERCHANT_ID,",
-						"          ACCOUNT_ID,",
-						"          TAX_ID,",
-						"          NAME_TH,",
-						"          NAME_EN,",
-						"          ACTIVE_STATUS,",
-						"          UPDATE_DATE,",
-						"          SOURCE,",
-						"          MID_L11",
-						"     ),",
-						"     partitionBy('hash', 1)) ~> mcrmrchSink",
-						"mcrmrchEmptyDerived sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:[(concat(\r",
-						"    'B2K_MCRMRCH_DATA_ERROR_TEMP_',\r",
-						"    $FileErrorDate,\r",
-						"    '.txt'\r",
-						"))],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> mcrmrchEmptySink"
+						"     partitionBy('hash', 1)) ~> sink1"
 					]
 				}
 			},
