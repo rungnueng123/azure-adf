@@ -3105,7 +3105,7 @@
 						"     disjoint: false) ~> edctermDataCheck@(edctermDataPass, edctermDataFail)",
 						"emsmrmstFixedLength split(length(data) >= 234,",
 						"     disjoint: false) ~> emsmrmstDataCheck@(emsmrmstDataPass, emsmrmstDatafail)",
-						"edctermOutputFixedLength split(length(MERCHANT_ID) > 0 && length(Terminal_ID) > 0 && length(Terminal_Name_EN) > 0 && length(Terminal_Name_TH) > 0,",
+						"edctermOutputFixedLength split(length(MERCHANT_ID) > 0 && length(Terminal_ID) > 0,",
 						"     disjoint: false) ~> edctermFilterCheck@(edctermFilterPass, edctermFilterFail)",
 						"filterSequenceKey, importMerchantProfile join(mcrmrchFilterCheck@mcrmrchFilterPass@MID_L11 == importMerchantProfile@MID_L11,",
 						"     joinType:'inner',",
