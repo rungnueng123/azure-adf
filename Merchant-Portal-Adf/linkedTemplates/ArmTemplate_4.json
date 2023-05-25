@@ -13,6 +13,204 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/B2K_ValidateDataFlow_copy1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "B2KMPS"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "B2K_MCRMRCH",
+								"type": "DatasetReference"
+							},
+							"name": "mcrmrchFixedLength"
+						},
+						{
+							"dataset": {
+								"referenceName": "B2K_MCRMRCH",
+								"type": "DatasetReference"
+							},
+							"name": "mcrmrchEmptySource"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "B2K_MCRMRCH_DATA_ERROR",
+								"type": "DatasetReference"
+							},
+							"name": "mcrmrchFailSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "B2K_MCRMRCH_OUTPUT_TEMP",
+								"type": "DatasetReference"
+							},
+							"name": "mcrmrchSink",
+							"description": "Export data to B2K_MCRMRCH_OUTPUT"
+						},
+						{
+							"dataset": {
+								"referenceName": "B2K_MCRMRCH_DATA_ERROR_TEMP",
+								"type": "DatasetReference"
+							},
+							"name": "mcrmrchEmptySink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "mcrmrchDerivedFixedLength"
+						},
+						{
+							"name": "mcrmrchOutputFixedLength"
+						},
+						{
+							"name": "mcrmrchDataCheck"
+						},
+						{
+							"name": "mcrmrchEmptyDerived"
+						},
+						{
+							"name": "mcrmrchFailDerived"
+						},
+						{
+							"name": "mcrmrchFailAggregate"
+						},
+						{
+							"name": "mcrmrchFailDerived2"
+						},
+						{
+							"name": "mcrmrchFailAggregate2"
+						},
+						{
+							"name": "mcrmrchErrorFlatten"
+						},
+						{
+							"name": "mcrmrchErrorFlatten2"
+						},
+						{
+							"name": "mcrmrchErrorSelect"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     UPDATE_DATE as string (toString(currentTimestamp())),",
+						"     FileErrorDate as string ('')",
+						"}",
+						"source(output(",
+						"          data as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> mcrmrchFixedLength",
+						"source(output(",
+						"          data as string",
+						"     ),",
+						"     allowSchemaDrift: false,",
+						"     validateSchema: false,",
+						"     limit: 1,",
+						"     ignoreNoFilesFound: false) ~> mcrmrchEmptySource",
+						"mcrmrchDataCheck@mcrmrchDataPass derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
+						"          ACCOUNT_ID = trim(substring(data, 310, 10)),",
+						"          TAX_ID = trim(substring(data, 988, 13)),",
+						"          NAME_TH = trim(substring(data, 1029, 40)),",
+						"          NAME_EN = trim(substring(data, 23, 30)),",
+						"          ACTIVE_STATUS = case(or(substring(data, 210, 1) == '2', substring(data, 210, 1) == '5'), 'A', 'I'),",
+						"          UPDATE_DATE = $UPDATE_DATE,",
+						"          SOURCE = \"B2K\",",
+						"          MID_L11 = trim(substring(data, 3, 11))) ~> mcrmrchDerivedFixedLength",
+						"mcrmrchDerivedFixedLength select(mapColumn(",
+						"          data,",
+						"          BILLER_MERCHANT_ID,",
+						"          ACCOUNT_ID,",
+						"          TAX_ID,",
+						"          NAME_TH,",
+						"          NAME_EN,",
+						"          ACTIVE_STATUS,",
+						"          UPDATE_DATE,",
+						"          SOURCE,",
+						"          MID_L11",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> mcrmrchOutputFixedLength",
+						"mcrmrchFixedLength split(length(data) == 1200,",
+						"     disjoint: false) ~> mcrmrchDataCheck@(mcrmrchDataPass, mcrmrchDataFail)",
+						"mcrmrchEmptySource derive(data = data) ~> mcrmrchEmptyDerived",
+						"mcrmrchDataCheck@mcrmrchDataFail derive(Key = toLong(1),",
+						"          data = data) ~> mcrmrchFailDerived",
+						"mcrmrchFailDerived aggregate(groupBy(Key),",
+						"     data = collect(data)) ~> mcrmrchFailAggregate",
+						"mcrmrchFailAggregate derive(data = split(replace(replace(replace(replace(toString(data),'\",\"01','\u000101'),'\",\"',' '),'[\"',''),'\"]',''), '\u0001'),",
+						"     partitionBy('hash', 1)) ~> mcrmrchFailDerived2",
+						"mcrmrchFailDerived2 aggregate(groupBy(Key),",
+						"     data = topN(data,Key,1)) ~> mcrmrchFailAggregate2",
+						"mcrmrchFailAggregate2 foldDown(unroll(data),",
+						"     mapColumn(",
+						"          Key,",
+						"          data = data.value",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> mcrmrchErrorFlatten",
+						"mcrmrchErrorFlatten foldDown(unroll(data),",
+						"     mapColumn(",
+						"          Key,",
+						"          data",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> mcrmrchErrorFlatten2",
+						"mcrmrchErrorFlatten2 select(mapColumn(",
+						"          data",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> mcrmrchErrorSelect",
+						"mcrmrchErrorSelect sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(concat(\r",
+						"    'B2K_MCRMRCH_DATA_ERROR_',\r",
+						"    $FileErrorDate,\r",
+						"    '.txt'\r",
+						"))],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> mcrmrchFailSink",
+						"mcrmrchOutputFixedLength sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['B2K_MCRMRCH_OUTPUT_TEMP.txt'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          BILLER_MERCHANT_ID,",
+						"          ACCOUNT_ID,",
+						"          TAX_ID,",
+						"          NAME_TH,",
+						"          NAME_EN,",
+						"          ACTIVE_STATUS,",
+						"          UPDATE_DATE,",
+						"          SOURCE,",
+						"          MID_L11",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> mcrmrchSink",
+						"mcrmrchEmptyDerived sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(concat(\r",
+						"    'B2K_MCRMRCH_DATA_ERROR_TEMP_',\r",
+						"    $FileErrorDate,\r",
+						"    '.txt'\r",
+						"))],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> mcrmrchEmptySink"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG_FLOW')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -597,7 +795,7 @@
 						"type": "ExecuteDataFlow",
 						"dependsOn": [
 							{
-								"activity": "ValidateData",
+								"activity": "Copy Import Merc Prof",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -630,7 +828,6 @@
 									"edctermFixedLength": {},
 									"emsmrmstFixedLength": {},
 									"importMerchantProfile": {},
-									"mcrmrchError": {},
 									"mcrmrchSink": {},
 									"edctermSink": {},
 									"emsmrmstSink": {},
@@ -811,9 +1008,9 @@
 						"type": "ExecuteDataFlow",
 						"dependsOn": [
 							{
-								"activity": "Copy Import Merc Prof",
+								"activity": "Set UPDATE_DATE",
 								"dependencyConditions": [
-									"Succeeded"
+									"Failed"
 								]
 							}
 						],
@@ -862,7 +1059,7 @@
 							{
 								"activity": "ValidateDataFlow",
 								"dependencyConditions": [
-									"Succeeded"
+									"Failed"
 								]
 							}
 						],
@@ -1488,6 +1685,113 @@
 				"annotations": []
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Set UPDATE_DATE",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "B2K_ValidateDataFlow_copy1",
+								"type": "DataFlowReference",
+								"parameters": {
+									"UPDATE_DATE": {
+										"value": "'@{variables('UPDATE_DATE')}'",
+										"type": "Expression"
+									},
+									"FileErrorDate": {
+										"value": "'@{variables('FileErrorDate')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"mcrmrchFixedLength": {},
+									"mcrmrchEmptySource": {},
+									"mcrmrchFailSink": {},
+									"mcrmrchSink": {},
+									"mcrmrchEmptySink": {}
+								}
+							},
+							"staging": {},
+							"integrationRuntime": {
+								"referenceName": "AzureIR-ManagedVNet",
+								"type": "IntegrationRuntimeReference"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Set UPDATE_DATE",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set FileErrorDate",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "UPDATE_DATE",
+							"value": {
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'yyyy-MM-dd HH:mm:ss')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set FileErrorDate",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "FileErrorDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyyMMdd')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"FileErrorDate": {
+						"type": "String"
+					},
+					"UPDATE_DATE": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/B2K_ValidateDataFlow_copy1')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/triggerKafKaLog_1')]",

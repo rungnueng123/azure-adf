@@ -1352,7 +1352,6 @@
 						"container": "file-upload"
 					},
 					"columnDelimiter": "\u0001",
-					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"quoteChar": "\""
 				},
