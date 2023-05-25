@@ -9,7 +9,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "B2K_MCRMRCH_OUTPUT_TEMP",
+						"referenceName": "B2K_MCRMRCH",
 						"type": "DatasetReference"
 					},
 					"name": "mcrmrchFixedLength"
@@ -34,14 +34,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "importMerchantProfile"
-				},
-				{
-					"dataset": {
-						"referenceName": "B2K_MCRMRCH_DATA_ERROR_MAPPING_TEMP",
-						"type": "DatasetReference"
-					},
-					"name": "mcrmrchError",
-					"description": "Import data from B2K_MCRMRCH_DATA_ERROR_TEMP"
 				}
 			],
 			"sinks": [
@@ -136,10 +128,19 @@
 					"name": "joinImpMercProf3"
 				},
 				{
-					"name": "mcrmrchErrorDerived"
+					"name": "mcrmrchDataCheck"
 				},
 				{
-					"name": "mcrmrchErrorAggregate"
+					"name": "mcrmrchFailDerived"
+				},
+				{
+					"name": "mcrmrchFailAggregate"
+				},
+				{
+					"name": "mcrmrchFailDerived2"
+				},
+				{
+					"name": "mcrmrchFailAggregate2"
 				},
 				{
 					"name": "mcrmrchErrorFlatten"
@@ -148,13 +149,16 @@
 					"name": "mcrmrchErrorFlatten2"
 				},
 				{
-					"name": "mcrmrchErrorColumn"
-				},
-				{
 					"name": "mcrmrchErrorSelect"
 				},
 				{
-					"name": "mcrmrchUnion"
+					"name": "mcrmrchErrorDerivedFixedLength"
+				},
+				{
+					"name": "mcrmrchDerivedFixedLength"
+				},
+				{
+					"name": "union1"
 				}
 			],
 			"scriptLines": [
@@ -163,15 +167,7 @@
 				"     FileErrorDate as string ('')",
 				"}",
 				"source(output(",
-				"          BILLER_MERCHANT_ID as string,",
-				"          ACCOUNT_ID as string,",
-				"          TAX_ID as string,",
-				"          NAME_TH as string,",
-				"          NAME_EN as string,",
-				"          ACTIVE_STATUS as string,",
-				"          UPDATE_DATE as string,",
-				"          SOURCE as string,",
-				"          MID_L11 as string",
+				"          data as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -194,13 +190,6 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> importMerchantProfile",
-				"source(output(",
-				"          data as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
-				"     partitionBy('hash', 1)) ~> mcrmrchError",
 				"edctermDataCheck@edctermDataPass derive(MERCHANT_ID = trim(substring(data, 11, 16)),",
 				"          Terminal_ID = trim(substring(data, 1, 8)),",
 				"          Terminal_Name_EN = iif(equals(toString(length(trim(substring(data, 30, 30)))), '0'), ' ', trim(substring(data, 30, 30))),",
@@ -237,7 +226,7 @@
 				"     skipDuplicateMapOutputs: true) ~> emsmrmstOutputFixedLength",
 				"mcrmrchFilterCheck@mcrmrchFilterPass filter(BILLER_MERCHANT_ID != '' && ACCOUNT_ID != '' && TAX_ID != '' && NAME_TH != '' && NAME_EN != '') ~> filterSequenceKey",
 				"edctermFilterCheck@edctermFilterPass filter(MERCHANT_ID != '' && Terminal_ID != '' && Terminal_Name_EN != '' && Terminal_Name_TH != '') ~> filterSequence",
-				"mcrmrchUnion split(length(BILLER_MERCHANT_ID) > 0 && length(ACCOUNT_ID) > 0 && length(TAX_ID) > 0 && length(NAME_TH) > 0 && length(NAME_EN) > 0,",
+				"union1 split(length(BILLER_MERCHANT_ID) > 0 && length(ACCOUNT_ID) > 0 && length(TAX_ID) > 0 && length(NAME_TH) > 0 && length(NAME_EN) > 0,",
 				"     disjoint: false) ~> mcrmrchFilterCheck@(mcrmrchFilterPass, mcrmrchFilterFail)",
 				"edctermFixedLength split(length(data) == 450,",
 				"     disjoint: false) ~> edctermDataCheck@(edctermDataPass, edctermDataFail)",
@@ -260,11 +249,16 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> joinImpMercProf3",
-				"mcrmrchError derive(Key = toLong(1),",
-				"          data = split(data, '\u0001')) ~> mcrmrchErrorDerived",
-				"mcrmrchErrorDerived aggregate(groupBy(Key),",
-				"     data = topN(data,Key,1)) ~> mcrmrchErrorAggregate",
-				"mcrmrchErrorAggregate foldDown(unroll(data),",
+				"mcrmrchFixedLength split(length(data) == 1200,",
+				"     disjoint: false) ~> mcrmrchDataCheck@(mcrmrchDataPass, mcrmrchDataFail)",
+				"mcrmrchDataCheck@mcrmrchDataFail derive(Key = toLong(1),",
+				"          data = data) ~> mcrmrchFailDerived",
+				"mcrmrchFailDerived aggregate(groupBy(Key),",
+				"     data = collect(data)) ~> mcrmrchFailAggregate",
+				"mcrmrchFailAggregate derive(data = split(replace(replace(replace(replace(toString(data),'\",\"01','\u000101'),'\",\"',' '),'[\"',''),'\"]',''), '\u0001')) ~> mcrmrchFailDerived2",
+				"mcrmrchFailDerived2 aggregate(groupBy(Key),",
+				"     data = topN(data,Key,1)) ~> mcrmrchFailAggregate2",
+				"mcrmrchFailAggregate2 foldDown(unroll(data),",
 				"     mapColumn(",
 				"          Key,",
 				"          data = data.value",
@@ -278,7 +272,12 @@
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> mcrmrchErrorFlatten2",
-				"mcrmrchErrorFlatten2 derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
+				"mcrmrchErrorFlatten2 select(mapColumn(",
+				"          data",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> mcrmrchErrorSelect",
+				"mcrmrchErrorSelect derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
 				"          ACCOUNT_ID = trim(substring(data, 310, 10)),",
 				"          TAX_ID = trim(substring(data, 988, 13)),",
 				"          NAME_TH = trim(substring(data, 1029, 40)),",
@@ -286,21 +285,17 @@
 				"          ACTIVE_STATUS = case(or(substring(data, 210, 1) == '2', substring(data, 210, 1) == '5'), 'A', 'I'),",
 				"          UPDATE_DATE = $UPDATE_DATE,",
 				"          SOURCE = \"B2K\",",
-				"          MID_L11 = trim(substring(data, 3, 11))) ~> mcrmrchErrorColumn",
-				"mcrmrchErrorColumn select(mapColumn(",
-				"          BILLER_MERCHANT_ID,",
-				"          ACCOUNT_ID,",
-				"          TAX_ID,",
-				"          NAME_TH,",
-				"          NAME_EN,",
-				"          ACTIVE_STATUS,",
-				"          UPDATE_DATE,",
-				"          SOURCE,",
-				"          MID_L11",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> mcrmrchErrorSelect",
-				"mcrmrchFixedLength, mcrmrchErrorSelect union(byName: true)~> mcrmrchUnion",
+				"          MID_L11 = trim(substring(data, 3, 11))) ~> mcrmrchErrorDerivedFixedLength",
+				"mcrmrchDataCheck@mcrmrchDataPass derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
+				"          ACCOUNT_ID = trim(substring(data, 310, 10)),",
+				"          TAX_ID = trim(substring(data, 988, 13)),",
+				"          NAME_TH = trim(substring(data, 1029, 40)),",
+				"          NAME_EN = trim(substring(data, 23, 30)),",
+				"          ACTIVE_STATUS = case(or(substring(data, 210, 1) == '2', substring(data, 210, 1) == '5'), 'A', 'I'),",
+				"          UPDATE_DATE = $UPDATE_DATE,",
+				"          SOURCE = \"B2K\",",
+				"          MID_L11 = trim(substring(data, 3, 11))) ~> mcrmrchDerivedFixedLength",
+				"mcrmrchDerivedFixedLength, mcrmrchErrorDerivedFixedLength union(byName: true)~> union1",
 				"joinImpMercProf1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['B2K_MCRMRCH_TEMP.txt'],",

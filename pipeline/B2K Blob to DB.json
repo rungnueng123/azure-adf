@@ -7,7 +7,7 @@
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
-						"activity": "ValidateData",
+						"activity": "Copy Import Merc Prof",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -201,9 +201,9 @@
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
-						"activity": "Copy Import Merc Prof",
+						"activity": "Set UPDATE_DATE",
 						"dependencyConditions": [
-							"Succeeded"
+							"Failed"
 						]
 					}
 				],
@@ -244,7 +244,7 @@
 					{
 						"activity": "ValidateDataFlow",
 						"dependencyConditions": [
-							"Succeeded"
+							"Failed"
 						]
 					}
 				],
