@@ -2578,13 +2578,6 @@
 								"type": "DatasetReference"
 							},
 							"name": "edctermFilterFailSink"
-						},
-						{
-							"dataset": {
-								"referenceName": "B2K_MCRMRCH_DATA_ERROR",
-								"type": "DatasetReference"
-							},
-							"name": "mcrmrchErrorSink"
 						}
 					],
 					"transformations": [
@@ -2895,23 +2888,7 @@
 						"          UPDATE_DATE,",
 						"          ACTIVE_STATUS",
 						"     ),",
-						"     partitionBy('hash', 1)) ~> edctermFilterFailSink",
-						"mcrmrchErrorDerivedFixedLength sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          BILLER_MERCHANT_ID,",
-						"          ACCOUNT_ID,",
-						"          TAX_ID,",
-						"          NAME_TH,",
-						"          NAME_EN,",
-						"          ACTIVE_STATUS,",
-						"          UPDATE_DATE,",
-						"          SOURCE,",
-						"          MID_L11",
-						"     ),",
-						"     partitionBy('hash', 1)) ~> mcrmrchErrorSink"
+						"     partitionBy('hash', 1)) ~> edctermFilterFailSink"
 					]
 				}
 			},
@@ -3541,8 +3518,7 @@
 									"mcrmrchFilterFailSink": {},
 									"edctermFailSink": {},
 									"emsmrmstFailSink": {},
-									"edctermFilterFailSink": {},
-									"mcrmrchErrorSink": {}
+									"edctermFilterFailSink": {}
 								}
 							},
 							"staging": {},
