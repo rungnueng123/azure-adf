@@ -1,0 +1,12 @@
+{
+	"name": "RestService1",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://65836a4b-0fa0-43e5-9729-2dade7dc1ec0.ods.opinsights.azure.com/api/logs?api-version=2016-04-01",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
