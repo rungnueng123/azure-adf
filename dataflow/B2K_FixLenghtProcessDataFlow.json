@@ -159,6 +159,9 @@
 				},
 				{
 					"name": "union1"
+				},
+				{
+					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -277,15 +280,17 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> mcrmrchErrorSelect",
-				"mcrmrchErrorSelect derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
-				"          ACCOUNT_ID = trim(substring(data, 310, 10)),",
-				"          TAX_ID = trim(substring(data, 988, 13)),",
-				"          NAME_TH = trim(substring(data, 1029, 40)),",
+				"derivedColumn1 derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
+				"          ACCOUNT_ID = trim(substring(data, toInteger(minus(310, diffLength)), 10)),",
+				"          TAX_ID = trim(substring(data, toInteger(minus(988, diffLength)), 13)),",
+				"          NAME_TH = trim(substring(data, toInteger(minus(1029, diffLength)), 40)),",
 				"          NAME_EN = trim(substring(data, 23, 30)),",
 				"          ACTIVE_STATUS = case(or(substring(data, 210, 1) == '2', substring(data, 210, 1) == '5'), 'A', 'I'),",
 				"          UPDATE_DATE = $UPDATE_DATE,",
 				"          SOURCE = \"B2K\",",
-				"          MID_L11 = trim(substring(data, 3, 11))) ~> mcrmrchErrorDerivedFixedLength",
+				"          MID_L11 = trim(substring(data, 3, 11)),",
+				"          column1 = diffLength,",
+				"          column2 = toInteger(minus(310, diffLength))) ~> mcrmrchErrorDerivedFixedLength",
 				"mcrmrchDataCheck@mcrmrchDataPass derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
 				"          ACCOUNT_ID = trim(substring(data, 310, 10)),",
 				"          TAX_ID = trim(substring(data, 988, 13)),",
@@ -296,6 +301,8 @@
 				"          SOURCE = \"B2K\",",
 				"          MID_L11 = trim(substring(data, 3, 11))) ~> mcrmrchDerivedFixedLength",
 				"mcrmrchDerivedFixedLength, mcrmrchErrorDerivedFixedLength union(byName: true)~> union1",
+				"mcrmrchErrorSelect derive(data = data,",
+				"          diffLength = toInteger(minus(1200,length(data)))) ~> derivedColumn1",
 				"joinImpMercProf1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['B2K_MCRMRCH_TEMP.txt'],",
