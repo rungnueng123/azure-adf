@@ -85,13 +85,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "edctermFilterFailSink"
-				},
-				{
-					"dataset": {
-						"referenceName": "B2K_MCRMRCH_DATA_ERROR",
-						"type": "DatasetReference"
-					},
-					"name": "sink1"
 				}
 			],
 			"transformations": [
@@ -307,9 +300,7 @@
 				"          MID_L11 = trim(substring(data, 3, 11))) ~> mcrmrchDerivedFixedLength",
 				"mcrmrchDerivedFixedLength, mcrmrchErrorDerivedFixedLength union(byName: true)~> union1",
 				"mcrmrchErrorSelect derive(data = data,",
-				"          diffLength = iif(length(trim(substring(data, 305, 15))) == 15, 0, iif(length(trim(substring(data, 305, 1))) == 1, -minus(15, length(trim(substring(data, 305, 15)))), minus(15, length(trim(substring(data, 305, 15)))))),",
-				"          column1 = length(data),",
-				"          column2 = substring(data, 305, 15)) ~> derivedColumn1",
+				"          diffLength = iif(length(trim(substring(data, 305, 15))) == 15, 0, iif(length(trim(substring(data, 305, 1))) == 1, -minus(15, length(trim(substring(data, 305, 15)))), minus(15, length(trim(substring(data, 305, 15))))))) ~> derivedColumn1",
 				"joinImpMercProf1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['B2K_MCRMRCH_TEMP.txt'],",
@@ -409,13 +400,7 @@
 				"          UPDATE_DATE,",
 				"          ACTIVE_STATUS",
 				"     ),",
-				"     partitionBy('hash', 1)) ~> edctermFilterFailSink",
-				"mcrmrchErrorSelect sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     partitionFileNames:['test.txt'],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink1"
+				"     partitionBy('hash', 1)) ~> edctermFilterFailSink"
 			]
 		}
 	}
