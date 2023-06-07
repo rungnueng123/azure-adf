@@ -115,7 +115,8 @@
 									"mcrmrchFilterFailSink": {},
 									"edctermFailSink": {},
 									"emsmrmstFailSink": {},
-									"edctermFilterFailSink": {}
+									"edctermFilterFailSink": {},
+									"sink1": {}
 								}
 							},
 							"staging": {},
@@ -6612,6 +6613,7 @@
 						"container": "file-upload"
 					},
 					"columnDelimiter": "\u0001",
+					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"quoteChar": "\""
 				},
@@ -8630,6 +8632,13 @@
 								"type": "DatasetReference"
 							},
 							"name": "edctermFilterFailSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "B2K_MCRMRCH_DATA_ERROR",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
 						}
 					],
 					"transformations": [
@@ -8826,7 +8835,7 @@
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> mcrmrchErrorSelect",
 						"derivedColumn1 derive(BILLER_MERCHANT_ID = trim(substring(data, 3, 16)),",
-						"          ACCOUNT_ID = trim(substring(data, 310, 10)),",
+						"          ACCOUNT_ID = trim(substring(data, add(310,diffLength), 10)),",
 						"          TAX_ID = trim(substring(data, 988, 13)),",
 						"          NAME_TH = trim(substring(data, 1029, 40)),",
 						"          NAME_EN = trim(substring(data, 23, 30)),",
@@ -8845,8 +8854,9 @@
 						"          MID_L11 = trim(substring(data, 3, 11))) ~> mcrmrchDerivedFixedLength",
 						"mcrmrchDerivedFixedLength, mcrmrchErrorDerivedFixedLength union(byName: true)~> union1",
 						"mcrmrchErrorSelect derive(data = data,",
-						"          diffLength = iif(length(trim(substring(data, toInteger(minus(310, toInteger(minus(1200,length(data))))), 10))) != 10,toInteger(minus(1200,toInteger(minus(length(data), 1)))),toInteger(minus(1200,length(data)))),",
-						"          column1 = length(data)) ~> derivedColumn1",
+						"          diffLength = iif(length(trim(substring(data, 305, 15))) == 15, 0, iif(length(trim(substring(data, 305, 1))) == 1, -minus(15, length(trim(substring(data, 305, 15)))), minus(15, length(trim(substring(data, 305, 15)))))),",
+						"          column1 = length(data),",
+						"          column2 = substring(data, 305, 15)) ~> derivedColumn1",
 						"joinImpMercProf1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     partitionFileNames:['B2K_MCRMRCH_TEMP.txt'],",
@@ -8946,7 +8956,13 @@
 						"          UPDATE_DATE,",
 						"          ACTIVE_STATUS",
 						"     ),",
-						"     partitionBy('hash', 1)) ~> edctermFilterFailSink"
+						"     partitionBy('hash', 1)) ~> edctermFilterFailSink",
+						"mcrmrchErrorSelect sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['test.txt'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink1"
 					]
 				}
 			},
@@ -8961,7 +8977,8 @@
 				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH_FILTER_ERROR')]",
 				"[concat(variables('factoryId'), '/datasets/B2K_EDCTERM_DATA_ERROR')]",
 				"[concat(variables('factoryId'), '/datasets/B2K_EMSMRMST_DATA_ERROR')]",
-				"[concat(variables('factoryId'), '/datasets/B2K_EDCTERM_FILTER_ERROR')]"
+				"[concat(variables('factoryId'), '/datasets/B2K_EDCTERM_FILTER_ERROR')]",
+				"[concat(variables('factoryId'), '/datasets/B2K_MCRMRCH_DATA_ERROR')]"
 			]
 		},
 		{
