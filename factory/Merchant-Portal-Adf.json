@@ -3,7 +3,7 @@
 	"properties": {
 		"globalConfigurations": {
 			"PipelineBillingEnabled": "false",
-			"PolicyValidationEnabled": "true"
+			"PolicyValidationEnabled": "false"
 		}
 	},
 	"location": "southeastasia",
