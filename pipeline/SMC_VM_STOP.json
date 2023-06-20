@@ -66,6 +66,10 @@
 									"type": "Expression"
 								},
 								"method": "POST",
+								"body": {
+									"value": "{}",
+									"type": "Expression"
+								},
 								"authentication": {
 									"resource": "https://management.azure.com/",
 									"credential": {
