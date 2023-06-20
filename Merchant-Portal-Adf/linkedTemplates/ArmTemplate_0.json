@@ -39,10 +39,6 @@
 		"az_function_piilog_properties_groupId": {
 			"type": "string",
 			"defaultValue": "sites"
-		},
-		"B2Kblob_properties_typeProperties_serviceEndpoint": {
-			"type": "string",
-			"defaultValue": "https://merchantportalblob.blob.core.windows.net/"
 		}
 	},
 	"variables": {
@@ -77,6 +73,256 @@
 			"apiVersion": "2018-06-01",
 			"properties": {},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SMC_VM_START')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Check VM Status",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.01:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@concat('https://management.azure.com/subscriptions/',variables('SubscriptionId'),'/resourceGroups/',variables('ResourceGroupName'),'/providers/Microsoft.Compute/virtualMachines/',variables('VMName'),'/InstanceView?api-version=2020-12-01')",
+								"type": "Expression"
+							},
+							"method": "GET",
+							"headers": {},
+							"authentication": {
+								"resource": "https://management.azure.com",
+								"credential": {
+									"referenceName": "AzureManageIdentity",
+									"type": "CredentialReference"
+								},
+								"type": "UserAssignedManagedIdentity"
+							}
+						}
+					},
+					{
+						"name": "If Condition1",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Check VM Status",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(activity('Check VM Status').output.statuses[1].displayStatus, 'VM deallocated')",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Start VM",
+									"type": "WebActivity",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"url": {
+											"value": "@concat('https://management.azure.com/subscriptions/',variables('SubscriptionId'),'/resourceGroups/',variables('ResourceGroupName'),'/providers/Microsoft.Compute/virtualMachines/',variables('VMName'),'/',variables('Command'),'?api-version=2020-12-01')",
+											"type": "Expression"
+										},
+										"method": "POST",
+										"headers": {},
+										"body": {
+											"value": "{}",
+											"type": "Expression"
+										},
+										"authentication": {
+											"resource": "https://management.azure.com/",
+											"credential": {
+												"referenceName": "AzureManageIdentity",
+												"type": "CredentialReference"
+											},
+											"type": "UserAssignedManagedIdentity"
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"SubscriptionId": {
+						"type": "String",
+						"defaultValue": "fc603cd3-a62b-4072-9917-973c6cc4e0bf"
+					},
+					"ResourceGroupName": {
+						"type": "String",
+						"defaultValue": "HFY-Merchant-Portal"
+					},
+					"Region": {
+						"type": "String",
+						"defaultValue": "Southeast Asia"
+					},
+					"VMName": {
+						"type": "String",
+						"defaultValue": "vmshir"
+					},
+					"Command": {
+						"type": "String",
+						"defaultValue": "Start"
+					}
+				},
+				"folder": {
+					"name": "SMC_VM"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SMC_VM_STOP')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Check VM Status",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.01:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@concat('https://management.azure.com/subscriptions/',variables('SubscriptionId'),'/resourceGroups/',variables('ResourceGroupName'),'/providers/Microsoft.Compute/virtualMachines/',variables('VMName'),'/InstanceView?api-version=2020-12-01')",
+								"type": "Expression"
+							},
+							"method": "GET",
+							"headers": {},
+							"authentication": {
+								"resource": "https://management.azure.com",
+								"credential": {
+									"referenceName": "AzureManageIdentity",
+									"type": "CredentialReference"
+								},
+								"type": "UserAssignedManagedIdentity"
+							}
+						}
+					},
+					{
+						"name": "If Condition1",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Check VM Status",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(activity('Check VM Status').output.statuses[1].displayStatus, 'VM running')",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Stop VM",
+									"type": "WebActivity",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"url": {
+											"value": "@concat('https://management.azure.com/subscriptions/',variables('SubscriptionId'),'/resourceGroups/',variables('ResourceGroupName'),'/providers/Microsoft.Compute/virtualMachines/',variables('VMName'),'/',variables('Command'),'?api-version=2020-12-01')",
+											"type": "Expression"
+										},
+										"method": "POST",
+										"headers": {},
+										"body": {
+											"value": "{}",
+											"type": "Expression"
+										},
+										"authentication": {
+											"resource": "https://management.azure.com/",
+											"credential": {
+												"referenceName": "AzureManageIdentity",
+												"type": "CredentialReference"
+											},
+											"type": "UserAssignedManagedIdentity"
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"SubscriptionId": {
+						"type": "String",
+						"defaultValue": "fc603cd3-a62b-4072-9917-973c6cc4e0bf"
+					},
+					"ResourceGroupName": {
+						"type": "String",
+						"defaultValue": "HFY-Merchant-Portal"
+					},
+					"Region": {
+						"type": "String",
+						"defaultValue": "Southeast Asia"
+					},
+					"VMName": {
+						"type": "String",
+						"defaultValue": "vmshir"
+					},
+					"Command": {
+						"type": "String",
+						"defaultValue": "PowerOff"
+					}
+				},
+				"folder": {
+					"name": "SMC_VM"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AzureSqlDB')]",
@@ -766,82 +1012,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/TerminalProfileB2KTempSql')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDB",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/Database"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "TERMINAL_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "TERMINAL_NAME_TH",
-						"type": "varchar"
-					},
-					{
-						"name": "TERMINAL_NAME_EN",
-						"type": "varchar"
-					},
-					{
-						"name": "MERCHANT_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "ACTIVE_STATUS",
-						"type": "varchar"
-					},
-					{
-						"name": "UPDATE_DATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "TERMINAL_PROFILE_B2K_TEMP"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/B2Kblob')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"serviceEndpoint": "[parameters('B2Kblob_properties_typeProperties_serviceEndpoint')]",
-					"accountKind": "StorageV2",
-					"credential": {
-						"referenceName": "AzureManageIdentity",
-						"type": "CredentialReference"
-					}
-				},
-				"connectVia": {
-					"referenceName": "AzureIR-ManagedVNet",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/AzureIR-ManagedVNet')]",
-				"[concat(variables('factoryId'), '/credentials/AzureManageIdentity')]"
 			]
 		}
 	]

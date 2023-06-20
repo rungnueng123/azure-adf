@@ -110,9 +110,6 @@
 					},
 					"az_function_piilog_properties_groupId": {
 						"value": "[parameters('az_function_piilog_properties_groupId')]"
-					},
-					"B2Kblob_properties_typeProperties_serviceEndpoint": {
-						"value": "[parameters('B2Kblob_properties_typeProperties_serviceEndpoint')]"
 					}
 				}
 			},
@@ -131,6 +128,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"B2Kblob_properties_typeProperties_serviceEndpoint": {
+						"value": "[parameters('B2Kblob_properties_typeProperties_serviceEndpoint')]"
 					},
 					"SmcFtpB2k_properties_typeProperties_host": {
 						"value": "[parameters('SmcFtpB2k_properties_typeProperties_host')]"
