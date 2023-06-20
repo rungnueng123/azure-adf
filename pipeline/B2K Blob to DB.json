@@ -54,6 +54,12 @@
 						]
 					}
 				],
+				"policy": {
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
 				"userProperties": [],
 				"typeProperties": {
 					"variableName": "UPDATE_DATE",
@@ -127,6 +133,12 @@
 				"name": "Set FileErrorDate",
 				"type": "SetVariable",
 				"dependsOn": [],
+				"policy": {
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
 				"userProperties": [],
 				"typeProperties": {
 					"variableName": "FileErrorDate",
@@ -195,6 +207,37 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "Process MCRMRCH",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Copy Import Merc Prof",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@concat(\n    variables('HostImportB2k'),\n    variables('ServiceImportB2k')\n)",
+						"type": "Expression"
+					},
+					"connectVia": {
+						"referenceName": "shir",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "GET"
+				}
 			}
 		],
 		"variables": {
@@ -203,6 +246,14 @@
 			},
 			"FileErrorDate": {
 				"type": "String"
+			},
+			"HostImportB2k": {
+				"type": "String",
+				"defaultValue": "https://smc-import-b2k-api-dev.se.scb.co.th"
+			},
+			"ServiceImportB2k": {
+				"type": "String",
+				"defaultValue": "/smc-import-b2k-service/scb/import-b2k-api/blob/process/mcrmrch"
 			}
 		},
 		"folder": {
