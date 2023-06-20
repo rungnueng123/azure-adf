@@ -33,424 +33,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/MERCHANT_ACTIVITY_LOG')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDB",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Log/MERCHANT_ACTIVITY_LOG/Database"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "ID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "TRANSACTION_DATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "FUNCTION_CODE",
-						"type": "varchar"
-					},
-					{
-						"name": "LOG",
-						"type": "varchar"
-					},
-					{
-						"name": "LOG_TYPE",
-						"type": "varchar"
-					},
-					{
-						"name": "APPLICATION_NAME",
-						"type": "varchar"
-					},
-					{
-						"name": "EVENT",
-						"type": "varchar"
-					},
-					{
-						"name": "EVENT_TYPE",
-						"type": "varchar"
-					},
-					{
-						"name": "URL",
-						"type": "varchar"
-					},
-					{
-						"name": "MERCHANT_CENTER_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_ADDRESS",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_HOSTNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_USERNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_OBJECT",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_ADDRESS",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_HOSTNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_USERNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_OBJECT",
-						"type": "varchar"
-					},
-					{
-						"name": "CHANGE_FROM",
-						"type": "text"
-					},
-					{
-						"name": "CHANGE_TO",
-						"type": "text"
-					},
-					{
-						"name": "SEARCH_CRITERIA",
-						"type": "text"
-					},
-					{
-						"name": "RESULT_STATUS",
-						"type": "varchar"
-					},
-					{
-						"name": "MESSAGE",
-						"type": "text"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "MERCHANT_ACTIVITY_LOG"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MerchantEmailB2KTempSQL')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDB",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/Database"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "BILLER_MERCHANT_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "EMAIL_1",
-						"type": "varchar"
-					},
-					{
-						"name": "EMAIL_2",
-						"type": "varchar"
-					},
-					{
-						"name": "EMAIL_3",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "MERCHANT_EMAIL_B2K_TEMP"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MerchantEmailMPSTempSQL')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDB",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/Database"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "MERCHANT_EMAIL_MPS_TEMP"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MerchantProfileB2KTempSQL')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDB",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/Database"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "BILLER_MERCHANT_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "ACCOUNT_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "TAX_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "NAME_TH",
-						"type": "varchar"
-					},
-					{
-						"name": "NAME_EN",
-						"type": "varchar"
-					},
-					{
-						"name": "COMPANY_NAME_TH",
-						"type": "varchar"
-					},
-					{
-						"name": "COMPANY_NAME_EN",
-						"type": "varchar"
-					},
-					{
-						"name": "ACTIVE_STATUS",
-						"type": "varchar"
-					},
-					{
-						"name": "UPDATE_DATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "BUSINESS_TYPE",
-						"type": "varchar"
-					},
-					{
-						"name": "REF1_TH",
-						"type": "varchar"
-					},
-					{
-						"name": "REF1_EN",
-						"type": "varchar"
-					},
-					{
-						"name": "REF3",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE",
-						"type": "varchar"
-					},
-					{
-						"name": "REF2_TH",
-						"type": "varchar"
-					},
-					{
-						"name": "REF2_EN",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "MERCHANT_PROFILE_B2K_TEMP"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MerchantProfileMPSTempSQL')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDB",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "B2KMPS/Database"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "MERCHANT_PROFILE_MPS_TEMP"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SCB_ACTIVITY_LOG')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDB",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Log/SCB_ACTIVITY_LOG/Database"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "ID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "TRANSACTION_DATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "FUNCTION_CODE",
-						"type": "varchar"
-					},
-					{
-						"name": "LOG",
-						"type": "varchar"
-					},
-					{
-						"name": "LOG_TYPE",
-						"type": "varchar"
-					},
-					{
-						"name": "APPLICATION_NAME",
-						"type": "varchar"
-					},
-					{
-						"name": "EVENT",
-						"type": "varchar"
-					},
-					{
-						"name": "EVENT_TYPE",
-						"type": "varchar"
-					},
-					{
-						"name": "URL",
-						"type": "varchar"
-					},
-					{
-						"name": "MERCHANT_CENTER_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_ADDRESS",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_HOSTNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_USERNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "SOURCE_OBJECT",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_ADDRESS",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_HOSTNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_USERNAME",
-						"type": "varchar"
-					},
-					{
-						"name": "DESTINATION_OBJECT",
-						"type": "varchar"
-					},
-					{
-						"name": "CHANGE_FROM",
-						"type": "text"
-					},
-					{
-						"name": "CHANGE_TO",
-						"type": "text"
-					},
-					{
-						"name": "SEARCH_CRITERIA",
-						"type": "text"
-					},
-					{
-						"name": "RESULT_STATUS",
-						"type": "varchar"
-					},
-					{
-						"name": "MESSAGE",
-						"type": "text"
-					},
-					{
-						"name": "UPDATE_PII_LOG_STATUS",
-						"type": "varchar"
-					},
-					{
-						"name": "UPDATE_PII_LOG_DATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "SCB_ACTIVITY_LOG"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/TerminalProfileB2KTempSql')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -577,6 +159,222 @@
 				"connectVia": {
 					"referenceName": "shir",
 					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/triggerStartVM1')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SMC_VM_START",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-06-20T11:47:00",
+						"timeZone": "SE Asia Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								0
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/triggerStartVM2')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SMC_VM_START",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-06-20T11:51:00",
+						"timeZone": "SE Asia Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								12
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/triggerStartVM3')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SMC_VM_START",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-06-20T11:51:00",
+						"timeZone": "SE Asia Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								20
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/triggerStopVM1')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SMC_VM_STOP",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-06-20T11:52:00",
+						"timeZone": "SE Asia Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								6
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/triggerStopVM2')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SMC_VM_STOP",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-06-20T11:52:00",
+						"timeZone": "SE Asia Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								14
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/triggerStopVM3')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SMC_VM_STOP",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-06-20T11:52:00",
+						"timeZone": "SE Asia Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								22
+							]
+						}
+					}
 				}
 			},
 			"dependsOn": []
@@ -910,10 +708,7 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/SCB_ACTIVITY_LOG')]",
-				"[concat(variables('factoryId'), '/datasets/MERCHANT_ACTIVITY_LOG')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Send Email')]",

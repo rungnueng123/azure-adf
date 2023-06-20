@@ -9431,7 +9431,15 @@
 			"properties": {
 				"annotations": [],
 				"runtimeState": "Stopped",
-				"pipelines": [],
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SMC_VM_START",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
 				"type": "ScheduleTrigger",
 				"typeProperties": {
 					"recurrence": {
@@ -9450,7 +9458,9 @@
 					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/SMC_VM_START')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/triggerStartVM2')]",
@@ -9459,7 +9469,15 @@
 			"properties": {
 				"annotations": [],
 				"runtimeState": "Stopped",
-				"pipelines": [],
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SMC_VM_START",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
 				"type": "ScheduleTrigger",
 				"typeProperties": {
 					"recurrence": {
@@ -9478,7 +9496,9 @@
 					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/SMC_VM_START')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/triggerStartVM3')]",
@@ -9487,7 +9507,15 @@
 			"properties": {
 				"annotations": [],
 				"runtimeState": "Stopped",
-				"pipelines": [],
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SMC_VM_START",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
 				"type": "ScheduleTrigger",
 				"typeProperties": {
 					"recurrence": {
@@ -9506,7 +9534,9 @@
 					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/SMC_VM_START')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/triggerStopVM1')]",
@@ -9515,7 +9545,15 @@
 			"properties": {
 				"annotations": [],
 				"runtimeState": "Stopped",
-				"pipelines": [],
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SMC_VM_STOP",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
 				"type": "ScheduleTrigger",
 				"typeProperties": {
 					"recurrence": {
@@ -9534,7 +9572,9 @@
 					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/SMC_VM_STOP')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/triggerStopVM2')]",
@@ -9543,7 +9583,15 @@
 			"properties": {
 				"annotations": [],
 				"runtimeState": "Stopped",
-				"pipelines": [],
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SMC_VM_STOP",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
 				"type": "ScheduleTrigger",
 				"typeProperties": {
 					"recurrence": {
@@ -9562,7 +9610,9 @@
 					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/SMC_VM_STOP')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/triggerStopVM3')]",
@@ -9571,7 +9621,15 @@
 			"properties": {
 				"annotations": [],
 				"runtimeState": "Stopped",
-				"pipelines": [],
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SMC_VM_STOP",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
 				"type": "ScheduleTrigger",
 				"typeProperties": {
 					"recurrence": {
@@ -9590,7 +9648,9 @@
 					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/SMC_VM_STOP')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/triggerTaskExpire')]",
