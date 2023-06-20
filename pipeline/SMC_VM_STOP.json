@@ -103,7 +103,7 @@
 			},
 			"Command": {
 				"type": "String",
-				"defaultValue": "PowerOff"
+				"defaultValue": "Deallocate"
 			}
 		},
 		"folder": {

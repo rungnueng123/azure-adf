@@ -7,7 +7,7 @@
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
-						"activity": "Copy Import Merc Prof",
+						"activity": "Process MCRMRCH",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -215,7 +215,7 @@
 					{
 						"activity": "Copy Import Merc Prof",
 						"dependencyConditions": [
-							"Failed"
+							"Succeeded"
 						]
 					}
 				],
