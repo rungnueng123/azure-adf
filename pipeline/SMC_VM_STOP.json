@@ -70,6 +70,7 @@
 									"value": "{}",
 									"type": "Expression"
 								},
+								"httpRequestTimeout": "00:10:00",
 								"authentication": {
 									"resource": "https://management.azure.com/",
 									"credential": {
