@@ -1,5 +1,5 @@
 {
-	"name": "triggerStartVM",
+	"name": "triggerStartVM1",
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Stopped",
@@ -7,10 +7,18 @@
 		"type": "ScheduleTrigger",
 		"typeProperties": {
 			"recurrence": {
-				"frequency": "Minute",
-				"interval": 15,
+				"frequency": "Day",
+				"interval": 1,
 				"startTime": "2023-06-20T11:47:00",
-				"timeZone": "SE Asia Standard Time"
+				"timeZone": "SE Asia Standard Time",
+				"schedule": {
+					"minutes": [
+						0
+					],
+					"hours": [
+						0
+					]
+				}
 			}
 		}
 	}
