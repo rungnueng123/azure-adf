@@ -317,7 +317,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"url": {
-								"value": "@concat(\n    variables('HostImportB2k'),\n    variables('ServiceImportB2k')\n)",
+								"value": "@concat(\n    variables('HostImportB2k'),\n    variables('ServiceImportB2k'),\n    '?filename=B2K_MCRMRCH_',\n    variables('FileErrorDate'),\n    '.txt&containerName=b2k/',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyy/MM/dd')\n)",
 								"type": "Expression"
 							},
 							"connectVia": {
@@ -342,7 +342,7 @@
 					},
 					"HostImportB2k": {
 						"type": "String",
-						"defaultValue": "https://smc-import-b2k-api-dev.se.scb.co.th"
+						"defaultValue": "https://smc-import-api-dev.se.scb.co.th"
 					},
 					"ServiceImportB2k": {
 						"type": "String",
