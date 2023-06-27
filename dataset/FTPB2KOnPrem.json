@@ -16,6 +16,7 @@
 				"folderPath": "SIT"
 			},
 			"columnDelimiter": ",",
+			"rowDelimiter": "\n",
 			"encodingName": "WINDOWS-874",
 			"escapeChar": "\\",
 			"quoteChar": "\""
