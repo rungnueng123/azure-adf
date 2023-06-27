@@ -178,6 +178,7 @@
 						"container": "file-upload"
 					},
 					"columnDelimiter": "|",
+					"rowDelimiter": "\n",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
@@ -215,6 +216,7 @@
 						"container": "file-upload"
 					},
 					"columnDelimiter": "\u0001",
+					"rowDelimiter": "\n",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"quoteChar": "\""
@@ -255,6 +257,7 @@
 						"container": "file-upload"
 					},
 					"columnDelimiter": "\u0001",
+					"rowDelimiter": "\n",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"quoteChar": "\""
@@ -291,6 +294,7 @@
 						"container": "file-upload"
 					},
 					"columnDelimiter": "\u0001",
+					"rowDelimiter": "\n",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
@@ -325,6 +329,7 @@
 						"container": "file-upload"
 					},
 					"columnDelimiter": "\u0001",
+					"rowDelimiter": "\n",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
@@ -362,6 +367,7 @@
 						"container": "file-upload"
 					},
 					"columnDelimiter": "\u0001",
+					"rowDelimiter": "\n",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
@@ -396,6 +402,7 @@
 						"container": "file-upload"
 					},
 					"columnDelimiter": "\u0001",
+					"rowDelimiter": "\n",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
@@ -458,6 +465,7 @@
 						"folderPath": "SIT"
 					},
 					"columnDelimiter": ",",
+					"rowDelimiter": "\n",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"quoteChar": "\""
