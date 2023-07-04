@@ -1830,7 +1830,7 @@
 						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "Set UPDATE_DATE",
+								"activity": "Set BodyImportB2k",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1908,15 +1908,46 @@
 						"userProperties": [],
 						"typeProperties": {
 							"url": {
-								"value": "@concat(\n    variables('HostImportB2k'),\n    variables('ServiceImportB2k'),\n    '?filename=B2K_MCRMRCH_',\n    variables('FileErrorDate'),\n    '.txt&containerName=b2k/',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyy/MM/dd')\n)",
+								"value": "@concat(\n    variables('HostImportB2k'),\n    variables('ServiceImportB2k')\n)",
 								"type": "Expression"
 							},
 							"connectVia": {
 								"referenceName": "shir",
 								"type": "IntegrationRuntimeReference"
 							},
-							"method": "GET",
-							"headers": {}
+							"method": "POST",
+							"headers": {},
+							"body": {
+								"value": "@variables('BodyImportB2k')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set BodyImportB2k",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set UPDATE_DATE",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "BodyImportB2k",
+							"value": {
+								"value": "@concat(\n    '{\"filename\":\"B2K_MCRMRCH_',\n    variables('FileErrorDate'),\n    '.txt\",\"containerName\":\"b2k/',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyy/MM/dd'),\n    '\"}'\n)",
+								"type": "Expression"
+							}
 						}
 					}
 				],
@@ -1938,6 +1969,9 @@
 					"ServiceImportB2k": {
 						"type": "String",
 						"defaultValue": "/smc-import-b2k-service/scb/import-b2k-api/blob/process/mcrmrch"
+					},
+					"BodyImportB2k": {
+						"type": "String"
 					}
 				},
 				"folder": {
