@@ -132,7 +132,14 @@
 			{
 				"name": "Set FileErrorDate",
 				"type": "SetVariable",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Truncate Table Temp",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"retry": 0,
 					"retryIntervalInSeconds": 30,
@@ -269,6 +276,32 @@
 						"value": "@concat(\n    '{\"filename\":\"B2K_MCRMRCH_',\n    variables('FileErrorDate'),\n    '.txt\",\"containerName\":\"b2k/',\n    formatDateTime(subtractFromTime(getFutureTime(7, 'Hour', 'yyyy-MM-dd HH:mm:ss'),1,'Day'),'yyyy/MM/dd'),\n    '\"}'\n)",
 						"type": "Expression"
 					}
+				}
+			},
+			{
+				"name": "Truncate Table Temp",
+				"type": "Script",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "truncate table MERCHANT_PROFILE_B2K_TEMP;\ntruncate table MERCHANT_EMAIL_B2K_TEMP;\ntruncate table TERMINAL_PROFILE_B2K_TEMP;"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
 				}
 			}
 		],
