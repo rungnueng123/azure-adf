@@ -218,7 +218,14 @@
 					{
 						"name": "Set FileErrorDate",
 						"type": "SetVariable",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Truncate Table Temp",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
@@ -359,6 +366,32 @@
 								"type": "Expression"
 							}
 						}
+					},
+					{
+						"name": "Truncate Table Temp",
+						"type": "Script",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"linkedServiceName": {
+							"referenceName": "AzureSqlDB",
+							"type": "LinkedServiceReference"
+						},
+						"typeProperties": {
+							"scripts": [
+								{
+									"type": "Query",
+									"text": "truncate table MERCHANT_PROFILE_B2K_TEMP;\ntruncate table MERCHANT_EMAIL_B2K_TEMP;\ntruncate table TERMINAL_PROFILE_B2K_TEMP;"
+								}
+							],
+							"scriptBlockExecutionTimeout": "02:00:00"
+						}
 					}
 				],
 				"policy": {
@@ -398,7 +431,8 @@
 				"[concat(variables('factoryId'), '/pipelines/B2K_EMSMRMST to SQL')]",
 				"[concat(variables('factoryId'), '/datasets/ImportMerchantProfileSql')]",
 				"[concat(variables('factoryId'), '/datasets/B2K_IMPORT_MERCHANT_PROFILE')]",
-				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/shir')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDB')]"
 			]
 		},
 		{
