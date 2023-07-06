@@ -1,0 +1,109 @@
+{
+	"name": "Update OAuth Expire",
+	"properties": {
+		"activities": [
+			{
+				"name": "updateOAuthExpire",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Set Date Expire",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[purgeOauth2Authorization]",
+						"storedProcedureParameters": {
+							"DATE": {
+								"type": "String",
+								"value": {
+									"value": "@variables('dateExpire')",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ImportMerchantProfileSql",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Return Result",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "updateOAuthExpire",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineReturnValue",
+					"value": [
+						{
+							"key": "result",
+							"value": {
+								"type": "Expression",
+								"content": "@activity('updateOAuthExpire').output.firstRow"
+							}
+						}
+					],
+					"setSystemVariable": true
+				}
+			},
+			{
+				"name": "Set Date Expire",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "dateExpire",
+					"value": {
+						"value": "@formatDateTime(subtractFromTime(pipeline().parameters.jobDate,1,'Day'),'yyyy-MM-dd 23:59:59.999')",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"jobDate": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"dateExpire": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "SMC_Store_Procedure"
+		},
+		"annotations": []
+	}
+}

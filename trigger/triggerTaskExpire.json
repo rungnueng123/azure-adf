@@ -9,6 +9,12 @@
 					"referenceName": "SMC_MasterTaskExpirePipeline",
 					"type": "PipelineReference"
 				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "SMC_MasterOAuthExpirePipeline",
+					"type": "PipelineReference"
+				}
 			}
 		],
 		"type": "ScheduleTrigger",
