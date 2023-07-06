@@ -13,6 +13,652 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/SMC_MasterMPSPipeline_003')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set PipelineStep 3",
+						"description": "Error key message",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineError 3",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "MPS_INTEGRATE_FAILED"
+						}
+					},
+					{
+						"name": "Update Merchant Profile",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Update Merchant Profile MPS",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Send Email Error 3",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 3",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								},
+								"pipelineMstKey": {
+									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
+								},
+								"pipelineName": "SMC_MasterMPSPipeline_003",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
+									"type": "Expression"
+								},
+								"pipelineNameRerun": "SMC_MasterMPSPipeline_003"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineError 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineSubjectDate 3",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update Merchant Profile').error.Message",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Result Store",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update Merchant Profile",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "resultCode",
+							"value": {
+								"value": "@if(equals(activity('Update Merchant Profile').output.pipelineReturnValue.result.CODE, '000'), true, false)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "If Condition resultCode",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Set Result Store",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@variables('resultCode')",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Set PipelineSubjectDate 4",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineSubjectDate",
+										"value": {
+											"value": "@formatDateTime(subtractFromTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),1,'Day'),'dd/MM/yyyy')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set PipelineError 4",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineSubjectDate 4",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineError",
+										"value": {
+											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorProcedure,\n    '<br>ERROR_LINE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorLine,\n    '<br>ERROR_MESSAGE : ',\n    activity('Update Merchant Profile').output.pipelineReturnValue.result.ErrorMessage\n)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set PipelineStep 4",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineError 4",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineStep",
+										"value": "MPS_INTEGRATE_FAILED"
+									}
+								},
+								{
+									"name": "Send Email Error 4",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineStep 4",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Send Email",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"pipelineStep": {
+												"value": "@variables('pipelineStep')",
+												"type": "Expression"
+											},
+											"pipelineMstKey": {
+												"value": "@variables('pipelineMstKey')",
+												"type": "Expression"
+											},
+											"pipelineName": "SMC_MasterMPSPipeline_003",
+											"pipelineError": {
+												"value": "@variables('pipelineError')",
+												"type": "Expression"
+											},
+											"pipelineSubjectDate": {
+												"value": "@variables('pipelineSubjectDate')",
+												"type": "Expression"
+											},
+											"pipelineNameRerun": "SMC_MasterMPSPipeline_003"
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					},
+					"pipelineMstKey": {
+						"type": "String",
+						"defaultValue": "6f215d46e6c64b58bea218b89094b01c"
+					},
+					"pipelineError": {
+						"type": "String"
+					},
+					"pipelineSubjectDate": {
+						"type": "String"
+					},
+					"resultCode": {
+						"type": "Boolean"
+					}
+				},
+				"folder": {
+					"name": "SMC_MPS"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-13T09:46:48Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SMC_MasterOAuthExpirePipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Update OAuth Expire",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set Job Date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Update OAuth Expire",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"jobDate": {
+									"value": "@variables('jobDate')",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Set PipelineStep 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineError 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineStep",
+							"value": "EXPIRE_JOBS_FAILED"
+						}
+					},
+					{
+						"name": "Send Email Error 1",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineStep 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Email",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pipelineStep": {
+									"value": "@variables('pipelineStep')",
+									"type": "Expression"
+								},
+								"pipelineMstKey": {
+									"value": "@variables('pipelineMstKey')",
+									"type": "Expression"
+								},
+								"pipelineName": "SMC_MasterOAuthExpirePipeline",
+								"pipelineError": {
+									"value": "@variables('pipelineError')",
+									"type": "Expression"
+								},
+								"pipelineSubjectDate": {
+									"value": "@variables('pipelineSubjectDate')",
+									"type": "Expression"
+								},
+								"pipelineNameRerun": "SMC_MasterOAuthExpirePipeline"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineError 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set PipelineSubjectDate 1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineError",
+							"value": {
+								"value": "@activity('Update OAuth Expire').error.Message",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set PipelineSubjectDate 1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update OAuth Expire",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pipelineSubjectDate",
+							"value": {
+								"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Result Store",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Update OAuth Expire",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "resultCode",
+							"value": {
+								"value": "@if(equals(activity('Update OAuth Expire').output.pipelineReturnValue.result.CODE, '200'), true, false)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "If Condition resultCode",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Set Result Store",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@variables('resultCode')",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Set PipelineSubjectDate 2",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineSubjectDate",
+										"value": {
+											"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-ddTHH:mm:ss'),'dd/MM/yyyy HH:mm')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set PipelineError 2",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineSubjectDate 2",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineError",
+										"value": {
+											"value": "@concat(\n    'ERROR_PROCEDURE : ',\n    activity('Update OAuth Expire').output.pipelineReturnValue.result.ErrorProcedure,\n    '<br>ERROR_LINE : ',\n    activity('Update OAuth Expire').output.pipelineReturnValue.result.ErrorLine,\n    '<br>ERROR_MESSAGE : ',\n    activity('Update OAuth Expire').output.pipelineReturnValue.result.ErrorMessage\n)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set PipelineStep 2",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineError 2",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineStep",
+										"value": "EXPIRE_JOBS_FAILED"
+									}
+								},
+								{
+									"name": "Send Email Error 2",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "Set PipelineStep 2",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Send Email",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"pipelineStep": {
+												"value": "@variables('pipelineStep')",
+												"type": "Expression"
+											},
+											"pipelineMstKey": {
+												"value": "@variables('pipelineMstKey')",
+												"type": "Expression"
+											},
+											"pipelineName": "SMC_MasterOAuthExpirePipeline",
+											"pipelineError": {
+												"value": "@variables('pipelineError')",
+												"type": "Expression"
+											},
+											"pipelineSubjectDate": {
+												"value": "@variables('pipelineSubjectDate')",
+												"type": "Expression"
+											},
+											"pipelineNameRerun": "SMC_MasterOAuthExpirePipeline"
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Set Job Date",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "jobDate",
+							"value": {
+								"value": "@convertTimeZone(utcnow(), 'UTC', 'SE Asia Standard Time', 'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pipelineStep": {
+						"type": "String"
+					},
+					"pipelineMstKey": {
+						"type": "String",
+						"defaultValue": "70cd180d2eb6480b9553262b321c781b"
+					},
+					"pipelineError": {
+						"type": "String"
+					},
+					"pipelineSubjectDate": {
+						"type": "String"
+					},
+					"resultCode": {
+						"type": "Boolean"
+					},
+					"jobDate": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "SMC_Task_Expire"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SMC_MasterTaskExpirePipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -44,8 +690,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -107,8 +751,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -133,8 +775,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -159,8 +799,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -196,8 +834,6 @@
 									"type": "SetVariable",
 									"dependsOn": [],
 									"policy": {
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -222,8 +858,6 @@
 										}
 									],
 									"policy": {
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -248,8 +882,6 @@
 										}
 									],
 									"policy": {
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -343,8 +975,6 @@
 						"type": "SetVariable",
 						"dependsOn": [],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -369,8 +999,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -395,8 +1023,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -621,8 +1247,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -644,8 +1268,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -670,8 +1292,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -1729,8 +2349,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -1818,8 +2436,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -1943,9 +2559,6 @@
 							}
 						],
 						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -2089,8 +2702,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -2157,8 +2768,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -2331,8 +2940,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -2355,8 +2962,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -2418,8 +3023,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -2444,8 +3047,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -2470,8 +3071,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -2496,8 +3095,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -2515,8 +3112,6 @@
 						"type": "SetVariable",
 						"dependsOn": [],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -2626,8 +3221,6 @@
 										}
 									],
 									"policy": {
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -2649,8 +3242,6 @@
 										}
 									],
 									"policy": {
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -2668,8 +3259,6 @@
 									"type": "SetVariable",
 									"dependsOn": [],
 									"policy": {
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -2845,6 +3434,13 @@
 							"type": "PipelineReference"
 						},
 						"parameters": {}
+					},
+					{
+						"pipelineReference": {
+							"referenceName": "SMC_MasterOAuthExpirePipeline",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
 					}
 				],
 				"type": "ScheduleTrigger",
@@ -2866,7 +3462,8 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/SMC_MasterTaskExpirePipeline')]"
+				"[concat(variables('factoryId'), '/pipelines/SMC_MasterTaskExpirePipeline')]",
+				"[concat(variables('factoryId'), '/pipelines/SMC_MasterOAuthExpirePipeline')]"
 			]
 		},
 		{
@@ -2963,8 +3560,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -2987,8 +3582,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -3011,8 +3604,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -3135,8 +3726,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -3161,8 +3750,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -3187,8 +3774,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -3213,8 +3798,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -3239,8 +3822,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -3265,8 +3846,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -3291,8 +3870,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -3328,8 +3905,6 @@
 									"type": "SetVariable",
 									"dependsOn": [],
 									"policy": {
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -3354,8 +3929,6 @@
 										}
 									],
 									"policy": {
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -3380,8 +3953,6 @@
 										}
 									],
 									"policy": {
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -3541,8 +4112,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -3565,8 +4134,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -3649,8 +4216,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -3675,8 +4240,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -3701,8 +4264,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -3727,8 +4288,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -3753,8 +4312,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -3790,8 +4347,6 @@
 									"type": "SetVariable",
 									"dependsOn": [],
 									"policy": {
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -3816,8 +4371,6 @@
 										}
 									],
 									"policy": {
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -3842,8 +4395,6 @@
 										}
 									],
 									"policy": {
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -4023,8 +4574,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -4047,8 +4596,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -4071,8 +4618,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -4195,8 +4740,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -4221,8 +4764,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -4247,8 +4788,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -4273,8 +4812,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -4299,8 +4836,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -4325,8 +4860,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -4351,8 +4884,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -4388,8 +4919,6 @@
 									"type": "SetVariable",
 									"dependsOn": [],
 									"policy": {
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -4414,8 +4943,6 @@
 										}
 									],
 									"policy": {
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -4440,8 +4967,6 @@
 										}
 									],
 									"policy": {
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -4601,8 +5126,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -4625,8 +5148,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -4709,8 +5230,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -4735,8 +5254,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -4761,8 +5278,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -4787,8 +5302,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -4813,8 +5326,6 @@
 							}
 						],
 						"policy": {
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -4850,8 +5361,6 @@
 									"type": "SetVariable",
 									"dependsOn": [],
 									"policy": {
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -4876,8 +5385,6 @@
 										}
 									],
 									"policy": {
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -4902,8 +5409,6 @@
 										}
 									],
 									"policy": {
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -4987,82 +5492,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/MPS Blob to DB')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/triggerActivityLog')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "SMC_MasterActivityPipeline",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2023-01-09T12:00:00",
-						"timeZone": "SE Asia Standard Time",
-						"schedule": {
-							"minutes": [
-								0
-							],
-							"hours": [
-								1
-							]
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/SMC_MasterActivityPipeline')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/triggerB2K')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "SMC_MasterB2KPipeline_001",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2023-01-17T12:00:00",
-						"timeZone": "SE Asia Standard Time",
-						"schedule": {
-							"minutes": [
-								0
-							],
-							"hours": [
-								1
-							]
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/SMC_MasterB2KPipeline_001')]"
 			]
 		}
 	]
