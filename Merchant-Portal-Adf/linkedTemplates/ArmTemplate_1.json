@@ -1402,8 +1402,8 @@
 					},
 					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
-					"quoteChar": "\""
+					"escapeChar": "",
+					"quoteChar": ""
 				},
 				"schema": [
 					{
@@ -1444,8 +1444,8 @@
 					},
 					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
-					"quoteChar": "\""
+					"escapeChar": "",
+					"quoteChar": ""
 				},
 				"schema": []
 			},
@@ -1482,9 +1482,9 @@
 					},
 					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
-					"escapeChar": "\\",
+					"escapeChar": "",
 					"firstRowAsHeader": true,
-					"quoteChar": "\""
+					"quoteChar": ""
 				},
 				"schema": []
 			},
@@ -1517,9 +1517,9 @@
 						"container": "file-upload"
 					},
 					"columnDelimiter": "\u0001",
-					"escapeChar": "\\",
+					"escapeChar": "",
 					"firstRowAsHeader": true,
-					"quoteChar": "\""
+					"quoteChar": ""
 				},
 				"schema": []
 			},
