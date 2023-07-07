@@ -26,9 +26,9 @@
 			"columnDelimiter": "|",
 			"rowDelimiter": "\n",
 			"encodingName": "WINDOWS-874",
-			"escapeChar": "\\",
+			"escapeChar": "",
 			"firstRowAsHeader": true,
-			"quoteChar": "\""
+			"quoteChar": ""
 		},
 		"schema": []
 	}

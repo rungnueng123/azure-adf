@@ -21,9 +21,9 @@
 				"container": "file-upload"
 			},
 			"columnDelimiter": "\u0001",
-			"escapeChar": "\\",
+			"escapeChar": "",
 			"firstRowAsHeader": true,
-			"quoteChar": "\""
+			"quoteChar": ""
 		},
 		"schema": []
 	},
