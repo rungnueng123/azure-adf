@@ -23,7 +23,7 @@
 			"rowDelimiter": "\n",
 			"encodingName": "WINDOWS-874",
 			"escapeChar": "\\",
-			"quoteChar": "\""
+			"quoteChar": ""
 		},
 		"schema": []
 	},

@@ -23,7 +23,7 @@
 			"columnDelimiter": "|",
 			"encodingName": "WINDOWS-874",
 			"escapeChar": "\\",
-			"quoteChar": "\""
+			"quoteChar": ""
 		},
 		"schema": [
 			{

@@ -25,7 +25,7 @@
 			},
 			"columnDelimiter": "\u0001",
 			"encodingName": "WINDOWS-874",
-			"escapeChar": "",
+			"escapeChar": "\\",
 			"quoteChar": ""
 		},
 		"schema": []
