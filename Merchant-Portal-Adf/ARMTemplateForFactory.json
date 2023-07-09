@@ -8493,7 +8493,7 @@
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
-					"quoteChar": ""
+					"quoteChar": "\""
 				},
 				"schema": [
 					{
@@ -8557,7 +8557,7 @@
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
-					"quoteChar": ""
+					"quoteChar": "\""
 				},
 				"schema": []
 			},
