@@ -39,7 +39,7 @@
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
-					"quoteChar": "\""
+					"quoteChar": ""
 				},
 				"schema": []
 			},
@@ -72,7 +72,7 @@
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
-					"quoteChar": "\""
+					"quoteChar": ""
 				},
 				"schema": []
 			},
@@ -105,7 +105,7 @@
 					"columnDelimiter": "|",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
-					"quoteChar": "\""
+					"quoteChar": ""
 				},
 				"schema": [
 					{
@@ -145,7 +145,7 @@
 					"columnDelimiter": "|",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
-					"quoteChar": "\""
+					"quoteChar": ""
 				},
 				"schema": []
 			},
@@ -182,7 +182,7 @@
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
-					"quoteChar": "\""
+					"quoteChar": ""
 				},
 				"schema": []
 			},
@@ -219,7 +219,7 @@
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
-					"quoteChar": "\""
+					"quoteChar": ""
 				},
 				"schema": []
 			},
@@ -252,7 +252,7 @@
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
-					"quoteChar": "\""
+					"quoteChar": ""
 				},
 				"schema": []
 			},
@@ -285,7 +285,7 @@
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
-					"quoteChar": "\""
+					"quoteChar": ""
 				},
 				"schema": []
 			},
@@ -327,7 +327,7 @@
 						"container": "log"
 					},
 					"columnDelimiter": "|",
-					"escapeChar": "",
+					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": ""
 				},
@@ -362,7 +362,7 @@
 					"rowDelimiter": "\n",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
-					"quoteChar": "\""
+					"quoteChar": ""
 				},
 				"schema": []
 			},
@@ -394,7 +394,7 @@
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
-					"quoteChar": "\""
+					"quoteChar": ""
 				},
 				"schema": []
 			},

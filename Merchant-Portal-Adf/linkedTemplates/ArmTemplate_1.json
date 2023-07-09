@@ -1402,7 +1402,7 @@
 					},
 					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
-					"escapeChar": "",
+					"escapeChar": "\\",
 					"quoteChar": ""
 				},
 				"schema": [
@@ -1444,7 +1444,7 @@
 					},
 					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
-					"escapeChar": "",
+					"escapeChar": "\\",
 					"quoteChar": ""
 				},
 				"schema": []
@@ -1482,7 +1482,7 @@
 					},
 					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
-					"escapeChar": "",
+					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": ""
 				},
@@ -1517,7 +1517,7 @@
 						"container": "file-upload"
 					},
 					"columnDelimiter": "\u0001",
-					"escapeChar": "",
+					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": ""
 				},

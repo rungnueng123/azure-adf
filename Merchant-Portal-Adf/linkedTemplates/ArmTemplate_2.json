@@ -37,7 +37,7 @@
 						"container": "file-upload"
 					},
 					"columnDelimiter": "\u0001",
-					"escapeChar": "",
+					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": ""
 				},
@@ -99,7 +99,7 @@
 					},
 					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
-					"escapeChar": "",
+					"escapeChar": "\\",
 					"quoteChar": ""
 				},
 				"schema": []
@@ -135,7 +135,7 @@
 					},
 					"columnDelimiter": "\u0001",
 					"encodingName": "WINDOWS-874",
-					"escapeChar": "",
+					"escapeChar": "\\",
 					"quoteChar": ""
 				},
 				"schema": []
@@ -167,7 +167,7 @@
 						"container": "file-upload"
 					},
 					"columnDelimiter": "\u0001",
-					"escapeChar": "",
+					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": ""
 				},
@@ -200,7 +200,7 @@
 						"container": "file-upload"
 					},
 					"columnDelimiter": "\u0001",
-					"escapeChar": "",
+					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": ""
 				},
@@ -238,7 +238,7 @@
 					"columnDelimiter": "|",
 					"rowDelimiter": "\n",
 					"encodingName": "WINDOWS-874",
-					"escapeChar": "",
+					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": ""
 				},
@@ -276,7 +276,7 @@
 					"columnDelimiter": "\u0001",
 					"rowDelimiter": "\n",
 					"encodingName": "WINDOWS-874",
-					"escapeChar": "",
+					"escapeChar": "\\",
 					"quoteChar": ""
 				},
 				"schema": [
@@ -317,7 +317,7 @@
 					"columnDelimiter": "\u0001",
 					"rowDelimiter": "\n",
 					"encodingName": "WINDOWS-874",
-					"escapeChar": "",
+					"escapeChar": "\\",
 					"quoteChar": ""
 				},
 				"schema": []
@@ -354,7 +354,7 @@
 					"columnDelimiter": "\u0001",
 					"rowDelimiter": "\n",
 					"encodingName": "WINDOWS-874",
-					"escapeChar": "",
+					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": ""
 				},
@@ -389,7 +389,7 @@
 					"columnDelimiter": "\u0001",
 					"rowDelimiter": "\n",
 					"encodingName": "WINDOWS-874",
-					"escapeChar": "",
+					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": ""
 				},
@@ -427,7 +427,7 @@
 					"columnDelimiter": "\u0001",
 					"rowDelimiter": "\n",
 					"encodingName": "WINDOWS-874",
-					"escapeChar": "",
+					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": ""
 				},
@@ -462,7 +462,7 @@
 					"columnDelimiter": "\u0001",
 					"rowDelimiter": "\n",
 					"encodingName": "WINDOWS-874",
-					"escapeChar": "",
+					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": ""
 				},
@@ -526,7 +526,7 @@
 					"rowDelimiter": "\n",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
-					"quoteChar": "\""
+					"quoteChar": ""
 				},
 				"schema": []
 			},
@@ -553,7 +553,7 @@
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
-					"quoteChar": "\""
+					"quoteChar": ""
 				},
 				"schema": []
 			},
@@ -655,7 +655,7 @@
 						"container": "log"
 					},
 					"columnDelimiter": "|",
-					"escapeChar": "",
+					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": ""
 				},
@@ -693,7 +693,7 @@
 					"columnDelimiter": ",",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
-					"quoteChar": "\""
+					"quoteChar": ""
 				},
 				"schema": [
 					{
@@ -755,7 +755,7 @@
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
-					"quoteChar": "\""
+					"quoteChar": ""
 				},
 				"schema": []
 			},
@@ -791,7 +791,7 @@
 					"columnDelimiter": "|",
 					"encodingName": "WINDOWS-874",
 					"escapeChar": "\\",
-					"quoteChar": "\""
+					"quoteChar": ""
 				},
 				"schema": [
 					{
